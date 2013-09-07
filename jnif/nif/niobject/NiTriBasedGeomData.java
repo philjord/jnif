@@ -18,7 +18,7 @@ public abstract class NiTriBasedGeomData extends NiGeometryData
 	 </niobject>	
 	 */
 
-	public int numTriangles;  
+	public int numTriangles;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{

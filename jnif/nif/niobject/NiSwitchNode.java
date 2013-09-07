@@ -34,19 +34,16 @@ public class NiSwitchNode extends NiNode
 
 		return success;
 	}
-	
-	
+
 	public void addDisplayRows(ArrayList<Object[]> list)
 	{
 		super.addDisplayRows(list);
 
 		list.add(new Object[]
 		{ "NiSwitchNode", "unknownFlags1", "" + unknownFlags1 });
-		 
 
 		list.add(new Object[]
 		{ "NiSwitchNode", "unknownInt1", "" + unknownInt1 });
-	 
 
 	}
 }

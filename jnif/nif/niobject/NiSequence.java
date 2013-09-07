@@ -42,7 +42,7 @@ public class NiSequence extends NiObject
 		name = ByteConvert.readIndexString(stream, nifVer);
 		numControlledBlocks = ByteConvert.readInt(stream);
 		unknownInt1 = ByteConvert.readInt(stream);
-		
+
 		controlledBlocks = new NifControllerLink[numControlledBlocks];
 		for (int i = 0; i < numControlledBlocks; i++)
 		{

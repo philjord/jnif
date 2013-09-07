@@ -63,19 +63,19 @@ public class NiTexturingProperty extends NiProperty
 	 </niobject>
 	
 	 enum MapEnum
-    {
-        BASE_INDEX,
-        DARK_INDEX,
-        DETAIL_INDEX,
-        GLOSS_INDEX,
-        GLOW_INDEX,
-        BUMP_INDEX,
-        NORMAL_INDEX,
-        PARALLAX_INDEX,
-        DECAL_BASE,
-        SHADER_BASE,
-        INDEX_MAX
-    };
+	{
+	    BASE_INDEX,
+	    DARK_INDEX,
+	    DETAIL_INDEX,
+	    GLOSS_INDEX,
+	    GLOW_INDEX,
+	    BUMP_INDEX,
+	    NORMAL_INDEX,
+	    PARALLAX_INDEX,
+	    DECAL_BASE,
+	    SHADER_BASE,
+	    INDEX_MAX
+	};
 
 	 */
 

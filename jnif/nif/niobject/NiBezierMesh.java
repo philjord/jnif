@@ -3,10 +3,10 @@ package nif.niobject;
 import java.io.IOException;
 import java.io.InputStream;
 
-import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifRef;
 import nif.compound.NifVector3;
+import tools.io.LittleEndianPrimitiveBytes;
 
 public class NiBezierMesh extends NiAVObject
 {
@@ -57,7 +57,7 @@ public class NiBezierMesh extends NiAVObject
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		numBezierTriangles = ByteConvert.readInt(stream);
+		numBezierTriangles = LittleEndianPrimitiveBytes.readInt(stream);
 
 		bezierTriangle = new NifRef[numBezierTriangles];
 		for (int i = 0; i < numBezierTriangles; i++)
@@ -65,11 +65,11 @@ public class NiBezierMesh extends NiAVObject
 			bezierTriangle[i] = new NifRef(NiBezierTriangle4.class, stream);
 		}
 
-		unknown1 = ByteConvert.readInt(stream);
+		unknown1 = LittleEndianPrimitiveBytes.readInt(stream);
 
-		count1 = ByteConvert.readShort(stream);
+		count1 = LittleEndianPrimitiveBytes.readShort(stream);
 
-		unknown2 = ByteConvert.readShort(stream);
+		unknown2 = LittleEndianPrimitiveBytes.readShort(stream);
 
 		points1 = new NifVector3[count1];
 		for (int i = 0; i < count1; i++)
@@ -77,22 +77,22 @@ public class NiBezierMesh extends NiAVObject
 			points1[i] = new NifVector3(stream);
 		}
 
-		unknown3 = ByteConvert.readInt(stream);
+		unknown3 = LittleEndianPrimitiveBytes.readInt(stream);
 
 		points2 = new float[count1][2];
 		for (int i = 0; i < count1; i++)
 		{
-			points2[i] = ByteConvert.readFloats(2, stream);
+			points2[i] = LittleEndianPrimitiveBytes.readFloats(2, stream);
 		}
 
-		unknown4 = ByteConvert.readInt(stream);
+		unknown4 = LittleEndianPrimitiveBytes.readInt(stream);
 
-		count2 = ByteConvert.readShort(stream);
+		count2 = LittleEndianPrimitiveBytes.readShort(stream);
 
 		data2 = new short[count2][4];
 		for (int i = 0; i < count2; i++)
 		{
-			data2[i] = ByteConvert.readShorts(4, stream);
+			data2[i] = LittleEndianPrimitiveBytes.readShorts(4, stream);
 		}
 
 		return success;
