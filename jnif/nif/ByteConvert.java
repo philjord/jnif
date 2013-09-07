@@ -13,7 +13,28 @@ public class ByteConvert
 	private static float toFloat(byte[] b)
 	{
 
-		return Float.intBitsToFloat(ByteConvert.toInt(b));
+		//System.out.println("1.0 : "+ Integer.toBinaryString(Float.floatToRawIntBits(1.0f)) + " " + Float.floatToRawIntBits(1.0f));
+
+		//0.0 : 0
+		//1.0 : 111111100000000000000000000000 1065353216
+		//-0.0 : 10000000000000000000000000000000 -2147483648
+		//-1.0 : 10111111100000000000000000000000 -1082130432
+
+		//0.99999994 : 111111011111111111111111111111 1065353215
+		//-0.99999994 : 10111111011111111111111111111111 -1082130433
+
+		int i = toInt(b);
+		if (i == 0)
+			return 0f;
+		else if (i == 1065353216)
+			return 1.0f;
+		else if (i == -2147483648)
+			return -0.0f;
+		else if (i == -1082130432)
+			return -1.0f;
+		else
+			return Float.intBitsToFloat(ByteConvert.toInt(b));
+
 	}
 
 	public static short toShort(byte[] b)
