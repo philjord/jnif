@@ -67,4 +67,101 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 
 	}
 
+	//BELOW ARE CONVIENCE
+
+	public static int toInt(byte[] b)
+	{
+		return LittleEndianPrimitiveBytes.toInt(b);
+	}
+
+	public static short toShort(byte[] b)
+	{
+		return LittleEndianPrimitiveBytes.toShort(b);
+	}
+
+	public static byte readByte(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readByte(stream);
+	}
+
+	public static short readUnsignedByte(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readUnsignedByte(stream);
+	}
+
+	public static short byteToUnsigned(byte in)
+	{
+		return LittleEndianPrimitiveBytes.byteToUnsigned(in);
+	}
+
+	public static byte[] readBytes(int numBytes, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readBytes(numBytes, stream);
+	}
+
+	public static short[] readUnsignedBytes(int numBytes, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readUnsignedBytes(numBytes, stream);
+	}
+
+	public static int readInt(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readInt(stream);
+	}
+
+	public static int[] readInts(int numInts, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readInts(numInts, stream);
+	}
+
+	public static short readShort(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readShort(stream);
+	}
+
+	public static int readUnsignedShort(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readUnsignedShort(stream);
+	}
+
+	public static int shortToUnsigned(short in)
+	{
+		return LittleEndianPrimitiveBytes.shortToUnsigned(in);
+	}
+
+	public static int[] readUnsignedShorts(int numBytes, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readUnsignedShorts(numBytes, stream);
+	}
+
+	public static short[] readShorts(int numShorts, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readShorts(numShorts, stream);
+	}
+
+	public static float readFloat(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readFloat(stream);
+	}
+
+	public static float[] readFloats(int numFloats, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readFloats(numFloats, stream);
+	}
+
+	public static String readSizedString(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readSizedString(stream);
+	}
+
+	public static String[] readSizedStrings(int numStrings, InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readSizedStrings(numStrings, stream);
+	}
+
+	public static String readShortString(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readShortString(stream);
+	}
+
 }
