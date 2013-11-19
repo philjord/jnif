@@ -74,6 +74,11 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 		return LittleEndianPrimitiveBytes.toInt(b);
 	}
 
+	public static float toFloat(byte[] b)
+	{
+		return LittleEndianPrimitiveBytes.toFloat(b);
+	}
+
 	public static short toShort(byte[] b)
 	{
 		return LittleEndianPrimitiveBytes.toShort(b);
