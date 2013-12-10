@@ -11,7 +11,7 @@ public class NiPSysVolumeEmitter extends NiPSysEmitter
 	/**
 	 <niobject name="NiPSysVolumeEmitter" abstract="1" inherit="NiPSysEmitter" ver1="10.1.0.0">
 
-	 An emitter that emits meshes?
+	 An emitter that emits from a mesh?
 	 
 	 <add name="Emitter Object" type="Ptr" template="NiNode" ver1="10.1.0.0">Node parent of this modifier?</add>
 	 </niobject>
