@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ElderScrollsUtils"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Tools"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ElderScrollsUtils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Tools"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
