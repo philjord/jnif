@@ -64,7 +64,7 @@ public class NifVer
 	public static final int VER_10_0_1_2 = 0x0A000102;
 
 	public static final int VER_10_1_0_0 = 0x0A010000;
-	 
+
 	public static final int VER_10_1_0_106 = 0x0A01006A;
 
 	public static final int VER_10_2_0_0 = 0x0A020000;
@@ -106,8 +106,11 @@ public class NifVer
 
 	public int LOAD_USER_VER2 = 0;
 
-	public NifVer(int LOAD_VER, int LOAD_USER_VER, int LOAD_USER_VER2)
+	public String fileName;
+
+	public NifVer(String fileName, int LOAD_VER, int LOAD_USER_VER, int LOAD_USER_VER2)
 	{
+		this.fileName = fileName;
 		this.LOAD_VER = LOAD_VER;
 		this.LOAD_USER_VER = LOAD_USER_VER;
 		this.LOAD_USER_VER2 = LOAD_USER_VER2;
@@ -115,6 +118,6 @@ public class NifVer
 
 	public String toString()
 	{
-		return "nifVer " + LOAD_VER + " " + LOAD_USER_VER + " " + LOAD_USER_VER2;
+		return "nifVer " + fileName + " " + LOAD_VER + " " + LOAD_USER_VER + " " + LOAD_USER_VER2;
 	}
 }

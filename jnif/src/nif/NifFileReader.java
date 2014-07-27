@@ -62,7 +62,7 @@ public class NifFileReader
 			return null;
 		}
 
-		NifVer nifVer = new NifVer(header.version, header.userVersion, header.userVersion2);
+		NifVer nifVer = new NifVer(fileName, header.version, header.userVersion, header.userVersion2);
 
 		if (nifVer.LOAD_VER < NifVer.VER_10_1_0_106)
 		{
