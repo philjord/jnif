@@ -5,9 +5,8 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifMatrix33;
 import nif.compound.NifSkinData;
-import nif.compound.NifVector3;
+import nif.compound.NifSkinTransform;
 
 public class NiSkinData extends NiObject
 {
@@ -17,17 +16,8 @@ public class NiSkinData extends NiObject
 
 	 Skinning data.
 	 
-	 <add name="Rotation" type="Matrix33">
-
-	 The overall rotation offset of the skin from this bone in the bind position.
-	 (This is a guess, it has always been the identity matrix so far)
 	 
-	 </add>
-	 <add name="Translation" type="Vector3">
-	 The overall translation offset of the skin from this bone in the bind position. (This is a guess, it has always been (0.0, 0.0, 0.0) so far)
-	 </add>
-	 <add name="Scale" type="float">
-	 The scale offset of the skin from this bone in the bind position. (This is an assumption - it has always been 1.0 so far)
+	 <add name="SkinTransform" type="SkinTransform">	
 	 </add>
 	 <add name="Num Bones" type="uint">Number of bones.</add>
 	 <add name="Skin Partition" type="Ref" template="NiSkinPartition" ver1="4.0.0.2" ver2="10.1.0.0">
@@ -41,11 +31,7 @@ public class NiSkinData extends NiObject
 	 
 	 */
 
-	public NifMatrix33 rotation;
-
-	public NifVector3 translation;
-
-	public float scale;
+	public NifSkinTransform nifSkinTransform;
 
 	public int numBones;
 
@@ -57,9 +43,7 @@ public class NiSkinData extends NiObject
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		rotation = new NifMatrix33(stream);
-		translation = new NifVector3(stream);
-		scale = ByteConvert.readFloat(stream);
+		nifSkinTransform = new NifSkinTransform(stream);
 		numBones = ByteConvert.readInt(stream);
 		hasVertexWeights = ByteConvert.readBool(stream, nifVer);
 		boneList = new NifSkinData[numBones];
