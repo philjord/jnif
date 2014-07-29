@@ -8,6 +8,11 @@ import nif.NifVer;
 
 public abstract class NiObject
 {
+	static
+	{
+		System.out.println("Native (Unoptomised) NiObject in use (putjnifj3d.jar before jnif.jar in cp to use optomised)");
+	}
+	
 	/**
 	 <niobject name="NiObject" abstract="1">
 	 Abstract object type.
