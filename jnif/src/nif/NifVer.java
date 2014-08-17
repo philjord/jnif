@@ -44,6 +44,10 @@ public class NifVer
 	 <version num="20.3.0.6">Emerge</version>
 	 <version num="20.3.0.9">Warhammer</version>
 	 */
+	
+	//Skyrim version= 20.2.0.7, User version 1= 11, User Version 2=83.
+	//Right now I have a few messy edits in the header.
+	
 	//	NIF Version Constants
 	public static final int VER_4_0_0_2 = 0x04000002;
 

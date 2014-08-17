@@ -23,8 +23,7 @@ import nif.niobject.controller.NiObjectNET;
 public class NifFileReader
 {
 
-	//Skyrim version= 20.2.0.7, User version 1= 11, User Version 2=83.
-	//Right now I have a few messy edits in the header.
+
 
 	public static boolean IS_DEBUG = false;
 
