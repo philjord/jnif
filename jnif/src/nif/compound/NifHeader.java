@@ -168,7 +168,7 @@ public class NifHeader
 	public String toString(boolean verbose)
 	{
 		String out = "  Header String:  " + headerString + "\n";
-		out += "  Version:  " + version + "\n";
+		out += "  Version:  " + version + " ( 0x" + Integer.toHexString(version) + " )\n";
 		out += "  Endian Type:  " + endianType + "\n";
 		out += "  User Version:  " + userVersion + "\n";
 		out += "  Num Blocks:  " + numBlocks + "\n";

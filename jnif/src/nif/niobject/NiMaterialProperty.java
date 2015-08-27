@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.basic.NifFlags;
 import nif.compound.NifColor3;
 
 public class NiMaterialProperty extends NiProperty
@@ -23,6 +24,9 @@ public class NiMaterialProperty extends NiProperty
 	    <add name="Emit Multi" type="float" default="1.0" vercond="(Version == 20.2.0.7) &amp;&amp; (User Version >= 11) &amp;&amp; (User Version 2 > 21)">Unknown</add>
 	</niobject>
 	 */
+	
+	public NifFlags flags;
+	
 	public NifColor3 ambientColor;
 
 	public NifColor3 diffuseColor;
@@ -40,6 +44,12 @@ public class NiMaterialProperty extends NiProperty
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+		
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_2  )
+		{
+			flags = new NifFlags(stream);
+		}
+		
 		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 21))
 		{
 			ambientColor = new NifColor3(stream);

@@ -74,7 +74,7 @@ public abstract class NiGeometry extends NiAVObject
 			dirtyFlag = ByteConvert.readBool(stream, nifVer);
 		}
 
-		if (nifVer.LOAD_VER <= NifVer.VER_20_1_0_3)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0 && nifVer.LOAD_VER <= NifVer.VER_20_1_0_3)
 		{
 			hasShader = ByteConvert.readBool(stream, nifVer);
 			if (hasShader)

@@ -34,6 +34,8 @@ public abstract class NiObjectNET extends NiObject
 	 </niobject>
 	 */
 	public String name;
+	
+	public NifRef extraData;
 
 	public int numExtraDataList;
 
@@ -45,12 +47,21 @@ public abstract class NiObjectNET extends NiObject
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		name = ByteConvert.readIndexString(stream, nifVer);
-		numExtraDataList = ByteConvert.readInt(stream);
 
-		extraDataList = new NifRef[numExtraDataList];
-		for (int i = 0; i < numExtraDataList; i++)
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
 		{
-			extraDataList[i] = new NifRef(NiExtraData.class, stream);
+			extraData = new NifRef(NiExtraData.class, stream);
+		}
+		
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+		{
+			numExtraDataList = ByteConvert.readInt(stream);
+
+			extraDataList = new NifRef[numExtraDataList];
+			for (int i = 0; i < numExtraDataList; i++)
+			{
+				extraDataList[i] = new NifRef(NiExtraData.class, stream);
+			}
 		}
 		controller = new NifRef(NiTimeController.class, stream);
 

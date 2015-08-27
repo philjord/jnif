@@ -35,7 +35,7 @@ public class NiZBufferProperty extends NiProperty
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		flags = new NifFlags(stream);
-		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+		if (nifVer.LOAD_VER >= NifVer.VER_4_1_0_12 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
 		{
 			function = new CompareMode(stream);
 		}

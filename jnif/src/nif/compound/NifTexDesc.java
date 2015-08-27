@@ -75,6 +75,8 @@ public class NifTexDesc
 
 	public int PS2K;
 
+	public short UnknownShort1;
+
 	public NifTexDesc(InputStream stream, NifVer nifVer) throws IOException
 	{
 		source = new NifRef(NiSourceTexture.class, stream);
@@ -98,14 +100,21 @@ public class NifTexDesc
 			PS2K = ByteConvert.readShort(stream);
 		}
 
-		hasTextureTransform = ByteConvert.readBool(stream, nifVer);
-		if (hasTextureTransform)
+		if (nifVer.LOAD_VER <= NifVer.VER_4_1_0_12)
 		{
-			translation = new NifTexCoord(stream);
-			tiling = new NifTexCoord(stream);
-			wRotation = ByteConvert.readFloat(stream);
-			transformType = ByteConvert.readInt(stream);
-			centerOffset = new NifTexCoord(stream);
+			UnknownShort1 = ByteConvert.readShort(stream);
+		}
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			hasTextureTransform = ByteConvert.readBool(stream, nifVer);
+			if (hasTextureTransform)
+			{
+				translation = new NifTexCoord(stream);
+				tiling = new NifTexCoord(stream);
+				wRotation = ByteConvert.readFloat(stream);
+				transformType = ByteConvert.readInt(stream);
+				centerOffset = new NifTexCoord(stream);
+			}
 		}
 	}
 }

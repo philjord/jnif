@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.basic.NifRef;
 
 public abstract class NiExtraData extends NiObject
 {
@@ -21,10 +22,19 @@ public abstract class NiExtraData extends NiObject
 
 	public String name;
 
+	public NifRef NextExtraData;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		name = ByteConvert.readIndexString(stream, nifVer);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+		{
+			name = ByteConvert.readIndexString(stream, nifVer);
+		}
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+		{
+			NextExtraData = new NifRef(NiExtraData.class, stream);
+		}
 		return success;
 	}
 }

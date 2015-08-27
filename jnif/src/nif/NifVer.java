@@ -4,18 +4,18 @@ public class NifVer
 {
 	/**
 	 <version num="2.3">Dark Age of Camelot</version>
-	 <version num="3.0">Star Trek: Bridge Commander</version>
+	 <version num="3.0">Star Trek:  IV</version>
+	 <version num="4.2.1.0">Dark Age of Camelot, Civilization IV</version>
+	 <version num="4.2.2.0">
+	 Dark Age of Camelot, Civilization IV, Empire Earth II, Culpa InnataBridge Commander</version>
 	 <version num="3.03">Dark Age of Camelot</version>
 	 <version num="3.1">Dark Age of Camelot, Star Trek: Bridge Commander</version>
 	 <version num="3.3.0.13">Oblivion</version>
 	 <version num="4.0.0.0">Freedom Force</version>
 	 <version num="4.0.0.2">Morrowind, Freedom Force</version>
 	 <version num="4.1.0.12">Dark Age of Camelot</version>
-	 <version num="4.2.0.2">Civilization IV</version>
-	 <version num="4.2.1.0">Dark Age of Camelot, Civilization IV</version>
-	 <version num="4.2.2.0">
-	 Dark Age of Camelot, Civilization IV, Empire Earth II, Culpa Innata
-	 </version>
+	 <version num="4.2.0.2">Civilization </version>
+	 <version num="4.2.2.0">? </version>
 	 <version num="10.0.1.0">Zoo Tycoon 2, Civilization IV</version>
 	 <version num="10.0.1.2">Oblivion</version>
 	 <version num="10.0.1.3">?</version>
@@ -24,9 +24,7 @@ public class NifVer
 	 </version>
 	 <version num="10.1.0.101">Oblivion</version>
 	 <version num="10.1.0.106">Oblivion</version>
-	 <version num="10.2.0.0">
-	 Civilization IV, Oblivion, Loki, Pro Cycling Manager, Prison Tycoon, Red Ocean, Wildlife Park 2
-	 </version>
+	 <version num="10.2.0.0">Civilization IV, Oblivion, Loki, Pro Cycling Manager, Prison Tycoon, Red Ocean, Wildlife Park 2 </version>
 	 <version num="20.0.0.4">Civilization IV, Oblivion, Sid Meier's Railroads</version>
 	 <version num="20.0.0.5">Oblivion</version>
 	 <version num="20.1.0.3">Megami Tensei: Imagine</version>
@@ -44,11 +42,24 @@ public class NifVer
 	 <version num="20.3.0.6">Emerge</version>
 	 <version num="20.3.0.9">Warhammer</version>
 	 */
-	
+
 	//Skyrim version= 20.2.0.7, User version 1= 11, User Version 2=83.
 	//Right now I have a few messy edits in the header.
-	
+
 	//	NIF Version Constants
+
+	public static final int VER_2_3 = 0x02030000;
+
+	public static final int VER_3_0 = 0x03000000;
+
+	public static final int VER_3_03 = 0x03000300;
+
+	public static final int VER_3_1 = 0x03010000;
+
+	public static final int VER_3_3_0_13 = 0x0303000D;
+
+	public static final int VER_4_0_0_0 = 0x04000000;
+
 	public static final int VER_4_0_0_2 = 0x04000002;
 
 	public static final int VER_4_1_0_1 = 0x04010001;
@@ -67,7 +78,11 @@ public class NifVer
 
 	public static final int VER_10_0_1_2 = 0x0A000102;
 
+	public static final int VER_10_0_1_3 = 0x0A000103;
+
 	public static final int VER_10_1_0_0 = 0x0A010000;
+
+	public static final int VER_10_1_0_101 = 0x0A010065;
 
 	public static final int VER_10_1_0_106 = 0x0A01006A;
 

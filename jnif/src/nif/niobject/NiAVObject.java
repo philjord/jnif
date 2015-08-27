@@ -8,6 +8,7 @@ import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifFlags;
 import nif.basic.NifRef;
+import nif.compound.NifBoundingBox;
 import nif.compound.NifMatrix33;
 import nif.compound.NifVector3;
 import nif.niobject.controller.NiObjectNET;
@@ -48,9 +49,15 @@ public abstract class NiAVObject extends NiObjectNET
 
 	public float scale = 1;
 
+	public NifVector3 velocity;
+
 	public int numProperties = 0;
 
 	public NifRef[] properties;
+
+	public boolean hasBoundingBox;
+
+	public NifBoundingBox boundingBox;
 
 	public NifRef collisionObject;
 
@@ -66,6 +73,11 @@ public abstract class NiAVObject extends NiObjectNET
 		translation = new NifVector3(stream);
 		rotation = new NifMatrix33(stream);
 		scale = ByteConvert.readFloat(stream);
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+		{
+			velocity = new NifVector3(stream);
+		}
+
 		if (nifVer.LOAD_VER < NifVer.VER_20_2_0_7 || nifVer.LOAD_USER_VER <= 11 || nifVer.LOAD_VER == NifVer.VER_20_3_0_9)
 		{
 			numProperties = ByteConvert.readInt(stream);
@@ -75,7 +87,20 @@ public abstract class NiAVObject extends NiObjectNET
 				properties[i] = new NifRef(NiProperty.class, stream);
 			}
 		}
-		collisionObject = new NifRef(NiCollisionObject.class, stream);
+
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+		{
+			hasBoundingBox = ByteConvert.readBool(stream, nifVer);
+			if (hasBoundingBox)
+			{
+				boundingBox = new NifBoundingBox(stream);
+			}
+
+		}
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+		{
+			collisionObject = new NifRef(NiCollisionObject.class, stream);
+		}
 
 		return success;
 	}

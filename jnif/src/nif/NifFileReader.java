@@ -1,6 +1,5 @@
 package nif;
 
-import java.awt.BorderLayout;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
-
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
 
 import nif.basic.NifPtr;
 import nif.basic.NifRef;
@@ -23,9 +19,7 @@ import nif.niobject.controller.NiObjectNET;
 public class NifFileReader
 {
 
-
-
-	public static boolean IS_DEBUG = false;
+	public static boolean IS_DEBUG = true;
 
 	/**
 	 * NON caching!
@@ -60,12 +54,17 @@ public class NifFileReader
 			System.out.println("could not load file " + fileName + " due to bad header");
 			return null;
 		}
+		if (IS_DEBUG)
+		{
+			System.out.println("fileName " + fileName);
+			System.out.println("Header " + header);
+		}
 
 		NifVer nifVer = new NifVer(fileName, header.version, header.userVersion, header.userVersion2);
 
-		if (nifVer.LOAD_VER < NifVer.VER_10_1_0_106)
+		if (nifVer.LOAD_VER < NifVer.VER_4_0_0_2)
 		{
-			System.out.println("NIF VERSION TOO LOW!! < NifVer.VER_10_1_0_106 " + nifVer.LOAD_VER + "  min = " + NifVer.VER_10_1_0_106);
+			System.out.println("NIF VERSION TOO LOW!! < NifVer.VER_4_0_0_2 " + nifVer.LOAD_VER + "  min = " + NifVer.VER_4_0_0_2);
 			return null;
 		}
 
@@ -79,41 +78,79 @@ public class NifFileReader
 		boolean unknownBlocksFound = false;
 
 		NiObject[] blocks = new NiObject[numBlocks];
-
+		String objectType = null;
 		for (int i = 0; i < numBlocks; i++)
 		{
 			// There are two ways to read blocks, one before version 5.0.0.1 and one after that, ignore the one before
-
-			// From version 5.0.0.1 to version 10.0.1.0 there is a zero byte at the begining of each block
-			if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_106)
+			if (nifVer.LOAD_VER >= NifVer.VER_5_0_0_1)
 			{
-				int checkValue = ByteConvert.readInt(in);
-				if (checkValue != 0)
+				// From version 5.0.0.1 to version 10.0.1.0 there is a zero byte at the begining of each block
+				if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_106)
 				{
-					throw new IOException("Read failue - Bad object position" + "====[ " + "Object " + i + " | " + blocks[i] + " ]====");
+					int checkValue = ByteConvert.readInt(in);
+					if (checkValue != 0)
+					{
+						System.out.println(fileName + " i = " + i + "  previous object type was " + objectType);
+						throw new IOException("Read failue - Bad object position  zero byte at the begining of each block ");
+					}
 				}
-			}
 
-			// Find which block type this is by using the header arrays
-			String objectType = header.blockTypes[header.blockTypeIndex[i]];
+				// Find which block type this is by using the header arrays
+				objectType = header.blockTypes[header.blockTypeIndex[i]];
+
+			}
+			else
+			{
+				objectType = ByteConvert.readSizedString(in);
+
+				if (header.version < NifVer.VER_3_3_0_13)
+				{
+					//There can be special commands instead of object names
+					//in these versions
+					if (objectType == "Top Level Object")
+					{
+						//Just continue on to the next object
+						continue;
+					}
+
+					if (objectType == "End Of File")
+					{
+						//File is finished
+						break;
+					}
+				}
+
+			}
 
 			// Create Block of the type that was found
 			if (IS_DEBUG)
 				System.out.println("Loading: " + i + " " + objectType);
 
-			blocks[i] = constructNiObject(objectType);
+			NiObject obj = constructNiObject(objectType);
 
 			// Check for an unknown block type
-			if (blocks[i] == null && header.blockSizes != null)
+			if (obj == null)
 			{
 				System.out.println("Unknown object type encountered during file read:  " + objectType + " i = " + i + " in " + fileName);
 
-				addOutputDialog(fileName + " i = " + i + " " + objectType);
-
-				// let's try skipping over it?
-				blocks[i] = new UnknownBlock(objectType, header.blockSizes[i]);
 				unknownBlocksFound = true;
+				continue;
 			}
+
+			int index = -1;
+			if (header.version < NifVer.VER_3_3_0_13)
+			{
+				//These old versions have a pointer value after the name
+				//which is used as the index
+				index = ByteConvert.readInt(in);
+			}
+			else
+			{
+				//These newer verisons use their position in the file as their index
+				index = i;
+			}
+
+			blocks[index] = obj;
 
 			try
 			{
@@ -123,11 +160,11 @@ public class NifFileReader
 
 				// mark in case of over read
 				in.mark(1000000);
-				blocks[i].readFromStream(in, nifVer);
+				obj.readFromStream(in, nifVer);
 
 				long bytesReadOff = in.getBytesRead() - prevBytePos;
 
-				// only games after fallout ahve block sizes
+				// only games after fallout have block sizes
 				if (header.blockSizes != null && bytesReadOff != header.blockSizes[i])
 				{
 					System.out.println("blocks[i].readFromStream for i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]]
@@ -147,9 +184,9 @@ public class NifFileReader
 					}
 				}
 
-				if (IS_DEBUG && blocks[i] instanceof NiObjectNET)
+				if (IS_DEBUG && obj instanceof NiObjectNET)
 				{
-					System.out.println("name: " + ((NiObjectNET) blocks[i]).name);
+					System.out.println("name: " + ((NiObjectNET) obj).name);
 				}
 			}
 			catch (Exception e)
@@ -163,6 +200,7 @@ public class NifFileReader
 				System.out.println("Error whilst loading block num " + i + " in " + fileName);
 				throw (err);
 			}
+
 		}
 
 		// --Read Footer--//
@@ -276,6 +314,11 @@ public class NifFileReader
 	 */
 	private static NiObject constructNiObject(String objectType)
 	{
+		if (objectType == null || objectType.length() == 0)
+		{
+			System.out.println("Bad objectType [" + objectType + "]");
+			return null;
+		}
 		// let's see if we've got it already shall we?
 
 		Constructor<?> preCons = typeToClass.get(objectType);
@@ -368,7 +411,7 @@ public class NifFileReader
 									catch (Exception e7)
 									{
 										//ok give up
-										System.out.println("class for objectype " + objectType + " not found");
+										System.out.println("class for objectType " + objectType + " not found");
 										System.out.println("Searched in these directories: ");
 										System.out.println("nif.niobject." + objectType);
 										System.out.println("nif.niobject.bhk." + objectType);
@@ -389,20 +432,4 @@ public class NifFileReader
 		return null;
 	}
 
-	// some rubbish for outputting bad thigns during a load
-	private static JFrame f;
-
-	private static JTextArea jta;
-
-	private static void addOutputDialog(String nextLine)
-	{
-		if (f == null)
-		{
-			f = new JFrame();
-			jta = new JTextArea();
-			f.getContentPane().add(jta, BorderLayout.CENTER);
-			f.setVisible(true);
-		}
-		jta.setText(jta.getText() + "\n" + nextLine);
-	}
 }

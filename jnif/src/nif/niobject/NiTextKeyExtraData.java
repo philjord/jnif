@@ -25,6 +25,7 @@ public class NiTextKeyExtraData extends NiExtraData
 	 </add>
 	 </niobject>
 	 */
+	public int unknownInt;
 
 	public int numTextKeys;
 
@@ -33,6 +34,10 @@ public class NiTextKeyExtraData extends NiExtraData
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+		{
+			unknownInt = ByteConvert.readInt(stream);
+		}
 		numTextKeys = ByteConvert.readInt(stream);
 		textKeys = new NifKey[numTextKeys];
 		for (int i = 0; i < numTextKeys; i++)

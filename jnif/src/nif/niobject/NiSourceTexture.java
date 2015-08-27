@@ -46,6 +46,8 @@ public class NiSourceTexture extends NiTexture
 
 	public NifRef unknownLink;
 
+	public byte unknownByte;
+
 	public NifRef pixelData;
 
 	public PixelLayout pixelLayout;
@@ -67,11 +69,21 @@ public class NiSourceTexture extends NiTexture
 		if (useExternal == 1)
 		{
 			fileName = new NifFilePath(stream, nifVer);
-			unknownLink = new NifRef(NiObject.class, stream);
+			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			{
+				unknownLink = new NifRef(NiObject.class, stream);
+			}
 		}
 		else
 		{
-			fileName = new NifFilePath(stream, nifVer);
+			if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_0)
+			{
+				unknownByte = ByteConvert.readByte(stream);
+			}
+			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			{
+				fileName = new NifFilePath(stream, nifVer);
+			}
 			pixelData = new NifRef(ATextureRenderData.class, stream);
 		}
 
@@ -79,7 +91,10 @@ public class NiSourceTexture extends NiTexture
 		useMipmaps = new MipMapFormat(stream);
 		alphaFormat = new AlphaFormat(stream);
 		isStatic = ByteConvert.readByte(stream);
-		directRender = ByteConvert.readBool(stream, nifVer);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106)
+		{
+			directRender = ByteConvert.readBool(stream, nifVer);
+		}
 
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7)
 		{

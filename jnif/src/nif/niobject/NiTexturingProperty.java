@@ -148,8 +148,9 @@ public class NiTexturingProperty extends NiProperty
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
-		if (nifVer.LOAD_VER >= NifVer.VER_20_1_0_3)
+		
+		//note ||
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_2 || nifVer.LOAD_VER >= NifVer.VER_20_1_0_3)
 		{
 			flags = new NifFlags(stream);
 		}
@@ -233,12 +234,15 @@ public class NiTexturingProperty extends NiProperty
 			decal3Texture = new NifTexDesc(stream, nifVer);
 		}
 
-		numShaderTextures = ByteConvert.readInt(stream);
-
-		shaderTextures = new NifShaderTexDesc[numShaderTextures];
-		for (int i = 0; i < numShaderTextures; i++)
+		if(nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
 		{
-			shaderTextures[i] = new NifShaderTexDesc(stream, nifVer);
+			numShaderTextures = ByteConvert.readInt(stream);
+	
+			shaderTextures = new NifShaderTexDesc[numShaderTextures];
+			for (int i = 0; i < numShaderTextures; i++)
+			{
+				shaderTextures[i] = new NifShaderTexDesc(stream, nifVer);
+			}
 		}
 
 		return success;
