@@ -42,6 +42,8 @@ public class NiKeyframeData extends NiObject
 	public KeyType rotationType;
 
 	public NifQuatKey[] quaternionKeys;
+	
+	public float unknownFloat;
 
 	public NifKeyGroup[] xYZRotations;
 
@@ -67,6 +69,11 @@ public class NiKeyframeData extends NiObject
 			}
 			if (rotationType.type == 4)
 			{
+				if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+				{
+					unknownFloat= ByteConvert.readFloat(stream);
+				}
+				
 				xYZRotations = new NifKeyGroup[3];
 				for (int i = 0; i < 3; i++)
 				{

@@ -112,9 +112,13 @@ public class NifVer
 
 	public static final int VER_20_3_0_9 = 0x14030009; // special cases as this is the black prohecy number but it disagrees with nif.xml (slightly
 
+	public static final int VER_20_6_0_0 = 0x14060000;
+	
 	public static final int VER_UNSUPPORTED = 0xFFFFFFFF; /*!< Unsupported Nif Version */
 
 	public static final int VER_INVALID = 0xFFFFFFFE; /*!< Not a Nif file */
+
+	
 
 	// instanced strings list to be handed around
 	public String[] indexStrings;

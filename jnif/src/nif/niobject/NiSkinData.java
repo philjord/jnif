@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.basic.NifRef;
 import nif.compound.NifSkinData;
 import nif.compound.NifSkinTransform;
 
@@ -35,6 +36,8 @@ public class NiSkinData extends NiObject
 
 	public int numBones;
 
+	public NifRef skinPartition;
+
 	public boolean hasVertexWeights;
 
 	public NifSkinData[] boneList;
@@ -45,7 +48,20 @@ public class NiSkinData extends NiObject
 
 		nifSkinTransform = new NifSkinTransform(stream);
 		numBones = ByteConvert.readInt(stream);
-		hasVertexWeights = ByteConvert.readBool(stream, nifVer);
+		if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+		{
+			skinPartition = new NifRef(NiSkinPartition.class, stream);
+		}
+
+		if (nifVer.LOAD_VER >= NifVer.VER_4_2_1_0)
+		{
+			hasVertexWeights = ByteConvert.readByte(stream) != 0;
+		}
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_1_0)
+		{
+			hasVertexWeights = true;// yes the version numbers above are the same 4210 read it and ignored it
+		}
+		
 		boneList = new NifSkinData[numBones];
 		for (int i = 0; i < numBones; i++)
 		{

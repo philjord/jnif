@@ -19,7 +19,7 @@ import nif.niobject.controller.NiObjectNET;
 public class NifFileReader
 {
 
-	public static boolean IS_DEBUG = true;
+	public static boolean IS_DEBUG = false;
 
 	/**
 	 * NON caching!

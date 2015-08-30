@@ -22,7 +22,10 @@ public abstract class NiSingleInterpController extends NiInterpController
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		interpolator = new NifRef(NiInterpolator.class, stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_2_0_0)
+		{			 
+			interpolator = new NifRef(NiInterpolator.class, stream);
+		}
 
 		return success;
 	}

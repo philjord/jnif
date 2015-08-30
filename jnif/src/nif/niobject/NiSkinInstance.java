@@ -41,7 +41,10 @@ public class NiSkinInstance extends NiObject
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		data = new NifRef(NiSkinData.class, stream);
-		skinPartition = new NifRef(NiSkinPartition.class, stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_2_0_0)
+		{
+			skinPartition = new NifRef(NiSkinPartition.class, stream);
+		}
 
 		skeletonRoot = new NifPtr(NiAVObject.class, stream);
 		numBones = ByteConvert.readInt(stream);

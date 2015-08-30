@@ -35,12 +35,23 @@ public abstract class NiDynamicEffect extends NiAVObject
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		switchState = ByteConvert.readBool(stream, nifVer);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106)
+		{
+			switchState = ByteConvert.readBool(stream, nifVer);
+		}
 		numAffectedNodes = ByteConvert.readInt(stream);
 		affectedNodes = new NifRef[numAffectedNodes];
 		for (int i = 0; i < numAffectedNodes; i++)
 		{
 			affectedNodes[i] = new NifRef(NiAVObject.class, stream);
+		}
+		// before 4.0.0.2 these refs are garbage in the nif file
+		if (nifVer.LOAD_VER <= NifVer.VER_4_0_0_2)
+		{
+			for (int i = 0; i < numAffectedNodes; i++)
+			{
+				affectedNodes[i].ref = -1;
+			}
 		}
 
 		return success;

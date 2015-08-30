@@ -49,6 +49,8 @@ public class NiTextureEffect extends NiDynamicEffect
 
 	public int textureClamping;
 
+	public short unknownShort2;
+
 	public int textureType;
 
 	public int coordinateGenerationType;
@@ -61,6 +63,12 @@ public class NiTextureEffect extends NiDynamicEffect
 
 	public float unknownFloat;
 
+	public short PS2L;
+
+	public short PS2K;
+
+	public short unknownShort3;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -69,6 +77,10 @@ public class NiTextureEffect extends NiDynamicEffect
 		modelProjectionTransform = new NifVector3(stream);
 		textureFiltering = ByteConvert.readInt(stream);
 		textureClamping = ByteConvert.readInt(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_20_6_0_0)
+		{
+			unknownShort2 = ByteConvert.readShort(stream);
+		}
 		textureType = ByteConvert.readInt(stream);
 		coordinateGenerationType = ByteConvert.readInt(stream);
 		sourceTexture = new NifRef(NiSourceTexture.class, stream);
@@ -76,6 +88,16 @@ public class NiTextureEffect extends NiDynamicEffect
 		unknownVector = new NifVector3(stream);
 		unknownFloat = ByteConvert.readFloat(stream);
 
+		if (nifVer.LOAD_VER <= NifVer.VER_10_2_0_0)
+		{
+			PS2L= ByteConvert.readShort(stream);
+			PS2K= ByteConvert.readShort(stream);
+		}
+		
+		if (nifVer.LOAD_VER <= NifVer.VER_4_1_0_12)
+		{
+			unknownShort3= ByteConvert.readShort(stream);
+		}
 		return success;
 	}
 }

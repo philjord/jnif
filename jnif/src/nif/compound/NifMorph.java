@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.enums.KeyType;
 
 public class NifMorph
 {
@@ -25,9 +26,19 @@ public class NifMorph
 	 </compound>
 	 */
 
-	public int numVertices;
+	public int numVertices;//arguement
 
 	public String frameName;
+
+	public int numKeys;
+
+	public KeyType Interpolation;
+
+	public NifKey[] Keys;
+
+	public int UnknownInt1;
+
+	public int UnknownInt2;
 
 	public NifVector3[] vectors;
 
@@ -38,9 +49,25 @@ public class NifMorph
 		{
 			frameName = ByteConvert.readIndexString(stream, nifVer);
 		}
+
+		if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+		{
+			numKeys = ByteConvert.readInt(stream);
+			Interpolation = new KeyType(stream);
+			Keys = new NifKey[numKeys];
+			for (int i = 0; i < numKeys; i++)
+			{
+				Keys[i] = new NifKey(Interpolation, Float.class, stream, nifVer);
+			}
+		}
+
 		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106 && nifVer.LOAD_VER <= NifVer.VER_10_2_0_0)
 		{
-			ByteConvert.readInt(stream);
+			UnknownInt1 = ByteConvert.readInt(stream);
+		}
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+		{
+			UnknownInt2 = ByteConvert.readInt(stream);
 		}
 		vectors = new NifVector3[numVertices];
 		for (int i = 0; i < numVertices; i++)

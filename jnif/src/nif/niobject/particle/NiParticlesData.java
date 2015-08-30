@@ -40,10 +40,10 @@ public class NiParticlesData extends NiGeometryData
 	 
 
 	 */
-	
-	
-	
-	
+
+	public short numParticles;
+
+	public float particlesRadius;
 
 	public boolean hasRadii;
 
@@ -83,16 +83,27 @@ public class NiParticlesData extends NiGeometryData
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		
-		hasRadii = ByteConvert.readBool(stream, nifVer);
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
+		if (nifVer.LOAD_VER <= NifVer.VER_4_0_0_2)
 		{
-			if (hasRadii)
+			numParticles = ByteConvert.readShort(stream);
+		}
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_0)
+		{
+			particlesRadius = ByteConvert.readFloat(stream);
+		}
+
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+		{
+			hasRadii = ByteConvert.readBool(stream, nifVer);
+			if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
 			{
-				radii = new float[numVertices];
-				for (int i = 0; i < numVertices; i++)
+				if (hasRadii)
 				{
-					radii[i] = ByteConvert.readFloat(stream);
+					radii = new float[numVertices];
+					for (int i = 0; i < numVertices; i++)
+					{
+						radii[i] = ByteConvert.readFloat(stream);
+					}
 				}
 			}
 		}
@@ -110,19 +121,22 @@ public class NiParticlesData extends NiGeometryData
 				}
 			}
 		}
-
-		hasRotations1 = ByteConvert.readBool(stream, nifVer);
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
 		{
-			if (hasRotations1)
+			hasRotations1 = ByteConvert.readBool(stream, nifVer);
+			if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
 			{
-				rotations1 = new NifQuaternion[numVertices];
-				for (int i = 0; i < numVertices; i++)
+				if (hasRotations1)
 				{
-					rotations1[i] = new NifQuaternion(stream);
+					rotations1 = new NifQuaternion[numVertices];
+					for (int i = 0; i < numVertices; i++)
+					{
+						rotations1[i] = new NifQuaternion(stream);
+					}
 				}
 			}
 		}
+
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 12)
 		{
 			UnknownByte1 = ByteConvert.readByte(stream);
