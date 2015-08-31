@@ -37,22 +37,22 @@ public class NiParticleSystem extends NiParticles
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		if (nifVer.LOAD_USER_VER >= 12 && nifVer.LOAD_VER != NifVer.VER_20_3_0_9)
+		if (nifVer.LOAD_USER_VER >= 12 && !nifVer.isBP())
 		{
 			UnknownShort1 = ByteConvert.readShort(stream);
 			UnknownShort2 = ByteConvert.readShort(stream);
 			UnknownInt1 = ByteConvert.readInt(stream);
 		}
 
-		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9)
+		//crazy black prophecy stuff
+		if (nifVer.isBP())
 		{
 			if (nifVer.LOAD_USER_VER == 9)
-			{//TODO: why?
+			{
 				ByteConvert.readBytes(6, stream);
 			}
-			else
+			else if(nifVer.LOAD_USER_VER == 12)
 			{
-				//TODO: why?
 				ByteConvert.readBytes(7, stream);
 			}
 

@@ -27,7 +27,7 @@ public class NiPSysMeshUpdateModifier extends NiPSysModifier
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9)
+		if (nifVer.isBP())
 		{
 			ByteConvert.readBytes(1, stream);
 		}

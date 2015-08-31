@@ -28,7 +28,7 @@ public class NifVer
 	 <version num="20.0.0.4">Civilization IV, Oblivion, Sid Meier's Railroads</version>
 	 <version num="20.0.0.5">Oblivion</version>
 	 <version num="20.1.0.3">Megami Tensei: Imagine</version>
-	 <version num="20.2.0.7">Emerge, Empire Earth III, Fallout 3</version>
+	 <version num="20.2.0.7">Emerge, Empire Earth III, Fallout 3, Skyrim</version>
 	 <version num="20.2.0.8">Emerge, Empire Earth III</version>
 	 <!--
 	 version 20.3.0.1 is found in Props/GDCLargeContainer.nif
@@ -40,7 +40,13 @@ public class NifVer
 	 <version num="20.3.0.2">Emerge</version>
 	 <version num="20.3.0.3">Emerge</version>
 	 <version num="20.3.0.6">Emerge</version>
-	 <version num="20.3.0.9">Warhammer</version>
+	 <version num="20.3.0.9">Warhammer, Lazeska, Divinity 2, Howling Sword, Bully SE</version>
+	 <version num="20.5.0.0">KrazyRain</version>
+	 <version num="20.6.0.0">KrazyRain</version>
+	 <version num="20.6.5.0">Epic Mickey</version>
+	 <version num="30.0.0.2">Emerge</version>
+
+
 	 */
 
 	//Skyrim version= 20.2.0.7, User version 1= 11, User Version 2=83.
@@ -110,15 +116,13 @@ public class NifVer
 
 	public static final int VER_20_3_0_6 = 0x14030006;
 
-	public static final int VER_20_3_0_9 = 0x14030009; // special cases as this is the black prohecy number but it disagrees with nif.xml (slightly
+	public static final int VER_20_3_0_9 = 0x14030009;// special, black prohecy disagrees with nif.xml (userversion == 12||userversion == 9)
 
 	public static final int VER_20_6_0_0 = 0x14060000;
-	
+
 	public static final int VER_UNSUPPORTED = 0xFFFFFFFF; /*!< Unsupported Nif Version */
 
 	public static final int VER_INVALID = 0xFFFFFFFE; /*!< Not a Nif file */
-
-	
 
 	// instanced strings list to be handed around
 	public String[] indexStrings;
@@ -142,5 +146,14 @@ public class NifVer
 	public String toString()
 	{
 		return "nifVer " + fileName + " " + LOAD_VER + " " + LOAD_USER_VER + " " + LOAD_USER_VER2;
+	}
+
+	/** 
+	 * crazy undocumented madness case
+	 * @return
+	 */
+	public boolean isBP()
+	{
+		return (LOAD_VER == NifVer.VER_20_3_0_9 && (LOAD_USER_VER == 9 || LOAD_USER_VER == 11 || LOAD_USER_VER == 12));
 	}
 }

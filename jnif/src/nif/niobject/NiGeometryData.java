@@ -204,8 +204,8 @@ public abstract class NiGeometryData extends NiObject
 		}
 		
 
-		//claculated actual value based on version
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_VER != NifVer.VER_20_3_0_9)
+		//calculated actual value based on version
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP())
 		{
 			actNumUVSets = numUVSets & 1;
 		}
@@ -305,7 +305,7 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		//claculated actual value based on version
-		if (nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nVer.LOAD_USER_VER >= 11 && nVer.LOAD_VER != NifVer.VER_20_3_0_9)
+		if (nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nVer.LOAD_USER_VER >= 11 && !nVer.isBP())
 		{
 			actNumUVSets = numUVSets & 1;
 		}

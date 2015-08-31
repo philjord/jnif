@@ -62,7 +62,7 @@ public class NiPSysData extends NiRotatingParticlesData
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11) && !nifVer.isBP())
 		{
 			particleDescriptions = new NifParticleDesc[numVertices];
 			for (int i = 0; i < numVertices; i++)
@@ -81,13 +81,13 @@ public class NiPSysData extends NiRotatingParticlesData
 			}
 		}
 
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 11))
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 11) && !nifVer.isBP())
 		{
 			unknownShort1 = ByteConvert.readShort(stream);
 			unknownShort2 = ByteConvert.readShort(stream);
 		}
 
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 12)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 12 && !nifVer.isBP())
 		{
 			HasSubtextureOffsetUVs = ByteConvert.readBool(stream, nifVer);
 

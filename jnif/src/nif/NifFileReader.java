@@ -16,6 +16,40 @@ import nif.niobject.NiNode;
 import nif.niobject.NiObject;
 import nif.niobject.controller.NiObjectNET;
 
+/**
+ * Notes on how to extend version support, for untested versions
+ * 
+ * If you encounter an error similar to this 
+ * "blocks[i].readFromStream for i=17 type= NiParticleSystem should have read off 156 but in fact read off 8186"
+ * 
+ * It most likely is either a version that isn't supported in the code or a bug in a version decoding step.
+ * 
+ * Both issues are very easy to fix.
+ * 
+ * Open file with notepad "Gamebryo File Format, Version 20.3.0.9" in the header tells you the version number of the file.
+ * Look at NifVer.java to see the list of version numbers and games they match.
+ * 
+ * You will need the definaition of Nif file formats
+ * Human readable version here: http://niftools.sourceforge.net/doc/nif/
+ * 
+ * NifSkope a tool for opening and viewing the files (this isn't needed but helps a lot)
+ * http://niftools.sourceforge.net/wiki/NifSkope
+ * 
+ * So for my example case I see a message stating that i=56 NiParticleSystem has read badly
+ * In most caes this suggests i=55 may be the culprit and I need to start from there and example the code versus the spec
+ * It is a NiZBufferProperty, but a quick check of the code shows nothing interesting or out of place
+ * So now I example NiParticleSystem and immediately seen odd 20.3.0.9 version decoding code.
+ * 
+ * So I carefully implements the spec as seen in nifskope and at the docs site.
+ * 
+ * And this now leads to a new bug in i=69...
+ * 
+ * 
+ * 
+ * 
+ * @author phil
+ *
+ */
 public class NifFileReader
 {
 
@@ -46,7 +80,8 @@ public class NifFileReader
 	{
 		ProgressInputStream in = new ProgressInputStream(inStr);
 
-		NifHeader header = new NifHeader();
+		NifHeader header = new NifHeader(fileName);
+		NifVer nifVer = header.nifVer;
 
 		boolean goodHeader = header.readFromStream(in);
 		if (!goodHeader)
@@ -59,8 +94,6 @@ public class NifFileReader
 			System.out.println("fileName " + fileName);
 			System.out.println("Header " + header);
 		}
-
-		NifVer nifVer = new NifVer(fileName, header.version, header.userVersion, header.userVersion2);
 
 		if (nifVer.LOAD_VER < NifVer.VER_4_0_0_2)
 		{
@@ -103,7 +136,7 @@ public class NifFileReader
 			{
 				objectType = ByteConvert.readSizedString(in);
 
-				if (header.version < NifVer.VER_3_3_0_13)
+				if (nifVer.LOAD_VER < NifVer.VER_3_3_0_13)
 				{
 					//There can be special commands instead of object names
 					//in these versions
@@ -138,7 +171,7 @@ public class NifFileReader
 			}
 
 			int index = -1;
-			if (header.version < NifVer.VER_3_3_0_13)
+			if (nifVer.LOAD_VER < NifVer.VER_3_3_0_13)
 			{
 				//These old versions have a pointer value after the name
 				//which is used as the index

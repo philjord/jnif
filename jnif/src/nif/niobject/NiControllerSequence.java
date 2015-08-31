@@ -104,7 +104,7 @@ public class NiControllerSequence extends NiSequence
 				unknownShort2 = ByteConvert.readShort(stream);
 			}
 		}
-		if (nifVer.LOAD_VER >= NifVer.VER_20_3_0_9)
+		if (nifVer.isBP())
 		{
 			ByteConvert.readInt(stream);
 		}

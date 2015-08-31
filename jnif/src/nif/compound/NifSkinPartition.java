@@ -145,7 +145,7 @@ public class NifSkinPartition
 			}
 		}
 
-		if (nifVer.LOAD_USER_VER >= 12)
+		if (nifVer.LOAD_USER_VER >= 12 && !nifVer.isBP())
 		{
 			UnknownShort = ByteConvert.readShort(stream);
 		}

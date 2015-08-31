@@ -45,15 +45,11 @@ public class NifHeader
 
 	public String headerString = "";
 
-	public int version = NifVer.VER_4_0_0_2;
+	public NifVer nifVer;
 
 	public byte endianType = 1;
 
-	public int userVersion = 0;
-
 	public int numBlocks = 0;
-
-	public int userVersion2 = 0;
 
 	public NifExportInfo exportInfo;
 
@@ -73,6 +69,11 @@ public class NifHeader
 
 	public int unknownInt2 = 0;
 
+	public NifHeader(String fileName)
+	{
+		nifVer = new NifVer(fileName, 0, 0, 0);
+	}
+
 	public boolean readFromStream(InputStream stream) throws IOException
 	{
 		// header loads till first linefeed (ascii 10) or 64 max (not checked)
@@ -86,38 +87,40 @@ public class NifHeader
 			len++;
 		}
 
-		version = ByteConvert.readInt(stream);
+		nifVer.LOAD_VER = ByteConvert.readInt(stream);
 		// if version bad return
 		if (!checkVersion(headerString))
 			return false;
 
-		if (version >= NifVer.VER_20_0_0_4)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
 		{
 			endianType = ByteConvert.readByte(stream);
 		}
 
-		if (version >= NifVer.VER_10_1_0_0)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
 		{
-			userVersion = ByteConvert.readInt(stream);
+			nifVer.LOAD_USER_VER = ByteConvert.readInt(stream);
 		}
 
 		numBlocks = ByteConvert.readInt(stream);
 
-		if (version >= NifVer.VER_10_1_0_0 && version != NifVer.VER_20_3_0_9)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
 		{
-			if (userVersion == 10 || userVersion == 11 || userVersion == 12)
+			if ((nifVer.LOAD_USER_VER >= 10 || (nifVer.LOAD_USER_VER == 1 && nifVer.LOAD_VER != NifVer.VER_10_2_0_0)) && !nifVer.isBP())
 			{
-				userVersion2 = ByteConvert.readInt(stream);
+				nifVer.LOAD_USER_VER2 = ByteConvert.readInt(stream);
 			}
 		}
 
-		if (version == NifVer.VER_10_0_1_2
-				|| (version >= NifVer.VER_10_1_0_0 && (userVersion == 10 || userVersion == 11 || userVersion == 12) && version != NifVer.VER_20_3_0_9))
+		if (nifVer.LOAD_VER == NifVer.VER_10_0_1_2
+				|| (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0
+						&& (nifVer.LOAD_USER_VER >= 10 || (nifVer.LOAD_USER_VER == 1 && nifVer.LOAD_VER != NifVer.VER_10_2_0_0)) && !nifVer
+							.isBP()))
 		{
-			exportInfo = new NifExportInfo(version, stream);
+			exportInfo = new NifExportInfo(nifVer.LOAD_USER_VER, stream);
 		}
 
-		if (version >= NifVer.VER_10_0_1_0)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
 		{
 			numBlockTypes = ByteConvert.readShort(stream);
 			blockTypes = new String[numBlockTypes];
@@ -132,7 +135,7 @@ public class NifHeader
 			}
 		}
 
-		if (version >= NifVer.VER_20_2_0_7)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7)
 		{
 			blockSizes = new int[numBlocks];
 			for (int i = 0; i < numBlocks; i++)
@@ -141,7 +144,7 @@ public class NifHeader
 			}
 		}
 
-		if (version >= NifVer.VER_20_1_0_3)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_1_0_3)
 		{
 			numStrings = ByteConvert.readInt(stream);
 			maxStringLength = ByteConvert.readInt(stream);
@@ -152,7 +155,7 @@ public class NifHeader
 			}
 		}
 
-		if (version >= NifVer.VER_10_0_1_0)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
 		{
 			unknownInt2 = ByteConvert.readInt(stream);
 		}
@@ -168,16 +171,19 @@ public class NifHeader
 	public String toString(boolean verbose)
 	{
 		String out = "  Header String:  " + headerString + "\n";
-		out += "  Version:  " + version + " ( 0x" + Integer.toHexString(version) + " )\n";
+		out += "  Version:  " + nifVer.LOAD_VER + " ( 0x" + Integer.toHexString(nifVer.LOAD_VER) + " )\n";
 		out += "  Endian Type:  " + endianType + "\n";
-		out += "  User Version:  " + userVersion + "\n";
+		out += "  User Version:  " + nifVer.LOAD_USER_VER + "\n";
 		out += "  Num Blocks:  " + numBlocks + "\n";
-		if ((userVersion != 0))
+		if (nifVer.LOAD_VER == NifVer.VER_10_0_1_2
+				|| (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0
+						&& (nifVer.LOAD_USER_VER >= 10 || (nifVer.LOAD_USER_VER == 1 && nifVer.LOAD_VER != NifVer.VER_10_2_0_0)) && !nifVer
+							.isBP()))
 		{
 			out += "    Creator:  " + exportInfo.creator + "\n";
 			out += "    Export Type:  " + exportInfo.exportInfo1 + "\n";
 			out += "    Export Script:  " + exportInfo.exportInfo2 + "\n";
-			out += "  	userVersion2:  " + userVersion2 + "\n";
+			out += "  	userVersion2:  " + nifVer.LOAD_USER_VER2 + "\n";
 		}
 		out += "  Num Block Types:  " + numBlockTypes + "\n";
 		if (verbose)
@@ -217,7 +223,7 @@ public class NifHeader
 		}
 
 		// anything else: unsupported
-		System.out.println("Unsupported header::" + version);
+		System.out.println("Unsupported header::" + nifVer.LOAD_VER);
 		return false;
 
 	}

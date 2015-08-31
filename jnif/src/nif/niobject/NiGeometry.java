@@ -84,7 +84,7 @@ public abstract class NiGeometry extends NiAVObject
 			}
 		}
 
-		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12) && nifVer.LOAD_VER != NifVer.VER_20_3_0_9)
+		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12) && !nifVer.isBP())
 		{
 			numProperties = 2;
 			properties = new NifRef[numProperties];

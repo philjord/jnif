@@ -116,7 +116,7 @@ public class NifControllerLink
 			ByteConvert.readShort(stream);
 		}
 		if ((nifVer.LOAD_USER_VER == 10 || (nifVer.LOAD_USER_VER == 11 || nifVer.LOAD_USER_VER == 12))
-				&& (nifVer.LOAD_VER != NifVer.VER_20_3_0_9))
+				&& !nifVer.isBP())
 		{
 			priority = ByteConvert.readUnsignedByte(stream);
 		}

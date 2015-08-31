@@ -137,14 +137,14 @@ public class NiParticlesData extends NiGeometryData
 			}
 		}
 
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 12)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 12 && !nifVer.isBP())
 		{
 			UnknownByte1 = ByteConvert.readByte(stream);
 			UnknownLink = new NifRef(NiObject.class, stream);
 		}
 
 		hasRotationAngles = ByteConvert.readBool(stream, nifVer);
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP()))
 		{
 			if (hasRotationAngles)
 			{
@@ -157,7 +157,7 @@ public class NiParticlesData extends NiGeometryData
 		}
 
 		hasRotationAxes = ByteConvert.readBool(stream, nifVer);
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11))
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP()))
 		{
 			if (hasRotationAxes)
 			{
@@ -169,7 +169,7 @@ public class NiParticlesData extends NiGeometryData
 			}
 		}
 
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 11)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 11 && !nifVer.isBP())
 		{
 			HasUVQuadrants = ByteConvert.readBool(stream, nifVer);
 
@@ -185,7 +185,7 @@ public class NiParticlesData extends NiGeometryData
 		}
 
 		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!This is not according tot eh spec!! >=11 is wrong
-		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER > 11)
+		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER > 11 && !nifVer.isBP())
 		{
 			UnknownByte2 = ByteConvert.readByte(stream);
 		}

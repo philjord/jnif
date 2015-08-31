@@ -66,7 +66,7 @@ public abstract class NiAVObject extends NiObjectNET
 		boolean success = super.readFromStream(stream, nifVer);
 		flags = new NifFlags(stream);
 		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 26))
-				|| (nifVer.LOAD_VER == NifVer.VER_20_3_0_9 && nifVer.LOAD_USER_VER > 6))
+				|| nifVer.isBP())
 		{
 			unknownShort1 = ByteConvert.readShort(stream);
 		}
@@ -78,7 +78,7 @@ public abstract class NiAVObject extends NiObjectNET
 			velocity = new NifVector3(stream);
 		}
 
-		if (nifVer.LOAD_VER < NifVer.VER_20_2_0_7 || nifVer.LOAD_USER_VER <= 11 || nifVer.LOAD_VER == NifVer.VER_20_3_0_9)
+		if (((nifVer.LOAD_VER < NifVer.VER_20_2_0_7 || nifVer.LOAD_USER_VER <= 11)) || nifVer.isBP())
 		{
 			numProperties = ByteConvert.readInt(stream);
 			properties = new NifRef[numProperties];
@@ -115,7 +115,7 @@ public abstract class NiAVObject extends NiObjectNET
 		{ "NiAVObject", "controller", "" + controller });
 
 		if ((nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nVer.LOAD_USER_VER >= 11 && nVer.LOAD_USER_VER2 > 26))
-				|| (nVer.LOAD_VER == NifVer.VER_20_3_0_9 && nVer.LOAD_USER_VER > 6))
+				|| nVer.isBP())
 		{
 			list.add(new Object[]
 			{ "NiAVObject", "unknownShort1", "" + unknownShort1 });
@@ -128,7 +128,7 @@ public abstract class NiAVObject extends NiObjectNET
 		list.add(new Object[]
 		{ "NiAVObject", "scale", "" + scale });
 
-		if (nVer.LOAD_VER < NifVer.VER_20_2_0_7 || nVer.LOAD_USER_VER <= 11 || nVer.LOAD_VER == NifVer.VER_20_3_0_9)
+		if (nVer.LOAD_VER < NifVer.VER_20_2_0_7 || nVer.LOAD_USER_VER <= 11 || nVer.isBP())
 		{
 			list.add(new Object[]
 			{ "NiAVObject", "numProperties", "" + numProperties });

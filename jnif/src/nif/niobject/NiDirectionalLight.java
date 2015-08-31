@@ -19,7 +19,7 @@ public class NiDirectionalLight extends NiLight
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9 && nifVer.LOAD_USER_VER > 9)
+		if (nifVer.isBP() && nifVer.LOAD_USER_VER != 9)
 		{
 			unknownByte = ByteConvert.readByte(stream);
 		}

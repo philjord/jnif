@@ -36,9 +36,12 @@ public class NiBillboardNode extends NiNode
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		billboardMode = new BillboardMode(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			billboardMode = new BillboardMode(stream);
+		}
 
-		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9 && nifVer.LOAD_USER_VER > 10)
+		if (nifVer.isBP())
 		{
 			unknownByte = ByteConvert.readByte(stream);
 		}
