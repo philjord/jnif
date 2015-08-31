@@ -17,7 +17,7 @@ import nif.niobject.NiObject;
 import nif.niobject.controller.NiObjectNET;
 
 /**
- * Notes on how to extend version support, for untested versions
+ * Notes on how to extend version support, for untested versions (and bugs)
  * 
  * If you encounter an error similar to this 
  * "blocks[i].readFromStream for i=17 type= NiParticleSystem should have read off 156 but in fact read off 8186"
@@ -26,24 +26,25 @@ import nif.niobject.controller.NiObjectNET;
  * 
  * Both issues are very easy to fix.
  * 
- * Open file with notepad "Gamebryo File Format, Version 20.3.0.9" in the header tells you the version number of the file.
+ * Open file with notepad and see text like this at teh start "Gamebryo File Format, Version 20.3.0.9" 
+ * This tells you it is a valid nif file and the version number of the file.
  * Look at NifVer.java to see the list of version numbers and games they match.
  * 
  * You will need the definaition of Nif file formats
  * Human readable version here: http://niftools.sourceforge.net/doc/nif/
+ * Note this is not perfectly update in all cases
  * 
- * NifSkope a tool for opening and viewing the files (this isn't needed but helps a lot)
+ * You will also want NifSkope a tool for opening and viewing the files (this isn't mandatory but helps a lot)
  * http://niftools.sourceforge.net/wiki/NifSkope
  * 
  * So for my example case I see a message stating that i=56 NiParticleSystem has read badly
- * In most caes this suggests i=55 may be the culprit and I need to start from there and example the code versus the spec
+ * In most cases this suggests i=55 may be the culprit and I need to start from there and examine the code versus the specification
  * It is a NiZBufferProperty, but a quick check of the code shows nothing interesting or out of place
  * So now I example NiParticleSystem and immediately seen odd 20.3.0.9 version decoding code.
  * 
  * So I carefully implements the spec as seen in nifskope and at the docs site.
  * 
- * And this now leads to a new bug in i=69...
- * 
+ * And this now leads to a new bug in i=69... 
  * 
  * 
  * 
