@@ -143,18 +143,22 @@ public class NiParticlesData extends NiGeometryData
 			UnknownLink = new NifRef(NiObject.class, stream);
 		}
 
-		hasRotationAngles = ByteConvert.readBool(stream, nifVer);
-		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP()))
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
 		{
-			if (hasRotationAngles)
+			hasRotationAngles = ByteConvert.readBool(stream, nifVer);
+			//where did this spec come from??? does oblivion work with this spec???
+			if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP()))
 			{
-				rotationAngles = new float[numVertices];
-				for (int i = 0; i < numVertices; i++)
+				if (hasRotationAngles)
 				{
-					rotationAngles[i] = ByteConvert.readFloat(stream);
+					rotationAngles = new float[numVertices];
+					for (int i = 0; i < numVertices; i++)
+					{
+						rotationAngles[i] = ByteConvert.readFloat(stream);
+					}
 				}
 			}
-		}
+		 
 
 		hasRotationAxes = ByteConvert.readBool(stream, nifVer);
 		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP()))
@@ -167,6 +171,7 @@ public class NiParticlesData extends NiGeometryData
 					rotationAxes[i] = new NifVector3(stream);
 				}
 			}
+		}
 		}
 
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 11 && !nifVer.isBP())
@@ -184,7 +189,7 @@ public class NiParticlesData extends NiGeometryData
 			}
 		}
 
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!This is not according tot eh spec!! >=11 is wrong
+		//!!!This is not according to the spec!! >=11 is wrong
 		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER > 11 && !nifVer.isBP())
 		{
 			UnknownByte2 = ByteConvert.readByte(stream);

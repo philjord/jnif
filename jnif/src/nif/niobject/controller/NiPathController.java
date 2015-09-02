@@ -42,8 +42,10 @@ public class NiPathController extends NiTimeController
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
-		unknownShort2 = ByteConvert.readShort(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			unknownShort2 = ByteConvert.readShort(stream);
+		}
 		unknownInt1 = ByteConvert.readInt(stream);
 		unknownInt2 = ByteConvert.readInt(stream);
 		unknownInt3 = ByteConvert.readInt(stream);

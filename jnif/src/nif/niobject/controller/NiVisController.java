@@ -3,6 +3,8 @@ package nif.niobject.controller;
 import java.io.InputStream;
 
 import nif.NifVer;
+import nif.basic.NifRef;
+import nif.niobject.NiVisData;
 
 public class NiVisController extends NiBoolInterpController
 {
@@ -16,9 +18,16 @@ public class NiVisController extends NiBoolInterpController
 	 
 	 */
 
+	public NifRef Data;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+
+		if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+		{
+			Data = new NifRef(NiVisData.class, stream);
+		}
 		return success;
 	}
 }

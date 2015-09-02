@@ -3,6 +3,8 @@ package nif.niobject.controller;
 import java.io.InputStream;
 
 import nif.NifVer;
+import nif.basic.NifRef;
+import nif.niobject.NiFloatData;
 
 public class NiAlphaController extends NiFloatInterpController
 {
@@ -16,9 +18,15 @@ public class NiAlphaController extends NiFloatInterpController
 	 
 	 */
 
+	public NifRef Data;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+		if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+		{
+			Data = new NifRef(NiFloatData.class, stream);
+		}
 		return success;
 	}
 }

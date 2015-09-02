@@ -35,14 +35,21 @@ public class NiPixelData extends ATextureRenderData
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		numPixels = ByteConvert.readInt(stream);
-
-		numFaces = ByteConvert.readInt(stream);
-
-		pixelData = new byte[numFaces][numPixels];
-		for (int i = 0; i < numFaces; i++)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
 		{
-			pixelData[i] = ByteConvert.readBytes(numPixels, stream);
+			numFaces = ByteConvert.readInt(stream);
 
+			pixelData = new byte[numFaces][numPixels];
+			for (int i = 0; i < numFaces; i++)
+			{
+				pixelData[i] = ByteConvert.readBytes(numPixels, stream);
+			}
+		}
+
+		if (nifVer.LOAD_VER <= NifVer.VER_10_2_0_0)
+		{
+			pixelData = new byte[1][numPixels];
+			pixelData[0] = ByteConvert.readBytes(numPixels, stream);
 		}
 
 		return success;

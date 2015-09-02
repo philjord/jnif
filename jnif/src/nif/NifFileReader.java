@@ -26,7 +26,7 @@ import nif.niobject.controller.NiObjectNET;
  * 
  * Both issues are very easy to fix.
  * 
- * Open file with notepad and see text like this at teh start "Gamebryo File Format, Version 20.3.0.9" 
+ * Open file with notepad and see text like this at the start "Gamebryo File Format, Version 20.3.0.9" 
  * This tells you it is a valid nif file and the version number of the file.
  * Look at NifVer.java to see the list of version numbers and games they match.
  * 
@@ -36,6 +36,8 @@ import nif.niobject.controller.NiObjectNET;
  * 
  * You will also want NifSkope a tool for opening and viewing the files (this isn't mandatory but helps a lot)
  * http://niftools.sourceforge.net/wiki/NifSkope
+ * 
+ * Setting IS_DEBUG = true below helps a lot. 
  * 
  * So for my example case I see a message stating that i=56 NiParticleSystem has read badly
  * In most cases this suggests i=55 may be the culprit and I need to start from there and examine the code versus the specification
@@ -298,7 +300,7 @@ public class NifFileReader
 					return null;
 				// TODO: and make sure they are down the heihrachy only somehow?
 			}
-			NifRef.allRefs.clear();
+			
 
 			for (int i = 0; i < NifPtr.allPtrs.size(); i++)
 			{
@@ -331,9 +333,10 @@ public class NifFileReader
 
 				if (countOfErrorsReported > 10)
 					return null;
-			}
-			NifPtr.allPtrs.clear();
+			}			
 		}
+		NifRef.allRefs.clear();
+		NifPtr.allPtrs.clear();
 
 		return new NifFile(header, new NiObjectList(nifVer, blocks), footer);
 	}

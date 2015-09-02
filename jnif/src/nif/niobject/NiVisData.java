@@ -31,6 +31,7 @@ public class NiVisData extends NiObject
 		boolean success = super.readFromStream(stream, nifVer);
 
 		numVisKeys = ByteConvert.readInt(stream);
+		visKeys = new NifKey[numVisKeys];
 		for (int i = 0; i < numVisKeys; i++)
 		{
 			KeyType type = new KeyType();

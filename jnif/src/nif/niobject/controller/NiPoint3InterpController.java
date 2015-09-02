@@ -3,7 +3,9 @@ package nif.niobject.controller;
 import java.io.InputStream;
 
 import nif.NifVer;
+import nif.basic.NifRef;
 import nif.enums.TargetColor;
+import nif.niobject.NiPosData;
 
 public abstract class NiPoint3InterpController extends NiSingleInterpController
 {
@@ -21,11 +23,19 @@ public abstract class NiPoint3InterpController extends NiSingleInterpController
 
 	public TargetColor targetColor;
 
+	public NifRef Data;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		targetColor = new TargetColor(stream);
-
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			targetColor = new TargetColor(stream);
+		}
+		if (nifVer.LOAD_VER <= NifVer.VER_10_1_0_0)
+		{
+			Data = new NifRef(NiPosData.class, stream);
+		}
 		return success;
 	}
 }

@@ -58,6 +58,20 @@ public abstract class ATextureRenderData extends NiObject
 
 	public PixelFormat pixelFormat;
 
+	public int RedMask;
+
+	public int GreenMask;
+
+	public int BlueMask;
+
+	public int AlphaMask;
+
+	public byte[] Unknown3Bytes;
+
+	public byte[] Unknown8Bytes;
+
+	public int unknownInt1;
+
 	public byte bitsPerPixel;
 
 	public int unknownInt2;
@@ -85,19 +99,42 @@ public abstract class ATextureRenderData extends NiObject
 		boolean success = super.readFromStream(stream, nifVer);
 
 		pixelFormat = new PixelFormat(stream);
-		bitsPerPixel = ByteConvert.readByte(stream);
 
-		unknownInt2 = ByteConvert.readInt(stream);
+		if (nifVer.LOAD_VER <= NifVer.VER_10_2_0_0)
+		{
+			RedMask = ByteConvert.readInt(stream);
+			GreenMask = ByteConvert.readInt(stream);
+			BlueMask = ByteConvert.readInt(stream);
+			AlphaMask = ByteConvert.readInt(stream);
+			bitsPerPixel = ByteConvert.readByte(stream);
+			Unknown3Bytes = ByteConvert.readBytes(3, stream);
+			Unknown8Bytes = ByteConvert.readBytes(8, stream);
+		}
 
-		unknownInt3 = ByteConvert.readInt(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0 && nifVer.LOAD_VER <= NifVer.VER_10_2_0_0)
+		{
+			unknownInt1 = ByteConvert.readInt(stream);
+		}
 
-		flags = ByteConvert.readByte(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
+		{
+			bitsPerPixel = ByteConvert.readByte(stream);
 
-		unknownInt4 = ByteConvert.readInt(stream);
+			unknownInt2 = ByteConvert.readInt(stream);
 
-		unknownByte1 = ByteConvert.readByte(stream);
+			unknownInt3 = ByteConvert.readInt(stream);
 
-		channels = new NifChannelData(stream);
+			flags = ByteConvert.readByte(stream);
+
+			unknownInt4 = ByteConvert.readInt(stream);
+
+			if (nifVer.LOAD_VER >= NifVer.VER_20_3_0_6)
+			{
+				unknownByte1 = ByteConvert.readByte(stream);
+			}
+
+			channels = new NifChannelData(stream);
+		}
 
 		palette = new NifRef(NiPalette.class, stream);
 

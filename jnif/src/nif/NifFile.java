@@ -18,4 +18,9 @@ public class NifFile
 		this.blocks = blocks;
 		this.footer = footer;
 	}
+
+	public String toString()
+	{
+		return "NifFile:" + header;
+	}
 }
