@@ -81,6 +81,10 @@ public class NifFileReader
 	 */
 	public static synchronized NifFile readNif(String fileName, InputStream inStr) throws IOException
 	{
+		// make sure these are cleared in case of exceptional exit last usage
+		NifRef.allRefs.clear();
+		NifPtr.allPtrs.clear();
+		
 		ProgressInputStream in = new ProgressInputStream(inStr);
 
 		NifHeader header = new NifHeader(fileName);
@@ -203,7 +207,7 @@ public class NifFileReader
 				// only games after fallout have block sizes
 				if (header.blockSizes != null && bytesReadOff != header.blockSizes[i])
 				{
-					System.out.println("blocks[i].readFromStream for i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]]
+					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]]
 							+ " should have read off " + header.blockSizes[i] + " but in fact read off " + bytesReadOff);
 
 					int diff = (int) (header.blockSizes[i] - bytesReadOff);
@@ -297,10 +301,9 @@ public class NifFileReader
 				}
 
 				if (countOfErrorsReported > 10)
-					return null;
-				// TODO: and make sure they are down the heihrachy only somehow?
+					break;
+				// TODO: and make sure they are down the hierarchy only somehow?
 			}
-			
 
 			for (int i = 0; i < NifPtr.allPtrs.size(); i++)
 			{
@@ -332,8 +335,8 @@ public class NifFileReader
 				}
 
 				if (countOfErrorsReported > 10)
-					return null;
-			}			
+					break;
+			}
 		}
 		NifRef.allRefs.clear();
 		NifPtr.allPtrs.clear();
