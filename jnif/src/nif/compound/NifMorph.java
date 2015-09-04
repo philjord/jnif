@@ -65,7 +65,7 @@ public class NifMorph
 		{
 			UnknownInt1 = ByteConvert.readInt(stream);
 		}
-		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5 && nifVer.LOAD_USER_VER == 0)
 		{
 			UnknownInt2 = ByteConvert.readInt(stream);
 		}

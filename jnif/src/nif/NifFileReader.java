@@ -48,7 +48,7 @@ import nif.niobject.controller.NiObjectNET;
  * 
  * And this now leads to a new bug in i=69... 
  * 
- * 
+ * Meshes\characters\_male\idleanims\deathposes.psa fallout?
  * 
  * @author phil
  *
