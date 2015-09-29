@@ -21,12 +21,17 @@ public class NiStringExtraData extends NiExtraData
 	 </niobject>
 	 
 	 */
+	public int bytesRemaining;
 
 	public String stringData;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+		{
+			bytesRemaining = ByteConvert.readInt(stream);
+		}
 		stringData = ByteConvert.readIndexString(stream, nifVer);
 		return success;
 	}
