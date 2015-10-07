@@ -9,6 +9,8 @@ import nif.enums.KeyType;
 
 public class NifMorph
 {
+	public NifVer nVer;
+
 	/**
 	 <compound name="Morph">
 
@@ -44,6 +46,8 @@ public class NifMorph
 
 	public NifMorph(int numVertices, InputStream stream, NifVer nifVer) throws IOException
 	{
+		this.nVer = nifVer;
+
 		this.numVertices = numVertices;
 		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106)
 		{
