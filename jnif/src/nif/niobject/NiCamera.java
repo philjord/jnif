@@ -68,17 +68,25 @@ public class NiCamera extends NiAVObject
 
 	public int unknownInt2;
 
+	public int unknownInt3;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		unknownShort = ByteConvert.readShort(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			unknownShort = ByteConvert.readShort(stream);
+		}
 		frustumLeft = ByteConvert.readFloat(stream);
 		frustumRight = ByteConvert.readFloat(stream);
 		frustumTop = ByteConvert.readFloat(stream);
 		frustumBottom = ByteConvert.readFloat(stream);
 		frustumNear = ByteConvert.readFloat(stream);
 		frustumFar = ByteConvert.readFloat(stream);
-		useOrthographicProjection = ByteConvert.readBool(stream, nifVer);
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+		{
+			useOrthographicProjection = ByteConvert.readBool(stream, nifVer);
+		}
 		viewportLeft = ByteConvert.readFloat(stream);
 		viewportRight = ByteConvert.readFloat(stream);
 		viewportTop = ByteConvert.readFloat(stream);
@@ -86,7 +94,15 @@ public class NiCamera extends NiAVObject
 		lODAdjust = ByteConvert.readFloat(stream);
 		unknownLink = new NifRef(NiObject.class, stream);
 		unknownInt = ByteConvert.readInt(stream);
-		unknownInt2 = ByteConvert.readInt(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_4_2_1_0)
+		{
+			unknownInt2 = ByteConvert.readInt(stream);
+		}
+		if (nifVer.LOAD_VER <= NifVer.VER_3_1)
+		{
+			unknownInt3 = ByteConvert.readInt(stream);
+		}
+
 		return success;
 	}
 }
