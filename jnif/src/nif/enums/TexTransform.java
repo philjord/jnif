@@ -20,11 +20,11 @@ public class TexTransform
 
 	public static final int TT_SCALE_V = 4;// Means this controller scales the V texture cooridnates.
 
-	public int transform;
+	public int transformType;
 
 	public TexTransform(InputStream stream) throws IOException
 	{
-		transform = ByteConvert.readInt(stream);
+		transformType = ByteConvert.readInt(stream);
 	}
 
 }
