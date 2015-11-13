@@ -5,7 +5,8 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 
-public class NifMatrix44 extends NifMatrix33
+//NOT sub classed from Matrix3, the maths is NOT the same!!
+public class NifMatrix44
 {
 	/**
 	 * <compound name="Matrix44" niflibtype="Matrix44" nifskopetype="matrix44">
@@ -30,6 +31,24 @@ public class NifMatrix44 extends NifMatrix33
 	 <add name="m44" type="float">The (4,4) element.</add>
 	 </compound>
 	 */
+
+	public float m11;
+
+	public float m21;
+
+	public float m31;
+
+	public float m12;
+
+	public float m22;
+
+	public float m32;
+
+	public float m13;
+
+	public float m23;
+
+	public float m33;
 
 	public float m41;
 

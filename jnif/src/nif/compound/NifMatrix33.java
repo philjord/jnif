@@ -42,12 +42,6 @@ public class NifMatrix33
 
 	public float m33;
 
-	//for Matrix44 use
-	protected NifMatrix33()
-	{
-
-	}
-
 	public NifMatrix33(InputStream stream) throws IOException
 	{
 		m11 = ByteConvert.readFloat(stream);
@@ -59,16 +53,5 @@ public class NifMatrix33
 		m13 = ByteConvert.readFloat(stream);
 		m23 = ByteConvert.readFloat(stream);
 		m33 = ByteConvert.readFloat(stream);
-		//NOTE aboive is from web site below is from empricial evidence RFNStairs02.nif
-		//TODO: dump this?
-		/*m11 = ByteConvert.readFloat(stream);
-		m12 = ByteConvert.readFloat(stream);
-		m13 = ByteConvert.readFloat(stream);
-		m21 = ByteConvert.readFloat(stream);
-		m22 = ByteConvert.readFloat(stream);
-		m23 = ByteConvert.readFloat(stream);
-		m31 = ByteConvert.readFloat(stream);
-		m32 = ByteConvert.readFloat(stream);
-		m33 = ByteConvert.readFloat(stream);*/
 	}
 }
