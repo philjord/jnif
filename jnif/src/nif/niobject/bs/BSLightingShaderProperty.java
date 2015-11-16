@@ -231,12 +231,26 @@ public class BSLightingShaderProperty extends NiObject
 			ByteConvert.readFloat(stream);//33 float -1.0 33 int -1082130432
 			ByteConvert.readFloat(stream);//34 float -1.0 34 int -1082130432
 
-			if (SkyrimShaderType.type == 1)
+			if (SkyrimShaderType.type == 2 || SkyrimShaderType.type == 4)
 			{
-				//6 bytes more to read! maybe 2 3byte colors?
-				ByteConvert.readUnsignedShort(stream);
-				ByteConvert.readInt(stream);// not confirmed
-
+				//appears to need no extra data
+			}
+			else if (SkyrimShaderType.type == 1)
+			{
+				//6 more required
+				ByteConvert.readUnsignedShort(stream);// not examined
+				EnvironmentMapScale = ByteConvert.readFloat(stream);// not examined
+			}
+			else if (SkyrimShaderType.type == 5)
+			{
+				//16 more required
+				SkinTintColor = new NifColor3(stream);// not examined
+				ByteConvert.readInt(stream);// not examined
+			}
+			else if (SkyrimShaderType.type == 6)
+			{
+				//12 more required
+				HairTintColor = new NifColor3(stream);// not examined				
 			}
 			else if (SkyrimShaderType.type != 0)
 			{

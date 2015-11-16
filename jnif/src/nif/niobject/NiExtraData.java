@@ -7,7 +7,7 @@ import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifRef;
 
-public abstract class NiExtraData extends NiObject
+public class NiExtraData extends NiObject
 {
 	/**
 	 <niobject name="NiExtraData" abstract="1" inherit="NiObject">

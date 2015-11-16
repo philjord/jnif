@@ -86,11 +86,11 @@ public class NifHeader
 			c = (char) stream.read();
 			len++;
 		}
-
-		nifVer.LOAD_VER = ByteConvert.readInt(stream);
 		// if version bad return
 		if (!checkVersion(headerString))
 			return false;
+
+		nifVer.LOAD_VER = ByteConvert.readInt(stream);
 
 		if (nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
 		{
@@ -206,7 +206,10 @@ public class NifHeader
 	{
 
 		// make sure this is a NIF file
-		if (ver.startsWith("NetImmerse File Format") || ver.startsWith("Gamebryo File Format"))
+		if (ver.startsWith("NetImmerse File Format") //
+				|| ver.startsWith("Gamebryo File Format")//
+				|| ver.startsWith("Game`ryo File Format")//FO 4 bum byte
+				)
 		{
 			// supported versions
 			/*
@@ -223,7 +226,7 @@ public class NifHeader
 		}
 
 		// anything else: unsupported
-		System.out.println("Unsupported header::" + nifVer.LOAD_VER);
+		System.out.println("Unsupported header version::" + ver);
 		return false;
 
 	}

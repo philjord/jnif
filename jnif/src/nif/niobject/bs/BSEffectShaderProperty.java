@@ -62,6 +62,14 @@ public class BSEffectShaderProperty extends NiProperty
 
 	public String GreyscaleTexture;
 
+	public String unknownTexture1;
+
+	public String unknownTexture2;
+
+	public String unknownTexture3;
+
+	public int unknownInt1;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -93,14 +101,13 @@ public class BSEffectShaderProperty extends NiProperty
 		SoftFalloffDepth = ByteConvert.readFloat(stream);
 
 		GreyscaleTexture = ByteConvert.readSizedString(stream);
-		
+
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
 		{
-			//TODO: read 16 more , not examined at all
-			ByteConvert.readInt(stream);
-			ByteConvert.readInt(stream);
-			ByteConvert.readInt(stream);
-			ByteConvert.readInt(stream);
+			unknownTexture1 = ByteConvert.readSizedString(stream);//e.g. Shared/Cubemaps/mipblur_DefaultOutside1.dds
+			unknownTexture1 = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
+			unknownTexture1 = ByteConvert.readSizedString(stream);
+			unknownInt1 = ByteConvert.readInt(stream);
 		}
 
 		return success;

@@ -30,7 +30,7 @@ import nif.niobject.controller.NiObjectNET;
  * This tells you it is a valid nif file and the version number of the file.
  * Look at NifVer.java to see the list of version numbers and games they match.
  * 
- * You will need the definaition of Nif file formats
+ * You will need the definition of Nif file formats
  * Human readable version here: http://niftools.sourceforge.net/doc/nif/
  * Note this is not perfectly update in all cases
  * 
@@ -208,35 +208,51 @@ public class NifFileReader
 
 				//bhkNPCollisionObject 
 				//bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
+				//bhkRagdollSystem
 				//BSPositionData
 				//BSSkin:2	- inner calsses ! but similar to prev?
 				//BSTriShape - data inside	
 				//BSConnectPoint:2
 				//BSSubIndexTriShape
+				//BSEyeCenterExtraData
+				//BSClothExtraData
 
 				//ALTERED:	
 				//NiGeometry - done  
-				//NiNode - done
-				//BSLightingShaderProperty - done
+				//NiNode - done				
 				//BSEffectShaderProperty - done
-
+				//NiExtraData - made not abstract
+				
+				//BSLightingShaderProperty - more types updating
 				//NiParticleSystem - maybe 68 more bytes sometimes maybe??
 
 				//STRONG:
 				//NiObjectNET-NiAVObject
 				//BSShaderTextureSet
+				
+				//Other:
+				//	J3dNiControllerSequence safty check is now wrong??
+				//NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
+				
+				
+				//Unsupported header::335675399
+				//could not load file f:\game media\fallout4\meshes\architecture\buildings\decokit\decolobbyaceiling1x1str003.nif due to bad header
 
 				//if (objectType.equals("BSTriShape"))
 				//	System.out.println("BSTriShape size = " + header.blockSizes[i]);
 
 				if (objectType.equals("bhkNPCollisionObject") //
 						|| objectType.equals("bhkPhysicsSystem")//
+						|| objectType.equals("bhkRagdollSystem")//
 						|| objectType.equals("BSSkin::Instance") //
 						|| objectType.equals("BSSkin::BoneData")//
 						|| objectType.equals("BSConnectPoint::Parents")//
 						|| objectType.equals("BSConnectPoint::Children") //
 						|| objectType.equals("BSPositionData")//
 						|| objectType.equals("BSSubIndexTriShape")//
+						|| objectType.equals("NiParticleSystem")//
+						|| objectType.equals("BSEyeCenterExtraData")//
+						|| objectType.equals("BSClothExtraData")//
 				)
 				{
 					byte[] b = new byte[header.blockSizes[i]];

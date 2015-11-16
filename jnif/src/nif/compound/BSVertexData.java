@@ -19,9 +19,7 @@ public class BSVertexData
 
 	public float x;
 
-	public float y;
-
-	public float z;
+	public BSHalfFloatTexCoord2 texCoord;
 
 	public NifByteColor3 color;
 
@@ -61,8 +59,6 @@ public class BSVertexData
 			s2 = ByteConvert.readUnsignedShort(stream);
 		}
 
-		// y and z are never negative? UV?
-		// x y and z are always <1 (1>x<-1) in fact some are slightly over here and there
 
 		//perhaps normals are calculated? I see identical normal positions, which is wrong
 
@@ -73,15 +69,10 @@ public class BSVertexData
 		vertex = new BSHalfFloatVector3(stream);
 
 		x = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		//	System.out.print("x " + x);
-		y = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		//	System.out.print("\ty " + y);
-		z = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		//len = (float) Math.sqrt((x * x) + (y * y) + (z * z));
-		//	System.out.println("\tz " + z + " len " + len);
+		
+		texCoord = new BSHalfFloatTexCoord2(stream);	
 
 		// I need colors? these shorts below? or bytes
-		// I need uv coords? 2 bytes?
 
 		color = new NifByteColor3(stream);// color is way wrong
 		b1 = ByteConvert.readByte(stream);

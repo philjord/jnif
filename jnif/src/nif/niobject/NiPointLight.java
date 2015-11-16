@@ -31,6 +31,12 @@ public class NiPointLight extends NiLight
 		constantAttenuation = ByteConvert.readFloat(stream);
 		linearAttenuation = ByteConvert.readFloat(stream);
 		quadraticAttenuation = ByteConvert.readFloat(stream);
+		
+		
+		//TODO: Problem  in f:\game media\fallout4\meshes\actors\createabot\characterassets\assaultronheadchargeao.nif 
+		//i=88 type= NiPointLight should have read off 124 but in fact read off 129
+		// but I see -394843 big number so I suspect the block before is trouble
+				
 		return success;
 	}
 }
