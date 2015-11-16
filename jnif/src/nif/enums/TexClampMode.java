@@ -16,7 +16,7 @@ public class TexClampMode
 
 	public static final int WRAP_S_CLAMP_T = 2;// Wrap in the S(U) direction but clamp in the T(V) direction.
 
-	public static final int WRAP_S_WRAP_T = 3;// Wrap in both directions.</option>
+	public static final int WRAP_S_WRAP_T = 3;// Wrap in both directions.</option> 
 
 	public int mode;
 

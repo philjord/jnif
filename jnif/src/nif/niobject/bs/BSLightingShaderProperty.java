@@ -90,7 +90,7 @@ public class BSLightingShaderProperty extends NiObject
 
 	public float UnknownFloat2;
 
-	public float Glossiness;
+	public float Glossiness;//LOAD_USER_VER2 == 130 0.5?? not out of 1000 but just 0-1??
 
 	public NifColor3 SpecularColor;
 
@@ -130,12 +130,20 @@ public class BSLightingShaderProperty extends NiObject
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
+		/*for (int b = 0; b < 35; b++)
+		{
+			stream.mark(0);
+			System.out.print("" + b + " float " + ByteConvert.readFloat(stream));
+			stream.reset();
+			System.out.println(" " + b + " int " + ByteConvert.readInt(stream));
+		}*/
+
 		if (nifVer.LOAD_USER_VER >= 12)
 		{
 			SkyrimShaderType = new BSLightingShaderPropertyShaderType(stream);
 		}
 
-		Name = ByteConvert.readIndexString(stream, nifVer);
+		Name = ByteConvert.readIndexString(stream, nifVer);// name of a material file in USER_VER2==130
 
 		NumExtraDataList = ByteConvert.readInt(stream);
 
@@ -146,6 +154,7 @@ public class BSLightingShaderProperty extends NiObject
 		}
 
 		controller = new NifRef(NiTimeController.class, stream);
+
 		if (nifVer.LOAD_USER_VER >= 12)
 		{
 			ShaderFlags1 = new SkyrimShaderPropertyFlags1(stream);
@@ -157,48 +166,82 @@ public class BSLightingShaderProperty extends NiObject
 		TextureSet = new NifRef(BSShaderTextureSet.class, stream);
 		EmissiveColor = new NifColor3(stream);
 		EmissiveMultiple = ByteConvert.readFloat(stream);
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
+		{
+			ByteConvert.readInt(stream);//3,5,11 all seen
+		}
 		TextureClampMode = new TexClampMode(stream);
 		Alpha = ByteConvert.readFloat(stream);
 		UnknownFloat2 = ByteConvert.readFloat(stream);
 		Glossiness = ByteConvert.readFloat(stream);
 		SpecularColor = new NifColor3(stream);
 		SpecularStrength = ByteConvert.readFloat(stream);
-		LightingEffect1 = ByteConvert.readFloat(stream);
-		LightingEffect2 = ByteConvert.readFloat(stream);
 
-		if (SkyrimShaderType.type == 1)
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
 		{
-			EnvironmentMapScale = ByteConvert.readFloat(stream);
+			LightingEffect1 = ByteConvert.readFloat(stream);
+			LightingEffect2 = ByteConvert.readFloat(stream);
+
+			if (SkyrimShaderType.type == 1)
+			{
+				EnvironmentMapScale = ByteConvert.readFloat(stream);
+			}
+			else if (SkyrimShaderType.type == 5)
+			{
+				SkinTintColor = new NifColor3(stream);
+			}
+			else if (SkyrimShaderType.type == 6)
+			{
+				HairTintColor = new NifColor3(stream);
+			}
+			else if (SkyrimShaderType.type == 7)
+			{
+				MaxPasses = ByteConvert.readFloat(stream);
+				Scale = ByteConvert.readFloat(stream);
+			}
+			else if (SkyrimShaderType.type == 11)
+			{
+				ParallaxInnerLayerThickness = ByteConvert.readFloat(stream);
+				ParallaxRefractionScale = ByteConvert.readFloat(stream);
+				ParallaxInnerLayerTextureScale = new NifTexCoord(stream);
+				ParallaxEnvmapStrength = ByteConvert.readFloat(stream);
+			}
+			else if (SkyrimShaderType.type == 14)
+			{
+				SparkleParamaters = new NifVector4(stream);
+			}
+			else if (SkyrimShaderType.type == 16)
+			{
+				EyeCubemapScale = ByteConvert.readFloat(stream);
+				LeftEyeReflectionCenter = new NifVector3(stream);
+				RightEyeReflectionCenter = new NifVector3(stream);
+			}
 		}
-		else if (SkyrimShaderType.type == 5)
+		else
 		{
-			SkinTintColor = new NifColor3(stream);
-		}
-		else if (SkyrimShaderType.type == 6)
-		{
-			HairTintColor = new NifColor3(stream);
-		}
-		else if (SkyrimShaderType.type == 7)
-		{
-			MaxPasses = ByteConvert.readFloat(stream);
-			Scale = ByteConvert.readFloat(stream);
-		}
-		else if (SkyrimShaderType.type == 11)
-		{
-			ParallaxInnerLayerThickness = ByteConvert.readFloat(stream);
-			ParallaxRefractionScale = ByteConvert.readFloat(stream);
-			ParallaxInnerLayerTextureScale = new NifTexCoord(stream);
-			ParallaxEnvmapStrength = ByteConvert.readFloat(stream);
-		}
-		else if (SkyrimShaderType.type == 14)
-		{
-			SparkleParamaters = new NifVector4(stream);
-		}
-		else if (SkyrimShaderType.type == 16)
-		{
-			EyeCubemapScale = ByteConvert.readFloat(stream);
-			LeftEyeReflectionCenter = new NifVector3(stream);
-			RightEyeReflectionCenter = new NifVector3(stream);
+			ByteConvert.readInt(stream); //24 float 0.0 24 int 0
+			ByteConvert.readInt(stream);//25 float 3.4028235E38 25 int 2139095039
+			ByteConvert.readInt(stream);//26 float 0.0 26 int 0
+			ByteConvert.readFloat(stream);//27 float 0.5019608 27 int 1056997505
+			ByteConvert.readFloat(stream);//28 float 5.0 28 int 1084227584
+			ByteConvert.readFloat(stream);//29 float -1.0 29 int -1082130432
+			ByteConvert.readFloat(stream);//30 float -1.0 30 int -1082130432
+			ByteConvert.readFloat(stream);//31 float -1.0 31 int -1082130432
+			ByteConvert.readFloat(stream);//32 float -1.0 32 int -1082130432
+			ByteConvert.readFloat(stream);//33 float -1.0 33 int -1082130432
+			ByteConvert.readFloat(stream);//34 float -1.0 34 int -1082130432
+
+			if (SkyrimShaderType.type == 1)
+			{
+				//6 bytes more to read! maybe 2 3byte colors?
+				ByteConvert.readUnsignedShort(stream);
+				ByteConvert.readInt(stream);// not confirmed
+
+			}
+			else if (SkyrimShaderType.type != 0)
+			{
+				System.out.println("SkyrimShaderType type of " + SkyrimShaderType.type + " Not yet looked at closely");
+			}
 		}
 
 		return success;

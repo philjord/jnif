@@ -93,6 +93,15 @@ public class BSEffectShaderProperty extends NiProperty
 		SoftFalloffDepth = ByteConvert.readFloat(stream);
 
 		GreyscaleTexture = ByteConvert.readSizedString(stream);
+		
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
+		{
+			//TODO: read 16 more , not examined at all
+			ByteConvert.readInt(stream);
+			ByteConvert.readInt(stream);
+			ByteConvert.readInt(stream);
+			ByteConvert.readInt(stream);
+		}
 
 		return success;
 	}

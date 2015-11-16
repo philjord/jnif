@@ -29,11 +29,15 @@ public class NifRef
 		this.refType = refType;
 		ref = ByteConvert.readInt(stream);
 
+		// really basic checks TODO: reenable after decode FO4
+//		if (ref < -1 || ref > 20000)
+//			new Throwable("Bad ref " + ref + " " + refType).printStackTrace();
+
 		allRefs.add(this);
 	}
 
 	public String toString()
 	{
-		return "[NPRef] " + ref + " " + refType;
+		return "[NifRef] " + ref + " " + refType;
 	}
 }

@@ -84,7 +84,7 @@ public class NifFileReader
 		// make sure these are cleared in case of exceptional exit last usage
 		NifRef.allRefs.clear();
 		NifPtr.allPtrs.clear();
-		
+
 		ProgressInputStream in = new ProgressInputStream(inStr);
 
 		NifHeader header = new NifHeader(fileName);
@@ -200,7 +200,52 @@ public class NifFileReader
 
 				// mark in case of over read
 				in.mark(1000000);
-				obj.readFromStream(in, nifVer);
+
+				//NEW:
+				//NiLightRadiusController - possibly good, just like dimmer (test good load)
+				//BSMeshLODTriShape - data inside and compressed
+				//BSVertexData -  new formats to support though
+
+				//bhkNPCollisionObject 
+				//bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
+				//BSPositionData
+				//BSSkin:2	- inner calsses ! but similar to prev?
+				//BSTriShape - data inside	
+				//BSConnectPoint:2
+				//BSSubIndexTriShape
+
+				//ALTERED:	
+				//NiGeometry - done  
+				//NiNode - done
+				//BSLightingShaderProperty - done
+				//BSEffectShaderProperty - done
+
+				//NiParticleSystem - maybe 68 more bytes sometimes maybe??
+
+				//STRONG:
+				//NiObjectNET-NiAVObject
+				//BSShaderTextureSet
+
+				//if (objectType.equals("BSTriShape"))
+				//	System.out.println("BSTriShape size = " + header.blockSizes[i]);
+
+				if (objectType.equals("bhkNPCollisionObject") //
+						|| objectType.equals("bhkPhysicsSystem")//
+						|| objectType.equals("BSSkin::Instance") //
+						|| objectType.equals("BSSkin::BoneData")//
+						|| objectType.equals("BSConnectPoint::Parents")//
+						|| objectType.equals("BSConnectPoint::Children") //
+						|| objectType.equals("BSPositionData")//
+						|| objectType.equals("BSSubIndexTriShape")//
+				)
+				{
+					byte[] b = new byte[header.blockSizes[i]];
+					in.read(b);
+				}
+				else
+				{
+					obj.readFromStream(in, nifVer);
+				}
 
 				long bytesReadOff = in.getBytesRead() - prevBytePos;
 
@@ -237,7 +282,7 @@ public class NifFileReader
 			}
 			catch (Error err)
 			{
-				System.out.println("Error whilst loading block num " + i + " in " + fileName);
+				System.out.println("Error whilst loading block num " + i + " of type " + objectType + " in " + fileName);
 				throw (err);
 			}
 
@@ -359,6 +404,10 @@ public class NifFileReader
 			System.out.println("Bad objectType [" + objectType + "]");
 			return null;
 		}
+
+		//FO4 has introduced inner class names, so swap marker
+		objectType = objectType.replace("::", "$");
+
 		// let's see if we've got it already shall we?
 
 		Constructor<?> preCons = typeToClass.get(objectType);

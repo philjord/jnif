@@ -38,6 +38,12 @@ public class NifVector3
 		}
 	}
 
+	// for NifMinFloatVector3
+	protected NifVector3()
+	{
+
+	}
+
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifVector3)

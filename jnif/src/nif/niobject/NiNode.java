@@ -42,13 +42,16 @@ public class NiNode extends NiAVObject
 		for (int i = 0; i < numChildren; i++)
 		{
 			children[i] = new NifRef(NiAVObject.class, stream);
-
 		}
-		numEffects = ByteConvert.readInt(stream);
-		effects = new NifRef[numEffects];
-		for (int i = 0; i < numEffects; i++)
-		{
-			effects[i] = new NifRef(NiDynamicEffect.class, stream);
+		
+		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
+		{			
+			numEffects = ByteConvert.readInt(stream);
+			effects = new NifRef[numEffects];
+			for (int i = 0; i < numEffects; i++)
+			{
+				effects[i] = new NifRef(NiDynamicEffect.class, stream);
+			}
 		}
 
 		return success;

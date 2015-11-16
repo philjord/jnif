@@ -33,4 +33,9 @@ public class NifTriangle
 		v3 = ByteConvert.readShort(stream);
 		v3 += v3 < 0 ? 65536 : 0;
 	}
+
+	public String toString()
+	{
+		return "[NifTriangle]" + v1 + " " + v2 + " " + v3;
+	}
 }

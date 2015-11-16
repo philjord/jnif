@@ -27,14 +27,22 @@ public class NifExportInfo
 
 	public String exportInfo2;
 
-	public NifExportInfo(int version, InputStream stream) throws IOException
+	public String exportInfo3;
+
+	public NifExportInfo(NifVer nifVer, InputStream stream) throws IOException
 	{
-		if (version == NifVer.VER_10_0_1_2)
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_2)
 		{
 			ByteConvert.readInt(stream);
 		}
 		creator = ByteConvert.readShortString(stream);
 		exportInfo1 = ByteConvert.readShortString(stream);
 		exportInfo2 = ByteConvert.readShortString(stream);
+		//fallout4
+		if(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130)
+		{
+			exportInfo3 = ByteConvert.readShortString(stream);
+		}
+
 	}
 }

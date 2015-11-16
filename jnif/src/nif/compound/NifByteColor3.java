@@ -30,6 +30,6 @@ public class NifByteColor3
 
 	public String toString()
 	{
-		return "[NPByteColor3]" + r + " " + g + " " + b;
+		return "[NPByteColor3] " + (r & 0xff) + " " + (g & 0xff) + " " + (b & 0xff);
 	}
 }

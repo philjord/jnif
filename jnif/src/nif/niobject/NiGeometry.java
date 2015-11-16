@@ -6,6 +6,7 @@ import java.io.InputStream;
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifRef;
+import nif.compound.NifVector3;
 
 public abstract class NiGeometry extends NiAVObject
 {
@@ -50,28 +51,40 @@ public abstract class NiGeometry extends NiAVObject
 
 	public boolean dirtyFlag;
 
+	//FO4 onwards
+	public NifVector3 center;
+
+	//FO4 onwards
+	public float radius;
+
+	//FO4 onwards
+	public NifRef unknownRef;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		data = new NifRef(NiObject.class, stream);
-
-		skin = new NifRef(NiSkinInstance.class, stream);
-
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7)
+		if (!(nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
 		{
-			numMaterials = ByteConvert.readInt(stream);
+			data = new NifRef(NiObject.class, stream);
 
-			materialNames = new String[numMaterials];
-			materialExtraData = new int[numMaterials];
-			for (int i = 0; i < numMaterials; i++)
+			skin = new NifRef(NiSkinInstance.class, stream);
+
+			if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7)
 			{
-				materialNames[i] = ByteConvert.readIndexString(stream, nifVer);
-				materialExtraData[i] = ByteConvert.readInt(stream);
-			}
+				numMaterials = ByteConvert.readInt(stream);
 
-			activeMaterial = ByteConvert.readInt(stream);
-			dirtyFlag = ByteConvert.readBool(stream, nifVer);
+				materialNames = new String[numMaterials];
+				materialExtraData = new int[numMaterials];
+				for (int i = 0; i < numMaterials; i++)
+				{
+					materialNames[i] = ByteConvert.readIndexString(stream, nifVer);
+					materialExtraData[i] = ByteConvert.readInt(stream);
+				}
+
+				activeMaterial = ByteConvert.readInt(stream);
+				dirtyFlag = ByteConvert.readBool(stream, nifVer);
+			}
 		}
 
 		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0 && nifVer.LOAD_VER <= NifVer.VER_20_1_0_3)
@@ -82,6 +95,14 @@ public abstract class NiGeometry extends NiAVObject
 				shaderName = ByteConvert.readIndexString(stream, nifVer);
 				unknownInteger = ByteConvert.readInt(stream);
 			}
+		}
+
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
+		{
+			//Super happy about these now!
+			center = new NifVector3(stream);
+			radius = ByteConvert.readFloat(stream);
+			unknownRef = new NifRef(NiObject.class, stream);
 		}
 
 		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12) && !nifVer.isBP())

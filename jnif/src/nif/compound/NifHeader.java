@@ -117,7 +117,7 @@ public class NifHeader
 						&& (nifVer.LOAD_USER_VER >= 10 || (nifVer.LOAD_USER_VER == 1 && nifVer.LOAD_VER != NifVer.VER_10_2_0_0)) && !nifVer
 							.isBP()))
 		{
-			exportInfo = new NifExportInfo(nifVer.LOAD_USER_VER, stream);
+			exportInfo = new NifExportInfo(nifVer, stream);
 		}
 
 		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
