@@ -34,11 +34,11 @@ public class BgsmFile
 		stream.read(buf);
 
 		textures[0] = ByteConvert.readSizedString(stream);
-		System.out.println("textures[0] " + textures[0]);
+		//System.out.println("textures[0] " + textures[0]);
 		textures[1] = ByteConvert.readSizedString(stream);
-		System.out.println("textures[1] " + textures[1]);
+		//System.out.println("textures[1] " + textures[1]);
 		textures[2] = ByteConvert.readSizedString(stream);
-		System.out.println("textures[2] " + textures[2]);
+		//System.out.println("textures[2] " + textures[2]);
 
 		
 	
