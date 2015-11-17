@@ -17,9 +17,9 @@ public class BSVertexData
 
 	public BSHalfFloatTexCoord2 texCoord;
 
-	public BSHalfFloatVector3 normal;
+	public BSHalfFloatColor4 color;
 
-	public NifByteColor4 color;
+	public BSHalfFloatVector3 normal;
 
 	public byte b1;
 
@@ -31,8 +31,16 @@ public class BSVertexData
 
 	public int s4;
 
+	public float f2;
+
+	public int s5;
+
+	public int s6;
+
 	public BSVertexData(int vertexFormatFlags, InputStream stream) throws IOException
 	{
+		// good for testing formats
+		// f:\game media\fallout4\meshes\landscape\animated\primegroundattack01\primegroundattack01.nif
 		this.vertexFormatFlags = vertexFormatFlags;
 
 		if (vertexFormatFlags > 7)
@@ -48,38 +56,29 @@ public class BSVertexData
 
 		if ((vertexFormatFlags & 0x1) != 0)
 		{
-			// perhaps normals are calculated? I perhaps they a just 3 bytes?
-			// not right!
-			normal = new BSHalfFloatVector3(stream);
-			// float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-
-			// s4 = ByteConvert.readUnsignedShort(stream);
-			ByteConvert.readByte(stream);
-			ByteConvert.readByte(stream);
+			// colors? no like that!
+			color = new BSHalfFloatColor4(stream);
+			//System.out.println("color any good? " + color);
 		}
 
 		if ((vertexFormatFlags & 0x2) != 0)
 		{
-			// I would expect to see heaps of identical color values? though perhaps in the extras as white is common
-			// No not right!
-			color = new NifByteColor4(stream);
-			// s1 = ByteConvert.readUnsignedShort(stream);
-			// s2 = ByteConvert.readUnsignedShort(stream);
+			s1 = ByteConvert.readUnsignedShort(stream);
+			s2 = ByteConvert.readUnsignedShort(stream);
 		}
 
 		if ((vertexFormatFlags & 0x4) != 0)
 		{
-			// 3 normal floats? colors? 6 half floats? normal and tangent or something fun?
-			// s1 = ByteConvert.readUnsignedShort(stream);
-			// s2 = ByteConvert.readUnsignedShort(stream);
-			// s1 = ByteConvert.readUnsignedShort(stream);
+			// I feel good about this lens are near 1 ish 
+			//(unless more UV sets?? could be 2 more with the f1 float? 
 			normal = new BSHalfFloatVector3(stream);
-			float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-			System.out.println("len? " + len);
-			
-			s2 = ByteConvert.readUnsignedShort(stream);
-			s1 = ByteConvert.readUnsignedShort(stream);
-			s2 = ByteConvert.readUnsignedShort(stream);
+			//float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+			//System.out.println("len? " + len + " " + normal);
+
+			f2 = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			s5 = ByteConvert.readUnsignedShort(stream);
+			s6 = ByteConvert.readUnsignedShort(stream);
+
 		}
 
 	}
