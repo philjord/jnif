@@ -40,30 +40,27 @@ public class BSVertexData
 			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags);
 		}
 
-		// perhaps normals are calculated? I perhaps they a just 3 bytes?
-		// I would expect to see heaps of identical color values? though perhaps in teh extras as white is common
-
 		vertex = new BSHalfFloatVector3(stream);
 
 		f1 = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
 
 		texCoord = new BSHalfFloatTexCoord2(stream);
 
-		// not right!
-		normal = new BSHalfFloatVector3(stream);
-		// float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-
-		// s4 = ByteConvert.readUnsignedShort(stream);
-		ByteConvert.readByte(stream);
-		ByteConvert.readByte(stream);
-
 		if ((vertexFormatFlags & 0x1) != 0)
 		{
-			// no extra data in this case
+			// perhaps normals are calculated? I perhaps they a just 3 bytes?
+			// not right!
+			normal = new BSHalfFloatVector3(stream);
+			// float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
+			// s4 = ByteConvert.readUnsignedShort(stream);
+			ByteConvert.readByte(stream);
+			ByteConvert.readByte(stream);
 		}
 
 		if ((vertexFormatFlags & 0x2) != 0)
 		{
+			// I would expect to see heaps of identical color values? though perhaps in the extras as white is common
 			// No not right!
 			color = new NifByteColor4(stream);
 			// s1 = ByteConvert.readUnsignedShort(stream);
@@ -72,10 +69,14 @@ public class BSVertexData
 
 		if ((vertexFormatFlags & 0x4) != 0)
 		{
-			// 3 normal floats? colors? 6 half floats?
-			s1 = ByteConvert.readUnsignedShort(stream);
-			s2 = ByteConvert.readUnsignedShort(stream);
-			s1 = ByteConvert.readUnsignedShort(stream);
+			// 3 normal floats? colors? 6 half floats? normal and tangent or something fun?
+			// s1 = ByteConvert.readUnsignedShort(stream);
+			// s2 = ByteConvert.readUnsignedShort(stream);
+			// s1 = ByteConvert.readUnsignedShort(stream);
+			normal = new BSHalfFloatVector3(stream);
+			float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+			System.out.println("len? " + len);
+			
 			s2 = ByteConvert.readUnsignedShort(stream);
 			s1 = ByteConvert.readUnsignedShort(stream);
 			s2 = ByteConvert.readUnsignedShort(stream);

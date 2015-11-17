@@ -1501,9 +1501,9 @@
         <add name="Vertex" type="BSHalfFloatVector3">Confirmed strong.</add>
         <add name="f1" type="ushort">Possibly a half float.</add>
         <add name="Tex Coord" type="BSHalfFloatTexCoord2">Confirmed strong.</add>
-        <add name="Unknown 4 Shorts" type="ushort" arr1="4">Possibly some Half Floats in here, I feel this should hold a normal somewhere.</add>
-        <add name="Unknown 2 Shorts" type="ushort" arr1="2" cond="(ARG &amp; 0x02) != 0">Unknown, but indicated by flag, so optional.</add>
-        <add name="Unknown 6 Shorts" type="ushort" arr1="6" cond="(ARG &amp; 0x04) != 0">Unknown, but indicated by flag, so optional.</add>
+        <add name="Unknown 4 Shorts" type="ushort" arr1="4" cond="(ARG == 1) || (ARG == 3) || (ARG == 5) || (ARG == 7)">Possibly some Half Floats in here, I feel this should hold a normal somewhere.(ARG &amp; 0x01) != 0 doesn't work?</add>
+        <add name="Unknown 2 Shorts" type="ushort" arr1="2" cond="(ARG == 2) || (ARG == 3) || (ARG == 6) || (ARG == 7)">Unknown, but indicated by flag, so optional. (ARG &amp; 0x02) != 0 doesn't work? </add>
+        <add name="Unknown 6 Shorts" type="ushort" arr1="6" cond="(ARG == 4) || (ARG == 5) || (ARG == 6) || (ARG == 7)">Unknown, but indicated by flag, so optional. (ARG &amp; 0x04) != 0 doesn't work?</add>
     </compound>
 
     <compound name="SphereBV">
@@ -4199,7 +4199,7 @@
         <add name="Num Vertices" type="ushort">Count of vertex data elements.</add>
         <add name="s4" type="ushort">//random - flags?.</add>
         <add name="s5" type="ushort">//0 in most cases 1x1 seen rockpileL01.</add>
-        <add name="Vertex Data" type="BSVertexData" arr1="Num Vertices" cond="s1 !=0"></add>
+        <add name="Vertex Data" type="BSVertexData" arr1="Num Vertices" arg="Vertex Format" cond="s1 !=0"></add>
         <add name="Triangles" type="Triangle" arr1="Num Triangles" cond="s1 !=0"></add>
     </niobject>
 

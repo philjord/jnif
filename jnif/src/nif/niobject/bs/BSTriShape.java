@@ -50,11 +50,17 @@ public class BSTriShape extends NiTriBasedGeom
 
 		//other examples
 		//Problem  in f:\game media\fallout4\meshes\architecture\commercial\monorailstation01.nif i=4 type= BSTriShape should have read off 982 but in fact read off 1366
+		
+		
+		// the bum guy is editor markeer so he wants no normals or text coords!
+		//for this guy should have stopped reading vert at about 80 half way through 
+		// so each vert too big? read less? 134 read want 54.5 less read off? (no normals??)
+		// vertexformat of 0?
+		//with normal = 20 with out = 8? 2680 1072  
 		//Problem  in f:\game media\fallout4\meshes\architecture\warehouse\greenhouse\greenhsdoorsm01.nif i=26 type= BSTriShape should have read off 2398 but in fact read off 2025
 		
-		
-		
-		
+		// NO not a problem in fact something is screwing with me!
+		//Problem  in Meshes\Interiors\Building\Concrete\Med_WallKit\BldConcMdWallPillarBot01.nif i=8 type= BSMeshLODTriShape should have read off 1964 but in fact read off 1955
 		
 		//System.out.println("name " + this.name);
 		//System.out.println("properties[0] " + properties[0]);

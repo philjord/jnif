@@ -195,7 +195,7 @@ public class NifFileReader
 			try
 			{
 
-				// set the positon to the current based on whatever the header read off
+				// set the position to the current based on whatever the header read off
 				long prevBytePos = in.getBytesRead();
 
 				// mark in case of over read
@@ -211,7 +211,7 @@ public class NifFileReader
 				//.bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
 				//.bhkRagdollSystem
 				//.BSPositionData
-				//.BSSkin:2	- inner calsses ! but similar to prev?				
+				//.BSSkin:2	- inner classes ! but similar to prev?				
 				//.BSConnectPoint:2
 				//.BSSubIndexTriShape
 				//.BSEyeCenterExtraData
@@ -241,9 +241,8 @@ public class NifFileReader
 				
 				//vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
 				
-				//Unsupported header::335675399
-				//could not load file f:\game media\fallout4\meshes\architecture\buildings\decokit\decolobbyaceiling1x1str003.nif due to bad header
-
+				
+			
 				//if (objectType.equals("BSTriShape"))
 				//	System.out.println("BSTriShape size = " + header.blockSizes[i]);
 
