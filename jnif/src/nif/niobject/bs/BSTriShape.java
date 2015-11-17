@@ -84,7 +84,7 @@ public class BSTriShape extends NiTriBasedGeom
 		s4 = ByteConvert.readUnsignedShort(stream);
 		//System.out.println("s4 " + s4);//random - flags?
 		s5 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s5 " + s4);//0 in all cases 1x1 seen rockpileL01
+		//System.out.println("s5 " + s5);//0 in all cases 1x1 seen rockpileL01
 
 		//	BSTriShape size = 122, mean load no vertex data
 		//TODO: lots of the above are 0's when size is 122 but numVertices is not 0

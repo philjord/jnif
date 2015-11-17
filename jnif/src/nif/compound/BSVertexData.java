@@ -46,17 +46,17 @@ public class BSVertexData
 		vertex = new BSHalfFloatVector3(stream);
 
 		f1 = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-	
+
 		texCoord = new BSHalfFloatTexCoord2(stream);
 
 		// not right!
 		normal = new BSHalfFloatVector3(stream);
-		//float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-		
+		// float len = (float) Math.sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
 		// s4 = ByteConvert.readUnsignedShort(stream);
 		ByteConvert.readByte(stream);
 		ByteConvert.readByte(stream);
-		
+
 		if ((vertexFormatFlags & 0x1) != 0)
 		{
 			// no extra data in this case
@@ -65,9 +65,9 @@ public class BSVertexData
 		if ((vertexFormatFlags & 0x2) != 0)
 		{
 			// No not right!
-			color = new NifByteColor4(stream);			
-			//s1 = ByteConvert.readUnsignedShort(stream);
-			//s2 = ByteConvert.readUnsignedShort(stream);
+			color = new NifByteColor4(stream);
+			// s1 = ByteConvert.readUnsignedShort(stream);
+			// s2 = ByteConvert.readUnsignedShort(stream);
 		}
 
 		if ((vertexFormatFlags & 0x4) != 0)

@@ -202,38 +202,44 @@ public class NifFileReader
 				in.mark(1000000);
 
 				//NEW:
-				//NiLightRadiusController - possibly good, just like dimmer (test good load)
-				//BSMeshLODTriShape - data inside and compressed
-				//BSVertexData -  new formats to support though
+				//.NiLightRadiusController - possibly good, just like dimmer (test good load)
+				//.BSMeshLODTriShape - data inside and compressed
+				//.BSVertexData -  new formats to support though
 
-				//bhkNPCollisionObject 
-				//bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
-				//bhkRagdollSystem
-				//BSPositionData
-				//BSSkin:2	- inner calsses ! but similar to prev?
-				//BSTriShape - data inside	
-				//BSConnectPoint:2
-				//BSSubIndexTriShape
-				//BSEyeCenterExtraData
-				//BSClothExtraData
+				//.BSTriShape - data inside	much done
+				//.bhkNPCollisionObject 
+				//.bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
+				//.bhkRagdollSystem
+				//.BSPositionData
+				//.BSSkin:2	- inner calsses ! but similar to prev?				
+				//.BSConnectPoint:2
+				//.BSSubIndexTriShape
+				//.BSEyeCenterExtraData
+				//.BSClothExtraData
 
 				//ALTERED:	
-				//NiGeometry - done  
-				//NiNode - done				
-				//BSEffectShaderProperty - done
-				//NiExtraData - made not abstract
+				//.NiGeometry - done  
+				//.NiNode - done				
+				//.BSEffectShaderProperty - done
+				//.NiExtraData - made not abstract
+				//.BSLightingShaderProperty - more types updating
 				
-				//BSLightingShaderProperty - more types updating
 				//NiParticleSystem - maybe 68 more bytes sometimes maybe??
+				
+				
+				//NEW COMPOUNDS
+				//.BSHalfFloatTexCoord2
+				//.BSHalfFloatVector3
 
 				//STRONG:
 				//NiObjectNET-NiAVObject
 				//BSShaderTextureSet
 				
 				//Other:
-				//	J3dNiControllerSequence safty check is now wrong??
+				//	J3dNiControllerSequence safety check is now wrong??
 				//NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
 				
+				//vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
 				
 				//Unsupported header::335675399
 				//could not load file f:\game media\fallout4\meshes\architecture\buildings\decokit\decolobbyaceiling1x1str003.nif due to bad header

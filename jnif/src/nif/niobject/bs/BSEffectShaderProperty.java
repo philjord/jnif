@@ -105,8 +105,8 @@ public class BSEffectShaderProperty extends NiProperty
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
 		{
 			unknownTexture1 = ByteConvert.readSizedString(stream);//e.g. Shared/Cubemaps/mipblur_DefaultOutside1.dds
-			unknownTexture1 = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
-			unknownTexture1 = ByteConvert.readSizedString(stream);
+			unknownTexture2 = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
+			unknownTexture3 = ByteConvert.readSizedString(stream);
 			unknownInt1 = ByteConvert.readInt(stream);
 		}
 
