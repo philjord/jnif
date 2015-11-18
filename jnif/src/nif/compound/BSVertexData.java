@@ -63,6 +63,7 @@ public class BSVertexData
 
 		if ((vertexFormatFlags & 0x2) != 0)
 		{
+			// I see these on winged creates a lot? transparency?
 			s1 = ByteConvert.readUnsignedShort(stream);
 			s2 = ByteConvert.readUnsignedShort(stream);
 		}

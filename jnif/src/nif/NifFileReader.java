@@ -19,34 +19,33 @@ import nif.niobject.controller.NiObjectNET;
 /**
  * Notes on how to extend version support, for untested versions (and bugs)
  * 
- * If you encounter an error similar to this 
+ * If you encounter an error similar to this
  * "blocks[i].readFromStream for i=17 type= NiParticleSystem should have read off 156 but in fact read off 8186"
  * 
  * It most likely is either a version that isn't supported in the code or a bug in a version decoding step.
  * 
  * Both issues are very easy to fix.
  * 
- * Open file with notepad and see text like this at the start "Gamebryo File Format, Version 20.3.0.9" 
- * This tells you it is a valid nif file and the version number of the file.
- * Look at NifVer.java to see the list of version numbers and games they match.
+ * Open file with notepad and see text like this at the start "Gamebryo File Format, Version 20.3.0.9" This tells you it
+ * is a valid nif file and the version number of the file. Look at NifVer.java to see the list of version numbers and
+ * games they match.
  * 
- * You will need the definition of Nif file formats
- * Human readable version here: http://niftools.sourceforge.net/doc/nif/
- * Note this is not perfectly update in all cases
+ * You will need the definition of Nif file formats Human readable version here:
+ * http://niftools.sourceforge.net/doc/nif/ Note this is not perfectly update in all cases
  * 
  * You will also want NifSkope a tool for opening and viewing the files (this isn't mandatory but helps a lot)
  * http://niftools.sourceforge.net/wiki/NifSkope
  * 
- * Setting IS_DEBUG = true below helps a lot. 
+ * Setting IS_DEBUG = true below helps a lot.
  * 
- * So for my example case I see a message stating that i=56 NiParticleSystem has read badly
- * In most cases this suggests i=55 may be the culprit and I need to start from there and examine the code versus the specification
- * It is a NiZBufferProperty, but a quick check of the code shows nothing interesting or out of place
- * So now I example NiParticleSystem and immediately seen odd 20.3.0.9 version decoding code.
+ * So for my example case I see a message stating that i=56 NiParticleSystem has read badly In most cases this suggests
+ * i=55 may be the culprit and I need to start from there and examine the code versus the specification It is a
+ * NiZBufferProperty, but a quick check of the code shows nothing interesting or out of place So now I example
+ * NiParticleSystem and immediately seen odd 20.3.0.9 version decoding code.
  * 
  * So I carefully implements the spec as seen in nifskope and at the docs site.
  * 
- * And this now leads to a new bug in i=69... 
+ * And this now leads to a new bug in i=69...
  * 
  * Meshes\characters\_male\idleanims\deathposes.psa fallout?
  * 
@@ -60,6 +59,7 @@ public class NifFileReader
 
 	/**
 	 * NON caching!
+	 * 
 	 * @param file
 	 * @return
 	 * @throws IOException
@@ -73,8 +73,9 @@ public class NifFileReader
 		return nifFile;
 	}
 
-	/** Reads the given input stream and returns a vector of block references	
-	 * NON caching!
+	/**
+	 * Reads the given input stream and returns a vector of block references NON caching!
+	 * 
 	 * @param file
 	 * @return
 	 * @throws IOException
@@ -108,7 +109,7 @@ public class NifFileReader
 			return null;
 		}
 
-		//set the byteconvert string list static if required for index strings
+		// set the byteconvert string list static if required for index strings
 		if (nifVer.LOAD_VER >= NifVer.VER_20_1_0_3)
 		{
 			nifVer.indexStrings = header.strings;
@@ -145,17 +146,17 @@ public class NifFileReader
 
 				if (nifVer.LOAD_VER < NifVer.VER_3_3_0_13)
 				{
-					//There can be special commands instead of object names
-					//in these versions
+					// There can be special commands instead of object names
+					// in these versions
 					if (objectType == "Top Level Object")
 					{
-						//Just continue on to the next object
+						// Just continue on to the next object
 						continue;
 					}
 
 					if (objectType == "End Of File")
 					{
-						//File is finished
+						// File is finished
 						break;
 					}
 				}
@@ -180,13 +181,13 @@ public class NifFileReader
 			int index = -1;
 			if (nifVer.LOAD_VER < NifVer.VER_3_3_0_13)
 			{
-				//These old versions have a pointer value after the name
-				//which is used as the index
+				// These old versions have a pointer value after the name
+				// which is used as the index
 				index = ByteConvert.readInt(in);
 			}
 			else
 			{
-				//These newer verisons use their position in the file as their index
+				// These newer verisons use their position in the file as their index
 				index = i;
 			}
 
@@ -201,52 +202,53 @@ public class NifFileReader
 				// mark in case of over read
 				in.mark(1000000);
 
-				//NEW:
-				//.NiLightRadiusController - possibly good, just like dimmer (test good load)
-				//.BSMeshLODTriShape - data inside and compressed
-				//.BSVertexData -  new formats to support though
+				// NEW:
+				// .NiLightRadiusController - possibly good, just like dimmer (test good load)
+				// .BSMeshLODTriShape - data inside and compressed
+				// .BSVertexData - new formats to support though
 
-				//.BSTriShape - data inside	much done
-				//.bhkNPCollisionObject 
-				//.bhkPhysicsSystem - big  big block, possibly all the old havok gear in one?
-				//.bhkRagdollSystem
-				//.BSPositionData
-				//.BSSkin:2	- inner classes ! but similar to prev?				
-				//.BSConnectPoint:2
-				//.BSSubIndexTriShape
-				//.BSEyeCenterExtraData
-				//.BSClothExtraData
+				// .BSTriShape - data inside much done
+				// .BSSubIndexTriShape -  more work required close
+				// .bhkNPCollisionObject
+				// .bhkPhysicsSystem - big big block, possibly all the old havok gear in one?
+				// .bhkRagdollSystem
+				// .BSPositionData
+				// .BSSkin:2 - inner classes ! but similar to prev?
+				// .BSConnectPoint:2
+				
+				// .BSEyeCenterExtraData
+				// .BSClothExtraData
 
-				//ALTERED:	
-				//.NiGeometry - done  
-				//.NiNode - done				
-				//.BSEffectShaderProperty - done
-				//.NiExtraData - made not abstract
-				//.BSLightingShaderProperty - more types updating
-				
-				//NiParticleSystem - maybe 68 more bytes sometimes maybe??
-				
-				
-				//NEW COMPOUNDS
-				//.BSHalfFloatTexCoord2
-				//.BSHalfFloatVector3
+				// ALTERED:
+				// .NiGeometry - done
+				// .NiNode - done
+				// .BSEffectShaderProperty - done
+				// .NiExtraData - made not abstract
+				// .BSLightingShaderProperty - more types updating
 
-				//STRONG:
-				//NiObjectNET-NiAVObject
-				//BSShaderTextureSet
-				
-				//Other:
-				//	J3dNiControllerSequence safety check is now wrong??
-				//NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
-				
-				//vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
-				
-				
-			
-				//if (objectType.equals("BSTriShape"))
-				//	System.out.println("BSTriShape size = " + header.blockSizes[i]);
+				// NiParticleSystem - maybe 68 more bytes sometimes maybe??
 
-				if (objectType.equals("bhkNPCollisionObject") //
+				// NEW COMPOUNDS
+				// .BSHalfFloatTexCoord2
+				// .BSHalfFloatVector3
+
+				// STRONG:
+				// NiObjectNET-NiAVObject
+				// BSShaderTextureSet
+
+				// Other:
+				// J3dNiControllerSequence safety check is now wrong??
+				// NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
+
+				// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
+				
+				
+				 
+			//	if (objectType.equals("BSSubIndexTriShape"))
+			//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
+
+				if( (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
+				&&(objectType.equals("bhkNPCollisionObject") //
 						|| objectType.equals("bhkPhysicsSystem")//
 						|| objectType.equals("bhkRagdollSystem")//
 						|| objectType.equals("BSSkin::Instance") //
@@ -254,40 +256,37 @@ public class NifFileReader
 						|| objectType.equals("BSConnectPoint::Parents")//
 						|| objectType.equals("BSConnectPoint::Children") //
 						|| objectType.equals("BSPositionData")//
-						|| objectType.equals("BSSubIndexTriShape")//
 						|| objectType.equals("NiParticleSystem")//
 						|| objectType.equals("BSEyeCenterExtraData")//
 						|| objectType.equals("BSClothExtraData")//
-				)
+				))
 				{
-					byte[] b = new byte[header.blockSizes[i]];
-					in.read(b);
+					if (header.blockSizes != null)
+					{
+						byte[] b = new byte[header.blockSizes[i]];
+						in.read(b);
+					}
 				}
 				else
-				{
+				{					
 					obj.readFromStream(in, nifVer);
 				}
 
 				long bytesReadOff = in.getBytesRead() - prevBytePos;
+				
+				if(bytesReadOff < 0)
+					System.out.println("Negative bytes read! Shenanigans.");
 
 				// only games after fallout have block sizes
 				if (header.blockSizes != null && bytesReadOff != header.blockSizes[i])
 				{
-					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]]
-							+ " should have read off " + header.blockSizes[i] + " but in fact read off " + bytesReadOff);
+					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]] + " should have read off " + header.blockSizes[i]
+							+ " but in fact read off " + bytesReadOff);
 
-					int diff = (int) (header.blockSizes[i] - bytesReadOff);
-					// let's try desperately to correct
-					if (diff > 0)
-					{
-						in.skip(diff);
-					}
-					else
-					{
-						// We've read parts of the next block too, let's reset it and reread what it should have been
-						in.reset();
-						in.skip(header.blockSizes[i]);
-					}
+					// We've read parts of the next block too, let's reset it and reread what it should have been
+					in.reset();
+					in.skip(header.blockSizes[i]);
+
 				}
 
 				if (IS_DEBUG && obj instanceof NiObjectNET)
@@ -346,14 +345,13 @@ public class NifFileReader
 					if (actualNiObject == null)
 					{
 						countOfErrorsReported++;
-						System.out.println("NifRef ref:" + ref.ref + " is ref.refType = " + ref.refType
-								+ " but the blocks[ref.ref] is null (likely bad stream read in block loading); in file " + fileName);
+						System.out.println(
+								"NifRef ref:" + ref.ref + " is ref.refType = " + ref.refType + " but the blocks[ref.ref] is null (likely bad stream read in block loading); in file " + fileName);
 					}
 					else if (!ref.refType.isInstance(actualNiObject))
 					{
 						countOfErrorsReported++;
-						System.out.println("NifRef ref:" + ref.ref + " is type " + actualNiObject.getClass() + " but ref.refType = "
-								+ ref.refType + "; in file " + fileName);
+						System.out.println("NifRef ref:" + ref.ref + " is type " + actualNiObject.getClass() + " but ref.refType = " + ref.refType + "; in file " + fileName);
 					}
 				}
 				else if (ref.ref == -1)
@@ -380,14 +378,13 @@ public class NifFileReader
 					if (actualNiObject == null)
 					{
 						countOfErrorsReported++;
-						System.out.println("NifPtr ptr:" + ptr.ptr + " is ptr.ptrType = " + ptr.ptrType
-								+ " but the blocks[ptr.ptr] is null (likely bad stream read in block loading); in file " + fileName);
+						System.out.println(
+								"NifPtr ptr:" + ptr.ptr + " is ptr.ptrType = " + ptr.ptrType + " but the blocks[ptr.ptr] is null (likely bad stream read in block loading); in file " + fileName);
 					}
 					else if (!ptr.ptrType.isInstance(actualNiObject))
 					{
 						countOfErrorsReported++;
-						System.out.println("NifPtr ptr:" + ptr.ptr + " is type " + actualNiObject.getClass() + " but ptr.ptrType = "
-								+ ptr.ptrType + "; in file " + fileName);
+						System.out.println("NifPtr ptr:" + ptr.ptr + " is type " + actualNiObject.getClass() + " but ptr.ptrType = " + ptr.ptrType + "; in file " + fileName);
 					}
 				}
 				else if (ptr.ptr == -1)
@@ -426,7 +423,7 @@ public class NifFileReader
 			return null;
 		}
 
-		//FO4 has introduced inner class names, so swap marker
+		// FO4 has introduced inner class names, so swap marker
 		objectType = objectType.replace("::", "$");
 
 		// let's see if we've got it already shall we?
@@ -520,7 +517,7 @@ public class NifFileReader
 									}
 									catch (Exception e7)
 									{
-										//ok give up
+										// ok give up
 										System.out.println("class for objectType " + objectType + " not found");
 										System.out.println("Searched in these directories: ");
 										System.out.println("nif.niobject." + objectType);
