@@ -6221,8 +6221,12 @@
     </niobject>
 
     <!-- FO4 new-->
-    <niobject name="BSSubIndexTriShape" inherit="NiAVObject">
-    	Not examined	
+    <niobject name="BSSubIndexTriShape" inherit="BSTriShape">
+        <add name="s1" type="ushort">Unknown</add>
+        <add name="s2" type="ushort">Unknown</add>
+        <add name="Size1" type="uint">Unknown</add>
+        <add name="Size2" type="uint">Unknown</add>       
+        <add name="s8Arr" type="ushort" arr1="Size2" arr2="8" >Unknown</add>
     </niobject>
 
 </niftoolsxml>
