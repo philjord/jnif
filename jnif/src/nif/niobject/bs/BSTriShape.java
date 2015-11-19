@@ -42,18 +42,7 @@ public class BSTriShape extends NiTriBasedGeom
 		numVertices = ByteConvert.readUnsignedShort(stream);
 
 		dataSize = ByteConvert.readInt(stream);
-	/*	System.out.println("vertexFormat1 "+vertexFormat1 );
-		System.out.println("vertexFormat2 "+vertexFormat2 );
-		System.out.println("vertexFormat3 "+vertexFormat3 );
-		System.out.println("vertexFormat4 "+vertexFormat4 );
-		System.out.println("vertexFormat5 "+vertexFormat5 );
-		System.out.println("vertexFormat6 "+vertexFormat6 );
-		System.out.println("vertexFormat8 "+vertexFormat8 );
-		System.out.println("vertexFormatFlags "+vertexFormatFlags );
-		System.out.println("numTriangles "+numTriangles );
-		System.out.println("numVertices "+numVertices );
-		System.out.println("dataSize "+dataSize ); 
-		System.out.println("vertexdatasize  "+((dataSize-(numTriangles*6))/numVertices));*/
+		
 
 		vertexData = new BSVertexData[numVertices];
 		for (int v = 0; v < numVertices; v++)

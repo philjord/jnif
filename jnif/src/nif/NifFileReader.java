@@ -215,7 +215,7 @@ public class NifFileReader
 				// .BSPositionData
 				// .BSSkin:2 - inner classes ! but similar to prev?
 				// .BSConnectPoint:2
-				
+
 				// .BSEyeCenterExtraData
 				// .BSClothExtraData
 
@@ -226,6 +226,7 @@ public class NifFileReader
 				// .NiExtraData - made not abstract
 				// .BSLightingShaderProperty - more types updating
 
+				// NiDynamicEffect unexpected end of stream F:\game media\Fallout4\Meshes\Actors\Bloatfly\CharacterAssets\BloatFlyGlowAO.nif
 				// NiParticleSystem - maybe 68 more bytes sometimes maybe??
 
 				// NEW COMPOUNDS
@@ -241,14 +242,11 @@ public class NifFileReader
 				// NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
 
 				// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
-				
-				
-				 
-			//	if (objectType.equals("BSSubIndexTriShape"))
-			//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
 
-				if( (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
-				&&(objectType.equals("bhkNPCollisionObject") //
+				//	if (objectType.equals("BSSubIndexTriShape"))
+				//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
+
+				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130) && (objectType.equals("bhkNPCollisionObject") //
 						|| objectType.equals("bhkPhysicsSystem")//
 						|| objectType.equals("bhkRagdollSystem")//
 						|| objectType.equals("BSSkin::Instance") //
@@ -268,20 +266,20 @@ public class NifFileReader
 					}
 				}
 				else
-				{					
+				{
 					obj.readFromStream(in, nifVer);
 				}
 
 				long bytesReadOff = in.getBytesRead() - prevBytePos;
-				
-				if(bytesReadOff < 0)
+
+				if (bytesReadOff < 0)
 					System.out.println("Negative bytes read! Shenanigans.");
 
 				// only games after fallout have block sizes
 				if (header.blockSizes != null && bytesReadOff != header.blockSizes[i])
 				{
 					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]] + " should have read off " + header.blockSizes[i]
-							+ " but in fact read off " + bytesReadOff);
+							+ " but in fact read off " + bytesReadOff + " diff= " + (header.blockSizes[i] - bytesReadOff));
 
 					// We've read parts of the next block too, let's reset it and reread what it should have been
 					in.reset();
