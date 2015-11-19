@@ -7,6 +7,7 @@ import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifRef;
 import nif.compound.NifVector3;
+import nif.niobject.bs.BSSkin;
 
 public abstract class NiGeometry extends NiAVObject
 {
@@ -28,7 +29,7 @@ public abstract class NiGeometry extends NiAVObject
 	    <add name="Dirty Flag" type="bool" ver1="20.2.0.7">Dirty Flag?</add>
 	    <add name="Properties" type="Ref" template="NiObject" arr1="2" ver1="20.2.0.7" userver="12">Two property links, used in Skyrim nifs.</add>
 	</niobject>
-
+	
 	 */
 
 	public NifRef data;
@@ -102,7 +103,7 @@ public abstract class NiGeometry extends NiAVObject
 			//Super happy about these now!
 			center = new NifVector3(stream);
 			radius = ByteConvert.readFloat(stream);
-			unknownRef = new NifRef(NiObject.class, stream);
+			skin = new NifRef(BSSkin.Instance.class, stream);
 		}
 
 		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12) && !nifVer.isBP())

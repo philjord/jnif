@@ -10,106 +10,65 @@ import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
 
 public class BSTriShape extends NiTriBasedGeom
-{
-	// neither of thes is useful as yet
-	// note halffloats are used in BSPackedAdditionalGeometryData<!-- Fallout NV (nvdlc01vaultposter01.nif) -->
-	// wow http://docs.oracle.com/cd/E17802_01/j2se/javase/technologies/desktop/java3d/forDevelopers/j3dguide/AppendixCompress.doc.html
-
-	int s1;
-
-	int b1;
-
-	int b2;
-
-	int s2;
-
+{	
+	public int vertexFormat1;
+	public int vertexFormat2;
+	public int vertexFormat3;
+	public int vertexFormat4;
+	public int vertexFormat5;
+	public int vertexFormat6;
 	public int vertexFormatFlags;
-
+	public int vertexFormat8;
 	public int numTriangles;
-
-	int s3;
-
 	public int numVertices;
-
-	int s4;
-
-	int s5;
-
+	public int dataSize;
 	public BSVertexData[] vertexData;
-
 	public NifTriangle[] triangles;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		//Problem  in f:\game media\fallout4\meshes\actors\character\characterassets\1stpersonreversearm.nif
-		//i=29 type= BSTriShape should have read off 51724 but in fact read off 48180
-		//3544 not a multiple of vertexnum 
-		// for this roblem vertex 1118 is in fact the start of tris! but count read off is 1491
-
-		//other examples
-		//Problem  in f:\game media\fallout4\meshes\architecture\commercial\monorailstation01.nif i=4 type= BSTriShape should have read off 982 but in fact read off 1366
-		
-		
-		// the bum guy is editor markeer so he wants no normals or text coords!
-		//for this guy should have stopped reading vert at about 80 half way through 
-		// so each vert too big? read less? 134 read want 54.5 less read off? (no normals??)
-		// vertexformat of 0?
-		//with normal = 20 with out = 8? 2680 1072  
-		//Problem  in f:\game media\fallout4\meshes\architecture\warehouse\greenhouse\greenhsdoorsm01.nif i=26 type= BSTriShape should have read off 2398 but in fact read off 2025
-		
-		// NO not a problem in fact something is screwing with me!
-		//Problem  in Meshes\Interiors\Building\Concrete\Med_WallKit\BldConcMdWallPillarBot01.nif i=8 type= BSMeshLODTriShape should have read off 1964 but in fact read off 1955
-		
-		//System.out.println("name " + this.name);
-		//System.out.println("properties[0] " + properties[0]);
-		//System.out.println("properties[1] " + properties[1]);
-
-		s1 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s1 " + s1); //normally 517 but when 518 when format is 3
-
-		b1 = ByteConvert.readUnsignedByte(stream);
-		//System.out.println("b1 " + b1); //67?
-		b2 = ByteConvert.readUnsignedByte(stream);
-		//System.out.println("b2 " + b2); //0? 3x5 seen with 1=518 I think format change
-		s2 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s2 " + s2); // 45056 in all cases, one case 12288
-
-		vertexFormatFlags = ByteConvert.readUnsignedShort(stream); // 1, 3, 5 seen
-		//System.out.println("vertexFormatFlags " + vertexFormatFlags);
-		numTriangles = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("numTriangles " + numTriangles);
-
-		s3 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s3 " + s3);//0?
-
+	
+		vertexFormat1 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat2 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat3 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat4 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat5 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat6 = ByteConvert.readUnsignedByte(stream);
+		vertexFormatFlags = ByteConvert.readUnsignedByte(stream);
+		vertexFormat8 = ByteConvert.readUnsignedByte(stream);
+		numTriangles = ByteConvert.readInt(stream); 
 		numVertices = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("numVertices " + numVertices);
 
-		s4 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s4 " + s4);//random - flags?
-		s5 = ByteConvert.readUnsignedShort(stream);
-		//System.out.println("s5 " + s5);//0 in all cases 1x1 seen rockpileL01
+		dataSize = ByteConvert.readInt(stream);
+	/*	System.out.println("vertexFormat1 "+vertexFormat1 );
+		System.out.println("vertexFormat2 "+vertexFormat2 );
+		System.out.println("vertexFormat3 "+vertexFormat3 );
+		System.out.println("vertexFormat4 "+vertexFormat4 );
+		System.out.println("vertexFormat5 "+vertexFormat5 );
+		System.out.println("vertexFormat6 "+vertexFormat6 );
+		System.out.println("vertexFormat8 "+vertexFormat8 );
+		System.out.println("vertexFormatFlags "+vertexFormatFlags );
+		System.out.println("numTriangles "+numTriangles );
+		System.out.println("numVertices "+numVertices );
+		System.out.println("dataSize "+dataSize ); 
+		System.out.println("vertexdatasize  "+((dataSize-(numTriangles*6))/numVertices));*/
 
-		//	BSTriShape size = 122, mean load no vertex data
-		//TODO: lots of the above are 0's when size is 122 but numVertices is not 0
-		if (s1 != 0)
+		vertexData = new BSVertexData[numVertices];
+		for (int v = 0; v < numVertices; v++)
 		{
-			vertexData = new BSVertexData[numVertices];
-			for (int v = 0; v < numVertices; v++)
-			{
-				vertexData[v] = new BSVertexData(vertexFormatFlags, stream);
-				//System.out.println("" + v + " " + vertexData[v]);
-			}
-
-			triangles = new NifTriangle[numTriangles];
-			for (int t = 0; t < numTriangles; t++)
-			{
-				triangles[t] = new NifTriangle(stream);
-				//System.out.println("" + t + " " + triangles[t]);
-			}
+			vertexData[v] = new BSVertexData(vertexFormat1, vertexFormatFlags, stream);
+			//System.out.println("" + v + " " + vertexData[v]);
 		}
+
+		triangles = new NifTriangle[numTriangles];
+		for (int t = 0; t < numTriangles; t++)
+		{
+			triangles[t] = new NifTriangle(stream);
+			//System.out.println("" + t + " " + triangles[t]);
+		}
+
 		return success;
 	}
 	/*
@@ -129,7 +88,7 @@ public class BSTriShape extends NiTriBasedGeom
 			}
 		}
 		stream.reset();
-
+	
 		stream.mark(0);
 		for (int off = 0; off < 1; off++)
 		{
@@ -144,7 +103,7 @@ public class BSTriShape extends NiTriBasedGeom
 			}
 		}
 		stream.reset();
-
+	
 		stream.mark(0);
 		for (int off = 0; off < 3; off++)
 		{

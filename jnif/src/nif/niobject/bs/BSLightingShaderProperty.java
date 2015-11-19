@@ -231,7 +231,7 @@ public class BSLightingShaderProperty extends NiObject
 			ByteConvert.readFloat(stream);//33 float -1.0 33 int -1082130432
 			ByteConvert.readFloat(stream);//34 float -1.0 34 int -1082130432
 
-			if (SkyrimShaderType.type == 2 || SkyrimShaderType.type == 4)
+			if (SkyrimShaderType.type == 2 || SkyrimShaderType.type == 4 || SkyrimShaderType.type == 18)
 			{
 				//appears to need no extra data
 			}

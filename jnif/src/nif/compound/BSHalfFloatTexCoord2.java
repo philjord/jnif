@@ -17,4 +17,9 @@ public class BSHalfFloatTexCoord2
 		u = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
 		v = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
 	}
+
+	public String toString()
+	{
+		return "[BSHalfFloatTexCoord2] " + u + " " + v;
+	}
 }

@@ -8,8 +8,8 @@ import tools.MiniFloat;
 
 public class BSVertexData
 {
-
-	public int vertexFormatFlags;
+	public int vertexFormatFlags1;
+	public int vertexFormatFlags2;
 
 	public BSHalfFloatVector3 vertex;
 
@@ -37,38 +37,39 @@ public class BSVertexData
 
 	public int s6;
 
-	public BSVertexData(int vertexFormatFlags, InputStream stream) throws IOException
+	public BSVertexData(int vertexFormatFlags1, int vertexFormatFlags2, InputStream stream) throws IOException
 	{
 		// good for testing formats
 		// f:\game media\fallout4\meshes\landscape\animated\primegroundattack01\primegroundattack01.nif
-		this.vertexFormatFlags = vertexFormatFlags;
+		this.vertexFormatFlags2 = vertexFormatFlags2;
 
-		if (vertexFormatFlags > 7)
+		if (vertexFormatFlags2 > 7)
 		{
-			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags);
+			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags2);
 		}
 
 		vertex = new BSHalfFloatVector3(stream);
 
 		f1 = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
 
-		texCoord = new BSHalfFloatTexCoord2(stream);
+		if (vertexFormatFlags1 > 2)
+			texCoord = new BSHalfFloatTexCoord2(stream);
 
-		if ((vertexFormatFlags & 0x1) != 0)
+		if ((vertexFormatFlags2 & 0x1) != 0)
 		{
 			// colors? no like that!
 			color = new BSHalfFloatColor4(stream);
 			//System.out.println("color any good? " + color);
 		}
 
-		if ((vertexFormatFlags & 0x2) != 0)
+		if ((vertexFormatFlags2 & 0x2) != 0)
 		{
 			// I see these on winged creates a lot? transparency?
 			s1 = ByteConvert.readUnsignedShort(stream);
 			s2 = ByteConvert.readUnsignedShort(stream);
 		}
 
-		if ((vertexFormatFlags & 0x4) != 0)
+		if ((vertexFormatFlags2 & 0x4) != 0)
 		{
 			// I feel good about this lens are near 1 ish 
 			//(unless more UV sets?? could be 2 more with the f1 float? 
@@ -86,7 +87,7 @@ public class BSVertexData
 
 	public String toString()
 	{
-		return "[CompressedVertexData] " + vertex + " " + color;
+		return "[BSVertexData] vertex " + vertex + " : texCoord " + texCoord;
 	}
 
 }
