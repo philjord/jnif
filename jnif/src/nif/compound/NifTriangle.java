@@ -26,12 +26,17 @@ public class NifTriangle
 
 	public NifTriangle(InputStream stream) throws IOException
 	{
-		v1 = ByteConvert.readShort(stream);
+		/*
+		 * v1 = ByteConvert.readShort(stream);
 		v1 += v1 < 0 ? 65536 : 0;
 		v2 = ByteConvert.readShort(stream);
 		v2 += v2 < 0 ? 65536 : 0;
 		v3 = ByteConvert.readShort(stream);
-		v3 += v3 < 0 ? 65536 : 0;
+		v3 += v3 < 0 ? 65536 : 0;*/
+		v1 = ByteConvert.readUnsignedShort(stream);	
+		v2 = ByteConvert.readUnsignedShort(stream);
+		v3 = ByteConvert.readUnsignedShort(stream);
+		
 	}
 
 	public String toString()

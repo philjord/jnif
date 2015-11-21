@@ -42,8 +42,8 @@ public class NiTriStripsData extends NiTriBasedGeomData
 		stripLengths = new int[numStrips];
 		for (int i = 0; i < numStrips; i++)
 		{
-			stripLengths[i] = ByteConvert.readShort(stream);
-			stripLengths[i] += stripLengths[i] < 0 ? 65536 : 0;
+			stripLengths[i] = ByteConvert.readUnsignedShort(stream);
+			//stripLengths[i] += stripLengths[i] < 0 ? 65536 : 0;
 
 		}
 		hasPoints = ByteConvert.readBool(stream, nifVer);
@@ -55,8 +55,8 @@ public class NiTriStripsData extends NiTriBasedGeomData
 				points[i] = new int[stripLengths[i]];
 				for (int j = 0; j < stripLengths[i]; j++)
 				{
-					points[i][j] = ByteConvert.readShort(stream);
-					points[i][j] += points[i][j] < 0 ? 65536 : 0;
+					points[i][j] = ByteConvert.readUnsignedShort(stream);
+					//points[i][j] += points[i][j] < 0 ? 65536 : 0;
 				}
 			}
 		}

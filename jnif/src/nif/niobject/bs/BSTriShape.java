@@ -10,7 +10,7 @@ import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
 
 public class BSTriShape extends NiTriBasedGeom
-{	
+{
 	public int vertexFormat1;
 	public int vertexFormat2;
 	public int vertexFormat3;
@@ -28,8 +28,8 @@ public class BSTriShape extends NiTriBasedGeom
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+		//CAREFUL CAREFUL!!! optomised version  exists in jnifj3d!!!
 
-	
 		vertexFormat1 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat2 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat3 = ByteConvert.readUnsignedByte(stream);
@@ -38,11 +38,10 @@ public class BSTriShape extends NiTriBasedGeom
 		vertexFormat6 = ByteConvert.readUnsignedByte(stream);
 		vertexFormatFlags = ByteConvert.readUnsignedByte(stream);
 		vertexFormat8 = ByteConvert.readUnsignedByte(stream);
-		numTriangles = ByteConvert.readInt(stream); 
+		numTriangles = ByteConvert.readInt(stream);
 		numVertices = ByteConvert.readUnsignedShort(stream);
 
 		dataSize = ByteConvert.readInt(stream);
-		
 
 		vertexData = new BSVertexData[numVertices];
 		for (int v = 0; v < numVertices; v++)
