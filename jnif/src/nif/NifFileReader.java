@@ -187,7 +187,7 @@ public class NifFileReader
 			}
 			else
 			{
-				// These newer verisons use their position in the file as their index
+				// These newer versions use their position in the file as their index
 				index = i;
 			}
 
@@ -202,67 +202,74 @@ public class NifFileReader
 				// mark in case of over read
 				in.mark(1000000);
 
-				// NEW:
-				// .NiLightRadiusController - possibly good, just like dimmer (test good load)
-				// .BSMeshLODTriShape - data inside and compressed
-				// .BSVertexData - new formats to support though
-
-				// .BSTriShape - data inside much done
-				// .BSSubIndexTriShape -  more work required close
-				// .bhkNPCollisionObject
-				// .bhkPhysicsSystem - big big block, possibly all the old havok gear in one?
-				// .bhkRagdollSystem
-				// .BSPositionData
-				// .BSSkin:2 - inner classes ! but similar to prev?
-				// .BSConnectPoint:2
-
-				// .BSEyeCenterExtraData
-				// .BSClothExtraData
-
-				// ALTERED:
-				// .NiGeometry - done
-				// .NiNode - done
-				// .BSEffectShaderProperty - done
-				// .NiExtraData - made not abstract
-				// .BSLightingShaderProperty - more types updating
-
-				// NiDynamicEffect unexpected end of stream F:\game media\Fallout4\Meshes\Actors\Bloatfly\CharacterAssets\BloatFlyGlowAO.nif
-				// NiParticleSystem - maybe 68 more bytes sometimes maybe??
-
-				// NEW COMPOUNDS
-				// .BSHalfFloatTexCoord2
-				// .BSHalfFloatVector3
-
-				// STRONG:
-				// NiObjectNET-NiAVObject
-				// BSShaderTextureSet
-
-				// Other:
-				// J3dNiControllerSequence safety check is now wrong??
-				// NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
-
-				// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
-
-				//	if (objectType.equals("BSSubIndexTriShape"))
-				//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
-
-				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130) && (objectType.equals("bhkNPCollisionObject") //
-						|| objectType.equals("bhkPhysicsSystem")//
-						|| objectType.equals("bhkRagdollSystem")//
-						|| objectType.equals("BSSkin::Instance") //
-						|| objectType.equals("BSSkin::BoneData")//
-						|| objectType.equals("BSConnectPoint::Parents")//
-						|| objectType.equals("BSConnectPoint::Children") //
-						|| objectType.equals("BSPositionData")//
-						|| objectType.equals("NiParticleSystem")//
-						|| objectType.equals("BSEyeCenterExtraData")//
-						|| objectType.equals("BSClothExtraData")//
-				))
+				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
 				{
-					if (header.blockSizes != null)
+					// NEW:
+					// .NiLightRadiusController - possibly good, just like dimmer (test good load)
+					// .BSMeshLODTriShape - data inside and compressed
+					// .BSVertexData - new formats to support though
+
+					// .BSTriShape - data inside much done
+					// .BSSubIndexTriShape -  more work required close
+					// .bhkNPCollisionObject
+					// .bhkPhysicsSystem - big big block, possibly all the old havok gear in one?
+					// .bhkRagdollSystem
+					// .BSPositionData
+					// .BSSkin:2 - inner classes ! but similar to prev?
+					// .BSConnectPoint:2
+
+					// .BSEyeCenterExtraData
+					// .BSClothExtraData
+
+					// ALTERED:
+					// .NiGeometry - done
+					// .NiNode - done
+					// .BSEffectShaderProperty - done
+					// .NiExtraData - made not abstract
+					// .BSLightingShaderProperty - more types updating
+
+					// NiDynamicEffect unexpected end of stream F:\game media\Fallout4\Meshes\Actors\Bloatfly\CharacterAssets\BloatFlyGlowAO.nif
+					// NiParticleSystem - maybe 68 more bytes sometimes maybe??
+
+					// NEW COMPOUNDS
+					// .BSHalfFloatTexCoord2
+					// .BSHalfFloatVector3
+
+					// STRONG:
+					// NiObjectNET-NiAVObject
+					// BSShaderTextureSet
+
+					// Other:
+					// J3dNiControllerSequence safety check is now wrong??
+					// NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
+
+					// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
+
+					//	if (objectType.equals("BSSubIndexTriShape"))
+					//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
+
+					if ((objectType.equals("bhkNPCollisionObject") //
+							|| objectType.equals("bhkPhysicsSystem")//
+							|| objectType.equals("bhkRagdollSystem")//
+							|| objectType.equals("BSSkin::Instance") //
+							|| objectType.equals("BSSkin::BoneData")//
+							|| objectType.equals("BSConnectPoint::Parents")//
+							|| objectType.equals("BSConnectPoint::Children") //
+							|| objectType.equals("BSPositionData")//
+							|| objectType.equals("NiParticleSystem")//
+							|| objectType.equals("BSEyeCenterExtraData")//
+							|| objectType.equals("BSClothExtraData")//
+					))
 					{
-						byte[] b = new byte[header.blockSizes[i]];
-						in.read(b);
+						if (header.blockSizes != null)
+						{
+							byte[] b = new byte[header.blockSizes[i]];
+							in.read(b);
+						}
+					}
+					else
+					{
+						obj.readFromStream(in, nifVer);
 					}
 				}
 				else

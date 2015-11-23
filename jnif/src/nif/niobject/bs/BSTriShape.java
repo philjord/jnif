@@ -48,20 +48,22 @@ public class BSTriShape extends NiTriBasedGeom
 			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags2);
 		}
 
-		vertexData = new BSVertexData[numVertices];
-		for (int v = 0; v < numVertices; v++)
+		if (vertexFormatFlags1 != 0)
 		{
-			vertexData[v] = new BSVertexData(vertexFormatFlags1, vertexFormatFlags2, stream);
-			//System.out.println("" + v + " " + vertexData[v]);
-		}
+			vertexData = new BSVertexData[numVertices];
+			for (int v = 0; v < numVertices; v++)
+			{
+				vertexData[v] = new BSVertexData(vertexFormatFlags1, vertexFormatFlags2, stream);
+				//System.out.println("" + v + " " + vertexData[v]);
+			}
 
-		triangles = new NifTriangle[numTriangles];
-		for (int t = 0; t < numTriangles; t++)
-		{
-			triangles[t] = new NifTriangle(stream);
-			//System.out.println("" + t + " " + triangles[t]);
+			triangles = new NifTriangle[numTriangles];
+			for (int t = 0; t < numTriangles; t++)
+			{
+				triangles[t] = new NifTriangle(stream);
+				//System.out.println("" + t + " " + triangles[t]);
+			}
 		}
-
 		return success;
 	}
 	/*
