@@ -34,14 +34,18 @@ public class BgsmFile
 		stream.read(buf);
 
 		textures[0] = ByteConvert.readSizedString(stream);
+		textures[0] = textures[0].replace("/", "\\");
+		textures[0] = textures[0].trim();
 		//System.out.println("textures[0] " + textures[0]);
 		textures[1] = ByteConvert.readSizedString(stream);
+		textures[1] = textures[1].replace("/", "\\");
+		textures[1] = textures[1].trim();
 		//System.out.println("textures[1] " + textures[1]);
 		textures[2] = ByteConvert.readSizedString(stream);
+		textures[2] = textures[2].replace("/", "\\");
+		textures[2] = textures[2].trim();
 		//System.out.println("textures[2] " + textures[2]);
 
-		
-	
 		/*buf = new byte[90]; //nope
 		 
 		stream.read(buf);
