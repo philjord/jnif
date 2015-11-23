@@ -14,6 +14,8 @@ public class BSMeshLODTriShape extends BSTriShape
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
+		//example SCOL\Fallout4.esm\CM00097712.NIF is messed up
+		
 		// idx4 = num tris in  a lot of cases, somes cases idx2 =numTris 
 		//looks like LOD distances like old system, where the count of how far tri should be used
 		lods = ByteConvert.readUnsignedShorts(6, stream);

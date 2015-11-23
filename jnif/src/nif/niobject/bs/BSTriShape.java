@@ -11,13 +11,13 @@ import nif.niobject.NiTriBasedGeom;
 
 public class BSTriShape extends NiTriBasedGeom
 {
-	public int vertexFormat1;
+	public int vertexFormatFlags1;
 	public int vertexFormat2;
 	public int vertexFormat3;
 	public int vertexFormat4;
 	public int vertexFormat5;
 	public int vertexFormat6;
-	public int vertexFormatFlags;
+	public int vertexFormatFlags2;
 	public int vertexFormat8;
 	public int numTriangles;
 	public int numVertices;
@@ -28,25 +28,30 @@ public class BSTriShape extends NiTriBasedGeom
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		//CAREFUL CAREFUL!!! optomised version  exists in jnifj3d!!!
+		//CAREFUL CAREFUL!!! Optimized version  exists in jnifj3d!!!
 
-		vertexFormat1 = ByteConvert.readUnsignedByte(stream);
+		vertexFormatFlags1 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat2 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat3 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat4 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat5 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat6 = ByteConvert.readUnsignedByte(stream);
-		vertexFormatFlags = ByteConvert.readUnsignedByte(stream);
+		vertexFormatFlags2 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat8 = ByteConvert.readUnsignedByte(stream);
 		numTriangles = ByteConvert.readInt(stream);
 		numVertices = ByteConvert.readUnsignedShort(stream);
 
 		dataSize = ByteConvert.readInt(stream);
 
+		if ((vertexFormatFlags2 & 0x8) != 0 || (vertexFormatFlags2 & 0x10) != 0 || (vertexFormatFlags2 & 0x20) != 0)
+		{
+			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags2);
+		}
+
 		vertexData = new BSVertexData[numVertices];
 		for (int v = 0; v < numVertices; v++)
 		{
-			vertexData[v] = new BSVertexData(vertexFormat1, vertexFormatFlags, stream);
+			vertexData[v] = new BSVertexData(vertexFormatFlags1, vertexFormatFlags2, stream);
 			//System.out.println("" + v + " " + vertexData[v]);
 		}
 

@@ -32,7 +32,6 @@ public class BSSubIndexTriShape extends BSTriShape
 		//11  11 = 176 (16*11) 
 		//16  16 = 256  (16*16=256)		
 
-
 		//1 2 = 111
 		//7  12  = 424 datasize=32
 		//2  3 = 152 datasize =36  (36*2 + 10 + 3*12 = 152)
@@ -42,23 +41,25 @@ public class BSSubIndexTriShape extends BSTriShape
 		//7  27 = 843 datasize=32  
 		//f:\game media\fallout4\meshes\actors\gorilla\characterassets\gorilla.nif
 
+		
+
 		ByteConvert.readBytes(int1 * 16, stream);
 		if (int1 < int2)
 		{
 			int diff = (int2 - int1);
 			System.out.println("int1!=int2 " + int1 + " " + int2 + " diff = " + diff);
-			/*	System.out.println("vertexFormat1 " + vertexFormat1);
-				System.out.println("vertexFormat2 " + vertexFormat2);
-				System.out.println("vertexFormat3 " + vertexFormat3);
-				System.out.println("vertexFormat4 " + vertexFormat4);
-				System.out.println("vertexFormat5 " + vertexFormat5);
-				System.out.println("vertexFormat6 " + vertexFormat6);
-				System.out.println("vertexFormat8 " + vertexFormat8);
-				System.out.println("vertexFormatFlags " + vertexFormatFlags);
-				System.out.println("numTriangles " + numTriangles);
-				System.out.println("numVertices " + numVertices);
-				System.out.println("dataSize " + dataSize);
-				System.out.println("vertexdatasize  " + ((dataSize - (numTriangles * 6)) / numVertices));*/
+			System.out.println("vertexFormat1 " + vertexFormatFlags1);
+			System.out.println("vertexFormat2 " + vertexFormat2);
+			System.out.println("vertexFormat3 " + vertexFormat3);
+			System.out.println("vertexFormat4 " + vertexFormat4);
+			System.out.println("vertexFormat5 " + vertexFormat5);
+			System.out.println("vertexFormat6 " + vertexFormat6);
+			System.out.println("vertexFormat8 " + vertexFormat8);
+			System.out.println("vertexFormatFlags " + vertexFormatFlags2);
+			System.out.println("numTriangles " + numTriangles);
+			System.out.println("numVertices " + numVertices);
+			System.out.println("dataSize " + dataSize);
+			System.out.println("vertexdatasize  " + ((dataSize - (numTriangles * 6)) / numVertices));
 
 			/*	for (int fidx = 0; fidx < 46; fidx++)
 				{

@@ -43,11 +43,6 @@ public class BSVertexData
 		// f:\game media\fallout4\meshes\landscape\animated\primegroundattack01\primegroundattack01.nif
 		this.vertexFormatFlags2 = vertexFormatFlags2;
 
-		if (vertexFormatFlags2 > 7)
-		{
-			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags2);
-		}
-
 		vertex = new BSHalfFloatVector3(stream);
 
 		f1 = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
@@ -81,6 +76,23 @@ public class BSVertexData
 			s5 = ByteConvert.readUnsignedShort(stream);
 			s6 = ByteConvert.readUnsignedShort(stream);
 
+		}
+
+		if ((vertexFormatFlags2 & 0x8) != 0)
+		{//???
+		}
+		if ((vertexFormatFlags2 & 0x10) != 0)
+		{//???
+		}
+		if ((vertexFormatFlags2 & 0x20) != 0)
+		{//???
+		}
+
+		if ((vertexFormatFlags2 & 0x40) != 0)
+		{
+			// colors? no like that!
+			color = new BSHalfFloatColor4(stream);
+			//System.out.println("color any good? " + color);
 		}
 
 	}
