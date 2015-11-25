@@ -11,9 +11,9 @@ public class BSByteVector3 extends NifVector3
 	public BSByteVector3(InputStream stream) throws IOException
 	{
 		super();
-		x = ByteConvert.readByte(stream) / 127f;
-		y = ByteConvert.readByte(stream) / 127f;
-		z = ByteConvert.readByte(stream) / 127f;
+		x = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
+		y = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
+		z = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
 
 		if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
 		{

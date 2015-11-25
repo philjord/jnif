@@ -53,7 +53,7 @@ public class BSTriShape extends NiTriBasedGeom
 		}
 		if ((vertexFormatFlags7 & 0x40) != 0)
 		{
-			System.out.println("(vertexFormatFlags & 0x40) != 0)");
+			System.out.println("(vertexFormatFlags & 0x40) != 0)" + this.name + " " + nifVer.fileName);
 		}
 
 		if (dataSize > 0)
