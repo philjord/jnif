@@ -208,18 +208,19 @@ public class NifFileReader
 					// .NiLightRadiusController - possibly good, just like dimmer (test good load)
 					// .BSMeshLODTriShape - data inside and compressed
 					// .BSVertexData - new formats to support though
-
+					// .BSSkin:2 - inner classes ! but similar to prev?
 					// .BSTriShape - data inside much done
 					// .BSSubIndexTriShape -  more work required close
+					// .BSConnectPoint:2
+
 					// .bhkNPCollisionObject
 					// .bhkPhysicsSystem - big big block, possibly all the old havok gear in one?
 					// .bhkRagdollSystem
 					// .BSPositionData
-					// .BSSkin:2 - inner classes ! but similar to prev?
-					// .BSConnectPoint:2
 
 					// .BSEyeCenterExtraData
 					// .BSClothExtraData
+					//NiPSysInitialRotSpeedVarCtlr
 
 					// ALTERED:
 					// .NiGeometry - done
@@ -227,38 +228,31 @@ public class NifFileReader
 					// .BSEffectShaderProperty - done
 					// .NiExtraData - made not abstract
 					// .BSLightingShaderProperty - more types updating
+					// NiDynamicEffect 					
 
-					// NiDynamicEffect unexpected end of stream F:\game media\Fallout4\Meshes\Actors\Bloatfly\CharacterAssets\BloatFlyGlowAO.nif
 					// NiParticleSystem - maybe 68 more bytes sometimes maybe??
-
-					// NEW COMPOUNDS
-					// .BSHalfFloatTexCoord2
-					// .BSHalfFloatVector3
-
-					// STRONG:
-					// NiObjectNET-NiAVObject
-					// BSShaderTextureSet
 
 					// Other:
 					// J3dNiControllerSequence safety check is now wrong??
-					// NiPointLight reporting issues? 5 too many each time (think it's the object before it causing trouble
 
 					// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
 
 					//	if (objectType.equals("BSSubIndexTriShape"))
 					//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
 
-					if ((objectType.equals("bhkNPCollisionObject") //
-							|| objectType.equals("bhkPhysicsSystem")//
-							|| objectType.equals("bhkRagdollSystem")//
-							|| objectType.equals("BSSkin::Instance") //
-							|| objectType.equals("BSSkin::BoneData")//
-							|| objectType.equals("BSConnectPoint::Parents")//
-							|| objectType.equals("BSConnectPoint::Children") //
-							|| objectType.equals("BSPositionData")//
-							|| objectType.equals("NiParticleSystem")//
-							|| objectType.equals("BSEyeCenterExtraData")//
-							|| objectType.equals("BSClothExtraData")//
+					if ((objectType.equals("BSClothExtraData")//
+							//|| objectType.equals("bhkPhysicsSystem")//
+							//|| objectType.equals("bhkRagdollSystem")//
+					//|| objectType.equals("bhkNPCollisionObject") //
+					//|| objectType.equals("BSSkin::Instance") //
+					//|| objectType.equals("BSSkin::BoneData")//
+					//|| objectType.equals("BSConnectPoint::Parents")//
+					//|| objectType.equals("BSConnectPoint::Children") //
+					//|| objectType.equals("BSPositionData")//
+					//|| objectType.equals("NiParticleSystem")//
+					//|| objectType.equals("BSEyeCenterExtraData")//
+
+					//|| objectType.equals("NiPSysInitialRotSpeedVarCtlr")//
 					))
 					{
 						if (header.blockSizes != null)
@@ -285,8 +279,9 @@ public class NifFileReader
 				// only games after fallout have block sizes
 				if (header.blockSizes != null && bytesReadOff != header.blockSizes[i])
 				{
-					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]] + " should have read off " + header.blockSizes[i]
-							+ " but in fact read off " + bytesReadOff + " diff= " + (header.blockSizes[i] - bytesReadOff));
+					System.out.println("Problem  in " + fileName + " i=" + i + " type= " + header.blockTypes[header.blockTypeIndex[i]]
+							+ " should have read off " + header.blockSizes[i] + " but in fact read off " + bytesReadOff + " diff= "
+							+ (header.blockSizes[i] - bytesReadOff));
 
 					// We've read parts of the next block too, let's reset it and reread what it should have been
 					in.reset();
@@ -350,13 +345,14 @@ public class NifFileReader
 					if (actualNiObject == null)
 					{
 						countOfErrorsReported++;
-						System.out.println(
-								"NifRef ref:" + ref.ref + " is ref.refType = " + ref.refType + " but the blocks[ref.ref] is null (likely bad stream read in block loading); in file " + fileName);
+						System.out.println("NifRef ref:" + ref.ref + " is ref.refType = " + ref.refType
+								+ " but the blocks[ref.ref] is null (likely bad stream read in block loading); in file " + fileName);
 					}
 					else if (!ref.refType.isInstance(actualNiObject))
 					{
 						countOfErrorsReported++;
-						System.out.println("NifRef ref:" + ref.ref + " is type " + actualNiObject.getClass() + " but ref.refType = " + ref.refType + "; in file " + fileName);
+						System.out.println("NifRef ref:" + ref.ref + " is type " + actualNiObject.getClass() + " but ref.refType = "
+								+ ref.refType + "; in file " + fileName);
 					}
 				}
 				else if (ref.ref == -1)
@@ -383,13 +379,14 @@ public class NifFileReader
 					if (actualNiObject == null)
 					{
 						countOfErrorsReported++;
-						System.out.println(
-								"NifPtr ptr:" + ptr.ptr + " is ptr.ptrType = " + ptr.ptrType + " but the blocks[ptr.ptr] is null (likely bad stream read in block loading); in file " + fileName);
+						System.out.println("NifPtr ptr:" + ptr.ptr + " is ptr.ptrType = " + ptr.ptrType
+								+ " but the blocks[ptr.ptr] is null (likely bad stream read in block loading); in file " + fileName);
 					}
 					else if (!ptr.ptrType.isInstance(actualNiObject))
 					{
 						countOfErrorsReported++;
-						System.out.println("NifPtr ptr:" + ptr.ptr + " is type " + actualNiObject.getClass() + " but ptr.ptrType = " + ptr.ptrType + "; in file " + fileName);
+						System.out.println("NifPtr ptr:" + ptr.ptr + " is type " + actualNiObject.getClass() + " but ptr.ptrType = "
+								+ ptr.ptrType + "; in file " + fileName);
 					}
 				}
 				else if (ptr.ptr == -1)

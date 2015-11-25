@@ -5,7 +5,9 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.BSVertexData;
+import nif.compound.BSVertexDataOther;
+import nif.compound.BSVertexDataRigid;
+import nif.compound.BSVertexDataSkinned;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
 
@@ -15,14 +17,16 @@ public class BSTriShape extends NiTriBasedGeom
 	public int vertexFormat2;
 	public int vertexFormat3;
 	public int vertexFormat4;
-	public int vertexFormat5;
+	public int vertexFormatFlags5;
 	public int vertexFormat6;
-	public int vertexFormatFlags2;
+	public int vertexFormatFlags7;
 	public int vertexFormat8;
 	public int numTriangles;
 	public int numVertices;
 	public int dataSize;
-	public BSVertexData[] vertexData;
+	public BSVertexDataRigid[] vertexDataRigid;
+	public BSVertexDataSkinned[] vertexDataSkinned;
+	public BSVertexDataOther[] vertexDataOther;
 	public NifTriangle[] triangles;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
@@ -34,27 +38,58 @@ public class BSTriShape extends NiTriBasedGeom
 		vertexFormat2 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat3 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat4 = ByteConvert.readUnsignedByte(stream);
-		vertexFormat5 = ByteConvert.readUnsignedByte(stream);
+		vertexFormatFlags5 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat6 = ByteConvert.readUnsignedByte(stream);
-		vertexFormatFlags2 = ByteConvert.readUnsignedByte(stream);
+		vertexFormatFlags7 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat8 = ByteConvert.readUnsignedByte(stream);
 		numTriangles = ByteConvert.readInt(stream);
 		numVertices = ByteConvert.readUnsignedShort(stream);
 
 		dataSize = ByteConvert.readInt(stream);
 
-		if ((vertexFormatFlags2 & 0x8) != 0 || (vertexFormatFlags2 & 0x10) != 0 || (vertexFormatFlags2 & 0x20) != 0)
+		if ((vertexFormatFlags7 & 0x8) != 0 || (vertexFormatFlags7 & 0x10) != 0 || (vertexFormatFlags7 & 0x20) != 0)
 		{
-			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags2);
+			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags7);
+		}
+		if ((vertexFormatFlags7 & 0x40) != 0)
+		{
+			System.out.println("(vertexFormatFlags & 0x40) != 0)");
 		}
 
-		if (vertexFormatFlags1 != 0)
+		if (dataSize > 0)
 		{
-			vertexData = new BSVertexData[numVertices];
-			for (int v = 0; v < numVertices; v++)
+			// good for testing formats
+			// f:\game media\fallout4\meshes\landscape\animated\primegroundattack01\primegroundattack01.nif
+			if ((vertexFormatFlags7 & 0x1) != 0)
 			{
-				vertexData[v] = new BSVertexData(vertexFormatFlags1, vertexFormatFlags2, stream);
-				//System.out.println("" + v + " " + vertexData[v]);
+				if ((vertexFormatFlags7 & 0x4) == 0)
+				{
+					vertexDataRigid = new BSVertexDataRigid[numVertices];
+					for (int v = 0; v < numVertices; v++)
+					{
+						vertexDataRigid[v] = new BSVertexDataRigid(vertexFormatFlags7, stream);
+						//System.out.println("" + v + " " + vertexData[v]);
+					}
+				}
+				else if (vertexFormatFlags5 == 0)
+				{
+					vertexDataSkinned = new BSVertexDataSkinned[numVertices];
+					for (int v = 0; v < numVertices; v++)
+					{
+						vertexDataSkinned[v] = new BSVertexDataSkinned(vertexFormatFlags7, stream);
+						//System.out.println("" + v + " " + vertexData[v]);
+					}
+				}
+			}
+
+			if ((vertexFormatFlags7 & 0x1) == 0 || vertexFormatFlags5 > 0)
+			{
+				vertexDataOther = new BSVertexDataOther[numVertices];
+				for (int v = 0; v < numVertices; v++)
+				{
+					vertexDataOther[v] = new BSVertexDataOther(vertexFormatFlags1, stream);
+					//System.out.println("" + v + " " + vertexData[v]);
+				}
 			}
 
 			triangles = new NifTriangle[numTriangles];

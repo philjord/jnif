@@ -168,5 +168,10 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 	{
 		return LittleEndianPrimitiveBytes.readShortString(stream);
 	}
+	
+	public static String readRealShortString(InputStream stream) throws IOException
+	{
+		return LittleEndianPrimitiveBytes.readRealShortString(stream);
+	}
 
 }

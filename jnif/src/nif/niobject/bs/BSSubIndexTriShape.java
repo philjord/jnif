@@ -5,69 +5,113 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifTriangle;
 
 public class BSSubIndexTriShape extends BSTriShape
 {
-
-	int numTriangles2;
-	int numA;
-	int int1;
-	int int2;
-	public NifTriangle[] triangles2;
+	public int numTriangles2;
+	public int numA;
+	public int numB;
+	public SubIndexPart1[] SubIndexPart1;
+	public SubIndexPart2 SubIndexPart2;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
-		numTriangles2 = ByteConvert.readUnsignedShort(stream);
-		numA = ByteConvert.readUnsignedShort(stream);
-		int1 = ByteConvert.readInt(stream);
-		int2 = ByteConvert.readInt(stream);
-
-		//2  2 = 34  16*2=32 ( or 8 for each one)
-		//4  4 = 64 (16*4)
-		//5  5 0 = 80  (16*5=80)
-		//6  6 = 96 (16*6)
-		//11  11 = 176 (16*11) 
-		//16  16 = 256  (16*16=256)		
-
-		//1 2 = 111
-		//7  12  = 424 datasize=32
-		//2  3 = 152 datasize =36  (36*2 + 10 + 3*12 = 152)
-		//2  3 = 153 datasize =36 so there is a size inside this guy?		
-		//7  27 = 1024 datasize=32 ok houston! these guys differ
-		//f:\game media\fallout4\meshes\actors\alien\characterassets\alien_body.nif
-		//7  27 = 843 datasize=32  
-		//f:\game media\fallout4\meshes\actors\gorilla\characterassets\gorilla.nif
-
-		
-
-		ByteConvert.readBytes(int1 * 16, stream);
-		if (int1 < int2)
+		if (dataSize > 0)
 		{
-			int diff = (int2 - int1);
-			System.out.println("int1!=int2 " + int1 + " " + int2 + " diff = " + diff);
-			System.out.println("vertexFormat1 " + vertexFormatFlags1);
-			System.out.println("vertexFormat2 " + vertexFormat2);
-			System.out.println("vertexFormat3 " + vertexFormat3);
-			System.out.println("vertexFormat4 " + vertexFormat4);
-			System.out.println("vertexFormat5 " + vertexFormat5);
-			System.out.println("vertexFormat6 " + vertexFormat6);
-			System.out.println("vertexFormat8 " + vertexFormat8);
-			System.out.println("vertexFormatFlags " + vertexFormatFlags2);
-			System.out.println("numTriangles " + numTriangles);
-			System.out.println("numVertices " + numVertices);
-			System.out.println("dataSize " + dataSize);
-			System.out.println("vertexdatasize  " + ((dataSize - (numTriangles * 6)) / numVertices));
+			numTriangles2 = ByteConvert.readInt(stream);
+			numA = ByteConvert.readInt(stream);
+			numB = ByteConvert.readInt(stream);
 
-			/*	for (int fidx = 0; fidx < 46; fidx++)
-				{
-					int f = ByteConvert.readUnsignedShort(stream);
-					System.out.println(" sidx " + fidx + " " + f + " "+ MiniFloat.toFloat(f));
-				}*/
+			SubIndexPart1 = new SubIndexPart1[numA];
+			for (int v = 0; v < numA; v++)
+			{
+				SubIndexPart1[v] = new SubIndexPart1(stream);
+			}
+
+			if (numA < numB)
+			{
+				SubIndexPart2 = new SubIndexPart2(stream);
+			}
 		}
-
 		return success;
 	}
+
+	public static class SubIndexRecordA
+	{
+		public int UnknownInt1;
+		public int UnknownInt2;
+		public int UnknownInt3;
+		public int UnknownInt4;
+
+		public SubIndexRecordA(InputStream stream) throws IOException
+		{
+			UnknownInt1 = ByteConvert.readInt(stream);
+			UnknownInt2 = ByteConvert.readInt(stream);
+			UnknownInt3 = ByteConvert.readInt(stream);
+			UnknownInt4 = ByteConvert.readInt(stream);
+		}
+	}
+
+	public static class SubIndexPart1
+	{
+		public int UnknownInt1;
+		public int UnknownInt2;
+		public int UnknownInt3;
+		public int NumRecords;
+		public SubIndexRecordA[] SubIndexRecord;
+
+		public SubIndexPart1(InputStream stream) throws IOException
+		{
+			UnknownInt1 = ByteConvert.readInt(stream);
+			UnknownInt2 = ByteConvert.readInt(stream);
+			UnknownInt3 = ByteConvert.readInt(stream);
+			NumRecords = ByteConvert.readInt(stream);
+			SubIndexRecord = new SubIndexRecordA[NumRecords];
+			for (int i = 0; i < NumRecords; i++)
+			{
+				SubIndexRecord[i] = new SubIndexRecordA(stream);
+			}
+		}
+	}
+
+	public static class SubIndexRecordB
+	{
+		public int UnknownInt1;
+		public int UnknownInt2;
+		public int NumData;
+		public float[] ExtraData;
+
+		public SubIndexRecordB(InputStream stream) throws IOException
+		{
+			UnknownInt1 = ByteConvert.readInt(stream);
+			UnknownInt2 = ByteConvert.readInt(stream);
+			NumData = ByteConvert.readInt(stream);
+			ExtraData = ByteConvert.readFloats(NumData, stream);
+		}
+	}
+
+	public static class SubIndexPart2
+	{
+		public int NumA2;
+		public int NumB2;
+		public int[] Sequence;
+		public SubIndexRecordB[] SubIndexRecord;
+		public String SSFFile;
+
+		public SubIndexPart2(InputStream stream) throws IOException
+		{
+			NumA2 = ByteConvert.readInt(stream);
+			NumB2 = ByteConvert.readInt(stream);
+			Sequence = ByteConvert.readInts(NumA2, stream);
+			SubIndexRecord = new SubIndexRecordB[NumB2];
+			for (int i = 0; i < NumB2; i++)
+			{
+				SubIndexRecord[i] = new SubIndexRecordB(stream);
+			}
+
+			SSFFile = ByteConvert.readRealShortString(stream);
+		}
+	}
+
 }

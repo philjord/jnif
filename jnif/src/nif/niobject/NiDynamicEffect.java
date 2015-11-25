@@ -11,7 +11,7 @@ public abstract class NiDynamicEffect extends NiAVObject
 {
 	/**
 	 <niobject name="NiDynamicEffect" abstract="1" inherit="NiAVObject">
-
+	
 	 A dynamic effect such as a light or environment map.
 	 
 	 <add name="Switch State" type="bool" ver1="10.1.0.106">
@@ -35,15 +35,9 @@ public abstract class NiDynamicEffect extends NiAVObject
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106 && !(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
 		{
 			switchState = ByteConvert.readBool(stream, nifVer);
-		}
-		numAffectedNodes = ByteConvert.readInt(stream);
-		affectedNodes = new NifRef[numAffectedNodes];
-		for (int i = 0; i < numAffectedNodes; i++)
-		{
-			affectedNodes[i] = new NifRef(NiAVObject.class, stream);
 		}
 		// before 4.0.0.2 these refs are garbage in the nif file
 		if (nifVer.LOAD_VER <= NifVer.VER_4_0_0_2)
@@ -51,6 +45,16 @@ public abstract class NiDynamicEffect extends NiAVObject
 			for (int i = 0; i < numAffectedNodes; i++)
 			{
 				affectedNodes[i].ref = -1;
+			}
+		}
+
+		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
+		{
+			numAffectedNodes = ByteConvert.readInt(stream);
+			affectedNodes = new NifRef[numAffectedNodes];
+			for (int i = 0; i < numAffectedNodes; i++)
+			{
+				affectedNodes[i] = new NifRef(NiAVObject.class, stream);
 			}
 		}
 

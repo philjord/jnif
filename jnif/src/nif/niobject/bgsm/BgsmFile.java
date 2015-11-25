@@ -62,8 +62,16 @@ public class BgsmFile
 
 	public static BgsmFile readBgsmFile(String fileName, InputStream inStr) throws IOException
 	{
-		ProgressInputStream in = new ProgressInputStream(inStr);
-		return new BgsmFile(in);
+		if (inStr != null)
+		{
+			ProgressInputStream in = new ProgressInputStream(inStr);
+			return new BgsmFile(in);
+		}
+		else
+		{
+			System.err.println("File Not Found in Mesh Source: " + fileName);
+			return null;
+		}
 	}
 
 	public static BgsmFile readBgsmFile(File file) throws IOException
