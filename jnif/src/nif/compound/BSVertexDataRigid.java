@@ -47,6 +47,7 @@ public class BSVertexDataRigid
 			color = new BSByteColor4(stream);
 		}
 		
+		// differs from nif.xml
 		// this flag destroys the vertex format completely
 		if ((vertexFormatFlags & 0x40) != 0)
 		{

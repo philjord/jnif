@@ -45,11 +45,11 @@ public class BSVertexDataOther
 		else
 			unknownShort1 = ByteConvert.readUnsignedShort(stream);
 
-		if (vertexFormatFlags == 3)
-			unknownInt1 = ByteConvert.readInt(stream);
-
-		if (vertexFormatFlags > 4)
+		// differs from nif.xml
+		if ((vertexFormatFlags & 0x01) != 0 || (vertexFormatFlags & 0x02) != 0)
+		{
 			texCoord = new BSHalfFloatTexCoord2(stream);
+		}
 
 		if (vertexFormatFlags > 3 && vertexFormatFlags != 7)
 		{
@@ -77,7 +77,8 @@ public class BSVertexDataOther
 		{
 			unknownInt2 = ByteConvert.readInt(stream);
 		}
-
+		
+		
 	
 
 	}

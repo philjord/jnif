@@ -252,6 +252,13 @@ public class BSLightingShaderProperty extends NiObject
 				//12 more required
 				HairTintColor = new NifColor3(stream);// not examined				
 			}
+			else if (SkyrimShaderType.type == 16)
+			{
+				//28 more required
+				EyeCubemapScale = ByteConvert.readFloat(stream);// not examined
+				LeftEyeReflectionCenter = new NifVector3(stream);// not examined
+				RightEyeReflectionCenter = new NifVector3(stream);// not examined				
+			}
 			else if (SkyrimShaderType.type != 0)
 			{
 				System.out.println("SkyrimShaderType type of " + SkyrimShaderType.type + " Not yet looked at closely");
