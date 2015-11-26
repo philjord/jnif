@@ -47,7 +47,7 @@ public class BSTriShape extends NiTriBasedGeom
 
 		dataSize = ByteConvert.readInt(stream);
 
-		if ((vertexFormatFlags7 & 0x8) != 0 || (vertexFormatFlags7 & 0x10) != 0 || (vertexFormatFlags7 & 0x20) != 0)
+		if ((vertexFormatFlags7 & 0x8) != 0  || (vertexFormatFlags7 & 0x20) != 0)
 		{
 			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags7);
 		}

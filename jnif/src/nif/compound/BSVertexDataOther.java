@@ -46,7 +46,7 @@ public class BSVertexDataOther
 			unknownShort1 = ByteConvert.readUnsignedShort(stream);
 
 		// differs from nif.xml
-		if ((vertexFormatFlags & 0x01) != 0 || (vertexFormatFlags & 0x02) != 0)
+		if ((vertexFormatFlags & 0x01) != 0 || (vertexFormatFlags & 0x02) != 0 || (vertexFormatFlags & 0x08) != 0)
 		{
 			texCoord = new BSHalfFloatTexCoord2(stream);
 		}

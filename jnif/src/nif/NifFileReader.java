@@ -222,6 +222,8 @@ public class NifFileReader
 					// .BSClothExtraData
 					//NiPSysInitialRotSpeedVarCtlr
 
+					//BSPackedCombinedSharedGeomDataExtra
+
 					// ALTERED:
 					// .NiGeometry - done
 					// .NiNode - done
@@ -241,18 +243,7 @@ public class NifFileReader
 					//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
 
 					if ((objectType.equals("BSClothExtraData")//
-							//|| objectType.equals("bhkPhysicsSystem")//
-							//|| objectType.equals("bhkRagdollSystem")//
-					//|| objectType.equals("bhkNPCollisionObject") //
-					//|| objectType.equals("BSSkin::Instance") //
-					//|| objectType.equals("BSSkin::BoneData")//
-					//|| objectType.equals("BSConnectPoint::Parents")//
-					//|| objectType.equals("BSConnectPoint::Children") //
-					//|| objectType.equals("BSPositionData")//
-					//|| objectType.equals("NiParticleSystem")//
-					//|| objectType.equals("BSEyeCenterExtraData")//
-
-					//|| objectType.equals("NiPSysInitialRotSpeedVarCtlr")//
+							|| objectType.equals("BSPackedCombinedSharedGeomDataExtra") //
 					))
 					{
 						if (header.blockSizes != null)
