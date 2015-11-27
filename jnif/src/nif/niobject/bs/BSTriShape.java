@@ -5,14 +5,16 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.BSVertexDataOther;
-import nif.compound.BSVertexDataRigid;
-import nif.compound.BSVertexDataSkinned;
+import nif.compound.BSVertexData;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
+import tools.MiniFloat;
 
 public class BSTriShape extends NiTriBasedGeom
 {
+	public static boolean LOAD_OPTIMIZED = false;
+	public static final float ES_TO_METERS_SCALE = 0.02f;
+
 	public int vertexFormatFlags1;
 	public int vertexFormat2;
 	public int vertexFormat3;
@@ -24,15 +26,24 @@ public class BSTriShape extends NiTriBasedGeom
 	public int numTriangles;
 	public int numVertices;
 	public int dataSize;
-	public BSVertexDataRigid[] vertexDataRigid;
-	public BSVertexDataSkinned[] vertexDataSkinned;
-	public BSVertexDataOther[] vertexDataOther;
+
+	public BSVertexData[] vertexData;
 	public NifTriangle[] triangles;
+
+	//OPTIMISATION
+	//public BSVertexData[] vertexData;
+	public float[] verticesOpt;
+	public float[] normalsOpt;
+	public float[] vertexColorsOpt;
+	public float[] uVSetOpt;
+
+	//OPTIMISATION
+	//public NifTriangle[] triangles;
+	public int[] trianglesOpt;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		//CAREFUL CAREFUL!!! Optimized version  exists in jnifj3d!!!
 
 		vertexFormatFlags1 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat2 = ByteConvert.readUnsignedByte(stream);
@@ -47,108 +58,100 @@ public class BSTriShape extends NiTriBasedGeom
 
 		dataSize = ByteConvert.readInt(stream);
 
-		if ((vertexFormatFlags7 & 0x8) != 0  || (vertexFormatFlags7 & 0x20) != 0)
-		{
-			System.out.println("NEW VERTEX FORMAT TO DEAL WITH! " + vertexFormatFlags7);
-		}
-		if ((vertexFormatFlags7 & 0x40) != 0)
-		{
-			System.out.println("(vertexFormatFlags & 0x40) != 0)" + this.name + " " + nifVer.fileName);
-		}
-
 		if (dataSize > 0)
 		{
-			// good for testing formats
-			// f:\game media\fallout4\meshes\landscape\animated\primegroundattack01\primegroundattack01.nif
-			if ((vertexFormatFlags7 & 0x1) != 0)
+			if (LOAD_OPTIMIZED)
 			{
-				if ((vertexFormatFlags7 & 0x4) == 0)
+				verticesOpt = new float[numVertices * 3];
+				if ((vertexFormatFlags7 & 0x4) != 0)
 				{
-					vertexDataRigid = new BSVertexDataRigid[numVertices];
-					for (int v = 0; v < numVertices; v++)
-					{
-						vertexDataRigid[v] = new BSVertexDataRigid(vertexFormatFlags7, stream);
-						//System.out.println("" + v + " " + vertexData[v]);
-					}
+					normalsOpt = new float[numVertices * 3];
 				}
-				else if (vertexFormatFlags5 == 0)
+				if ((vertexFormatFlags7 & 0x1) != 0)
 				{
-					vertexDataSkinned = new BSVertexDataSkinned[numVertices];
-					for (int v = 0; v < numVertices; v++)
-					{
-						vertexDataSkinned[v] = new BSVertexDataSkinned(vertexFormatFlags7, stream);
-						//System.out.println("" + v + " " + vertexData[v]);
-					}
+					vertexColorsOpt = new float[numVertices * 4];
 				}
-			}
+				if (vertexFormatFlags1 > 2)
+				{
+					uVSetOpt = new float[numVertices * 2];
+				}
 
-			if ((vertexFormatFlags7 & 0x1) == 0 || vertexFormatFlags5 > 0)
+				for (int i = 0; i < numVertices; i++)
+				{
+					verticesOpt[i * 3 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
+					verticesOpt[i * 3 + 2] = -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
+					verticesOpt[i * 3 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
+
+					ByteConvert.readUnsignedShort(stream);
+
+					if (vertexFormatFlags1 > 2)
+					{
+						uVSetOpt[i * 2 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						uVSetOpt[i * 2 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+					}
+
+					if ((vertexFormatFlags7 & 0x1) != 0)
+					{
+						vertexColorsOpt[i * 4 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						vertexColorsOpt[i * 4 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						vertexColorsOpt[i * 4 + 2] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						vertexColorsOpt[i * 4 + 3] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+					}
+
+					if ((vertexFormatFlags7 & 0x2) != 0)
+					{
+						ByteConvert.readBytes(4, stream);
+					}
+
+					if ((vertexFormatFlags7 & 0x4) != 0)
+					{
+						normalsOpt[i * 3 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						normalsOpt[i * 3 + 2] = -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						normalsOpt[i * 3 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+
+						ByteConvert.readBytes(6, stream);
+					}
+
+					if ((vertexFormatFlags7 & 0x40) != 0)
+					{
+						ByteConvert.readBytes(8, stream);
+					}
+				}
+
+				trianglesOpt = new int[numTriangles * 3];
+				for (int i = 0; i < numTriangles; i++)
+				{
+					trianglesOpt[i * 3 + 0] = ByteConvert.readUnsignedShort(stream);
+					trianglesOpt[i * 3 + 1] = ByteConvert.readUnsignedShort(stream);
+					trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
+				}
+
+			}
+			else
 			{
-				vertexDataOther = new BSVertexDataOther[numVertices];
+				//int dataSizeWithoutTris = dataSize - (numTriangles * 6);
+				//int dataPerVert = (dataSizeWithoutTris / numVertices);
+				//System.out.println("vertexFormatFlags7 " + vertexFormatFlags7);
+				//System.out.println("vertexFormatFlags5 " + vertexFormatFlags5);
+				//System.out.println("vertexFormatFlags1 " + vertexFormatFlags1);
+				//System.out.println("dataPerVert " + dataPerVert);			 
+
+				vertexData = new BSVertexData[numVertices];
 				for (int v = 0; v < numVertices; v++)
 				{
-					vertexDataOther[v] = new BSVertexDataOther(vertexFormatFlags1, stream);
+					vertexData[v] = new BSVertexData(vertexFormatFlags7, vertexFormatFlags1, stream);
 					//System.out.println("" + v + " " + vertexData[v]);
 				}
-			}
 
-			triangles = new NifTriangle[numTriangles];
-			for (int t = 0; t < numTriangles; t++)
-			{
-				triangles[t] = new NifTriangle(stream);
-				//System.out.println("" + t + " " + triangles[t]);
+				triangles = new NifTriangle[numTriangles];
+				for (int t = 0; t < numTriangles; t++)
+				{
+					triangles[t] = new NifTriangle(stream);
+					//System.out.println("" + t + " " + triangles[t]);
+				}
 			}
 		}
 		return success;
 	}
-	/*
-	  NOTE this is a double use of mark (along with NIfFileReader) so the following blocks 
-	 loads fail if bad
-	stream.mark(0);
-		for (int off = 0; off < 3; off++)
-		{
-			stream.reset();
-			System.out.println("offset " + off);
-			ByteConvert.readBytes(off, stream);
-			for (int fidx = 0; fidx < 350; fidx++)
-			{
-				int f = ByteConvert.readInt(stream);
-				if (f >= -1 && f <= 10000)
-					System.out.println("off " + off + " iidx " + fidx + " " + f);
-			}
-		}
-		stream.reset();
-	
-		stream.mark(0);
-		for (int off = 0; off < 1; off++)
-		{
-			stream.reset();
-			System.out.println("offset " + off);
-			ByteConvert.readBytes(off, stream);
-			for (int fidx = 0; fidx < 350; fidx++)
-			{
-				int f = ByteConvert.readUnsignedShort(stream);
-				if (f >= 0 && f <= 10000)
-					System.out.println("off " + off + " sidx " + fidx + " " + f);
-			}
-		}
-		stream.reset();
-	
-		stream.mark(0);
-		for (int off = 0; off < 3; off++)
-		{
-			stream.reset();
-			System.out.println("offset " + off);
-			ByteConvert.readBytes(off, stream);
-			for (int fidx = 0; fidx < 350; fidx++)
-			{
-				float f = ByteConvert.readFloat(stream);
-				if (f >= -1000 && f <= 1000 && Math.abs(f)>0.00000001)
-					System.out.println("off " + off + " fidx " + fidx + " " + f);
-			}
-		}
-		stream.reset();
-		
-	*/
 
 }
