@@ -11,7 +11,7 @@ public class BSVertexData
 	public int vertexFormatFlags7;
 	public int vertexType;
 
-	public BSHalfFloatVector3 vertex;
+	public NifVector3 vertex;
 
 	public float unknownDot;
 	public float unknownShort1;
@@ -28,8 +28,8 @@ public class BSVertexData
 
 	public byte b2;
 
-	public float[] BoneWeights = new float[4];//half
-	public int[] BoneIndices = new int[4];///surely this is unsigned byte?
+	public float[] BoneWeights = new float[4];
+	public int[] BoneIndices = new int[4];
 
 	/*
 	 test files 
@@ -50,7 +50,7 @@ public class BSVertexData
 	  7 & 8 == no exist
 	  7 & 16 == 4 more 
 	  7 & 32 == no exist
-	  7 & 64 == 8 more
+	  7 & 64 == normal precision vertex floats
 	  
 	
 	format7ToVertSize 1  size 20 = 1
@@ -93,7 +93,12 @@ public class BSVertexData
 		this.vertexFormatFlags7 = vertexFormatFlags7;
 		this.vertexType = vertexFormatFlags1;
 
-		if ((vertexFormatFlags7 & 0x01) != 0 || vertexType >= 2)
+		if ((vertexFormatFlags7 & 0x40) != 0)
+		{
+			vertex = new NifVector3(stream);
+			ByteConvert.readInt(stream);
+		}
+		else if ((vertexFormatFlags7 & 0x01) != 0 || vertexType >= 2)
 		{
 			vertex = new BSHalfFloatVector3(stream);
 
@@ -137,11 +142,6 @@ public class BSVertexData
 			if ((vertexFormatFlags7 & 0x10) != 0)
 			{
 				ByteConvert.readInt(stream);
-			}
-
-			if ((vertexFormatFlags7 & 0x40) != 0)
-			{
-				ByteConvert.readBytes(8, stream);
 			}
 		}
 		else
