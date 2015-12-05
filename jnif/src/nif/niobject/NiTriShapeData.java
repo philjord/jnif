@@ -12,7 +12,7 @@ public class NiTriShapeData extends NiTriBasedGeomData
 {
 	/**
 	 <niobject name="NiTriShapeData" abstract="0" inherit="NiTriBasedGeomData">
-
+	
 	 Holds mesh data using a list of singular triangles.
 	 
 	 <add name="Num Triangle Points" type="uint">Num Triangles times 3.</add>
@@ -30,6 +30,9 @@ public class NiTriShapeData extends NiTriBasedGeomData
 
 	public NifTriangle[] triangles;
 
+	//OPTOMISATION
+	public int[] trianglesOpt;
+
 	public int numMatchGroups;
 
 	public NifMatchGroup[] matchGroups;
@@ -42,14 +45,27 @@ public class NiTriShapeData extends NiTriBasedGeomData
 		{
 			hasTriangles = ByteConvert.readBool(stream, nifVer);
 		}
-		
-		// has triangles wasn't used  until a few version after it appeared
-		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_3 || hasTriangles)
+		if (LOAD_OPTIMIZED)
 		{
-			triangles = new NifTriangle[numTriangles];
+			trianglesOpt = new int[numTriangles * 3];
 			for (int i = 0; i < numTriangles; i++)
 			{
-				triangles[i] = new NifTriangle(stream);
+				trianglesOpt[i * 3 + 0] = ByteConvert.readUnsignedShort(stream);
+				trianglesOpt[i * 3 + 1] = ByteConvert.readUnsignedShort(stream);
+				trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
+			}
+
+		}
+		else
+		{
+			// has triangles wasn't used  until a few version after it appeared
+			if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_3 || hasTriangles)
+			{
+				triangles = new NifTriangle[numTriangles];
+				for (int i = 0; i < numTriangles; i++)
+				{
+					triangles[i] = new NifTriangle(stream);
+				}
 			}
 		}
 

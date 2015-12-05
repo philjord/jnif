@@ -9,7 +9,7 @@ public class NifMatrix33
 {
 	/**
 	 <compound name="Matrix33" niflibtype="Matrix33" nifskopetype="matrix33">
-
+	
 	 A 3x3 rotation matrix; M^T M=identity, det(M)=1.    Stored in OpenGL column-major format.
 	 
 	 <add name="m11" type="float">Member 1,1 (top left)</add>
@@ -53,5 +53,10 @@ public class NifMatrix33
 		m13 = ByteConvert.readFloat(stream);
 		m23 = ByteConvert.readFloat(stream);
 		m33 = ByteConvert.readFloat(stream);
+	}
+
+	public float[] data()
+	{
+		return new float[] { m11, m12, m13, m21, m22, m23, m31, m32, m33 };
 	}
 }

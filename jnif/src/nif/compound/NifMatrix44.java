@@ -10,7 +10,7 @@ public class NifMatrix44
 {
 	/**
 	 * <compound name="Matrix44" niflibtype="Matrix44" nifskopetype="matrix44">
-
+	
 	 A 4x4 transformation matrix.
 	 
 	 <add name="m11" type="float">The (1,1) element.</add>
@@ -83,4 +83,10 @@ public class NifMatrix44
 		m34 = ByteConvert.readFloat(stream);
 		m44 = ByteConvert.readFloat(stream);
 	}
+
+	public float[] data()
+	{
+		return new float[] { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 };
+	}
+
 }

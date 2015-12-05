@@ -33,6 +33,27 @@ public class BSLightingShaderPropertyShaderType
 	    </enum>
 
 	 */
+	
+	public static final int ST_Default=0;//"></option>
+	public static final int ST_EnvironmentMap=1;//">Enables EnvMap Mask(TS6), EnvMap Scale</option>
+	public static final int ST_GlowShader=2;//">Enables Glow(TS3)</option>
+	public static final int ST_Heightmap=3;//">Enables Height(TS4)</option>
+	public static final int ST_FaceTint=4;//">Enables SubSurface(TS3), Detail(TS4), Tint(TS7)</option>
+	public static final int ST_SkinTint=5;//">Enables Skin Tint Color</option>
+	public static final int ST_HairTint=6;//">Enables Hair Tint Color</option>
+	public static final int ST_ParallaxOccMaterial=7;//">Enables Height(TS4), Max Passes, Scale.  Unused?</option>
+	public static final int ST_WorldMultitexture=8;//"></option>
+	public static final int ST_WorldMap1=9;//"></option>
+	public static final int ST_UnknownUnused1=10;//"></option>
+	public static final int ST_MultiLayerParallax=11;//">Enables EnvMap Mask(TS6), Layer(TS7), Parallax Layer Thickness, Parallax Refraction Scale, Parallax Inner Layer U Scale, Parallax Inner Layer V Scale, EnvMap Scale</option>
+	public static final int ST_UnknownUnused2=12;//"></option>
+	public static final int ST_WorldMap2=13;//"></option>
+	public static final int ST_SparkleSnow=14;//">Enables SparkleParams</option>
+	public static final int ST_WorldMap3=15;//"></option>
+	public static final int ST_EyeEnvmap=16;//">Enables EnvMap Mask(TS6), Eye EnvMap Scale</option>
+	public static final int ST_UnknownUnused3=17;//"></option>
+	public static final int ST_WorldMap4=18;//"></option>
+	public static final int ST_WorldLODMultitexture=19;//"></option>
 
 	public int type;
 
