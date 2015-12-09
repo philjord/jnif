@@ -28,4 +28,9 @@ public class ApplyMode
 		applyMode = ByteConvert.readInt(stream);
 	}
 
+	public ApplyMode(int applyMode)
+	{
+		this.applyMode = applyMode;
+	}
+
 }

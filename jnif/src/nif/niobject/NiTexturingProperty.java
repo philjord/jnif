@@ -81,7 +81,7 @@ public class NiTexturingProperty extends NiProperty
 
 	public NifFlags flags;
 
-	public ApplyMode applyMode;
+	public ApplyMode applyMode = new ApplyMode(ApplyMode.APPLY_MODULATE);
 
 	public int textureCount;
 

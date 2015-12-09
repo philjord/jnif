@@ -26,10 +26,9 @@ public class NiTriShapeData extends NiTriBasedGeomData
 
 	public int numTrianglePoints;
 
-	public boolean hasTriangles;
+	public boolean hasTriangles = true;
 
 	public NifTriangle[] triangles;
-
 	//OPTOMISATION
 	public int[] trianglesOpt;
 
@@ -45,22 +44,23 @@ public class NiTriShapeData extends NiTriBasedGeomData
 		{
 			hasTriangles = ByteConvert.readBool(stream, nifVer);
 		}
-		if (LOAD_OPTIMIZED)
+		// has triangles wasn't used  until a few version after it appeared
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_3 || hasTriangles)
 		{
-			trianglesOpt = new int[numTriangles * 3];
-			for (int i = 0; i < numTriangles; i++)
+			if (LOAD_OPTIMIZED)
 			{
-				trianglesOpt[i * 3 + 0] = ByteConvert.readUnsignedShort(stream);
-				trianglesOpt[i * 3 + 1] = ByteConvert.readUnsignedShort(stream);
-				trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
-			}
+				trianglesOpt = new int[numTriangles * 3];
+				for (int i = 0; i < numTriangles; i++)
+				{
+					trianglesOpt[i * 3 + 0] = ByteConvert.readUnsignedShort(stream);
+					trianglesOpt[i * 3 + 1] = ByteConvert.readUnsignedShort(stream);
+					trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
+				}
 
-		}
-		else
-		{
-			// has triangles wasn't used  until a few version after it appeared
-			if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_3 || hasTriangles)
+			}
+			else
 			{
+
 				triangles = new NifTriangle[numTriangles];
 				for (int i = 0; i < numTriangles; i++)
 				{

@@ -11,7 +11,7 @@ public class BSSubIndexTriShape extends BSTriShape
 	public int numTriangles2;
 	public int numA;
 	public int numB;
-	public SubIndexPart1[] SubIndexPart1;
+	public BSSITSSegment[] SubIndexPart1;
 	public SubIndexPart2 SubIndexPart2;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
@@ -23,10 +23,10 @@ public class BSSubIndexTriShape extends BSTriShape
 			numA = ByteConvert.readInt(stream);
 			numB = ByteConvert.readInt(stream);
 
-			SubIndexPart1 = new SubIndexPart1[numA];
+			SubIndexPart1 = new BSSITSSegment[numA];
 			for (int v = 0; v < numA; v++)
 			{
-				SubIndexPart1[v] = new SubIndexPart1(stream);
+				SubIndexPart1[v] = new BSSITSSegment(stream);
 			}
 
 			if (numA < numB)
@@ -37,40 +37,40 @@ public class BSSubIndexTriShape extends BSTriShape
 		return success;
 	}
 
-	public static class SubIndexRecordA
+	public static class BSSITSSubSegment
 	{
+		public int TriangleOffset;
+		public int TriangleCount;
+		public int SegmentOffset;
 		public int UnknownInt1;
-		public int UnknownInt2;
-		public int UnknownInt3;
-		public int UnknownInt4;
 
-		public SubIndexRecordA(InputStream stream) throws IOException
+		public BSSITSSubSegment(InputStream stream) throws IOException
 		{
+			TriangleOffset = ByteConvert.readInt(stream);
+			TriangleCount = ByteConvert.readInt(stream);
+			SegmentOffset = ByteConvert.readInt(stream);
 			UnknownInt1 = ByteConvert.readInt(stream);
-			UnknownInt2 = ByteConvert.readInt(stream);
-			UnknownInt3 = ByteConvert.readInt(stream);
-			UnknownInt4 = ByteConvert.readInt(stream);
 		}
 	}
 
-	public static class SubIndexPart1
+	public static class BSSITSSegment
 	{
-		public int UnknownInt1;
-		public int UnknownInt2;
-		public int UnknownInt3;
+		public int TriangleOffset;
+		public int TriangleCount;
+		public int UnknownHash;
 		public int NumRecords;
-		public SubIndexRecordA[] SubIndexRecord;
+		public BSSITSSubSegment[] SubIndexRecord;
 
-		public SubIndexPart1(InputStream stream) throws IOException
+		public BSSITSSegment(InputStream stream) throws IOException
 		{
-			UnknownInt1 = ByteConvert.readInt(stream);
-			UnknownInt2 = ByteConvert.readInt(stream);
-			UnknownInt3 = ByteConvert.readInt(stream);
+			TriangleOffset = ByteConvert.readInt(stream);
+			TriangleCount = ByteConvert.readInt(stream);
+			UnknownHash = ByteConvert.readInt(stream);
 			NumRecords = ByteConvert.readInt(stream);
-			SubIndexRecord = new SubIndexRecordA[NumRecords];
+			SubIndexRecord = new BSSITSSubSegment[NumRecords];
 			for (int i = 0; i < NumRecords; i++)
 			{
-				SubIndexRecord[i] = new SubIndexRecordA(stream);
+				SubIndexRecord[i] = new BSSITSSubSegment(stream);
 			}
 		}
 	}

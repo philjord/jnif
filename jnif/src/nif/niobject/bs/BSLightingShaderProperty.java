@@ -56,8 +56,8 @@ public class BSLightingShaderProperty extends NiObject
 	    <add name="Left Eye Reflection Center" type="Vector3" cond="Skyrim Shader Type == 16">Offset to set center for left eye cubemap</add>
 	    <add name="Right Eye Reflection Center" type="Vector3" cond="Skyrim Shader Type == 16">Offset to set center for right eye cubemap</add>
 	</niobject>
-
-
+	
+	
 	 */
 
 	public BSLightingShaderPropertyShaderType SkyrimShaderType;
@@ -126,17 +126,22 @@ public class BSLightingShaderProperty extends NiObject
 
 	public NifVector3 RightEyeReflectionCenter;
 
+	//FO4 only
+	public float SubsurfaceRolloff;
+	public float UnknownFloat1;
+	public float BacklightPower;
+	public float GrayscaletoPaletteScale;
+	public float FresnelPower;
+	public float WetnessSpecScale;
+	public float WetnessSpecPower;
+	public float WetnessMinVar;
+	public float WetnessEnvMapScale;
+	public float WetnessFresnelPower;
+	public float WetnessMetalness;
+
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
-		/*for (int b = 0; b < 35; b++)
-		{
-			stream.mark(0);
-			System.out.print("" + b + " float " + ByteConvert.readFloat(stream));
-			stream.reset();
-			System.out.println(" " + b + " int " + ByteConvert.readInt(stream));
-		}*/
 
 		if (nifVer.LOAD_USER_VER >= 12)
 		{
@@ -219,17 +224,17 @@ public class BSLightingShaderProperty extends NiObject
 		}
 		else
 		{
-			ByteConvert.readInt(stream); //24 float 0.0 24 int 0
-			ByteConvert.readInt(stream);//25 float 3.4028235E38 25 int 2139095039
-			ByteConvert.readInt(stream);//26 float 0.0 26 int 0
-			ByteConvert.readFloat(stream);//27 float 0.5019608 27 int 1056997505
-			ByteConvert.readFloat(stream);//28 float 5.0 28 int 1084227584
-			ByteConvert.readFloat(stream);//29 float -1.0 29 int -1082130432
-			ByteConvert.readFloat(stream);//30 float -1.0 30 int -1082130432
-			ByteConvert.readFloat(stream);//31 float -1.0 31 int -1082130432
-			ByteConvert.readFloat(stream);//32 float -1.0 32 int -1082130432
-			ByteConvert.readFloat(stream);//33 float -1.0 33 int -1082130432
-			ByteConvert.readFloat(stream);//34 float -1.0 34 int -1082130432
+			SubsurfaceRolloff = ByteConvert.readFloat(stream);
+			UnknownFloat1 = ByteConvert.readFloat(stream);
+			BacklightPower = ByteConvert.readFloat(stream);
+			GrayscaletoPaletteScale = ByteConvert.readFloat(stream);
+			FresnelPower = ByteConvert.readFloat(stream);
+			WetnessSpecScale = ByteConvert.readFloat(stream);
+			WetnessSpecPower = ByteConvert.readFloat(stream);
+			WetnessMinVar = ByteConvert.readFloat(stream);
+			WetnessEnvMapScale = ByteConvert.readFloat(stream);
+			WetnessFresnelPower = ByteConvert.readFloat(stream);
+			WetnessMetalness = ByteConvert.readFloat(stream);
 
 			if (SkyrimShaderType.type == 2 || SkyrimShaderType.type == 4 || SkyrimShaderType.type == 18)
 			{

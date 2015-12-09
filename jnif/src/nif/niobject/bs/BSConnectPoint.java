@@ -5,18 +5,14 @@ import java.io.InputStream;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.compound.NifQuaternion;
+import nif.compound.NifVector3;
 import nif.niobject.NiExtraData;
 
 public class BSConnectPoint
 {
-	/*	<compound name="BSConnectPoint">
-	<add name="Root" type="SizedString" />
-	<add name="Variable Name" type="SizedString" />
-	<add name="Unknown Float 1" type="float" />
-	<add name="Unknown 6 Shorts" type="ushort" arr1="6" />
-	<add name="Unknown 4 Floats" type="float" arr1="4" />
-	</compound>
-	
+
+	/*
 	<niobject name="BSConnectPoint::Parents" inherit="NiExtraData">
 	Fallout 4 Item Slot Parent
 	<add name="Num Connect Points" type="uint" />
@@ -69,21 +65,29 @@ public class BSConnectPoint
 		}
 	}
 
+	/*	<compound name="BSConnectPoint">
+	<add name="Root" type="SizedString" />
+	<add name="Variable Name" type="SizedString" />
+	<add name="Rotation" type="Quaternion" />
+	<add name="Translation" type="Vector3" />
+	<add name="Scale" type="float" />
+	</compound>
+	*/
 	public static class BSConnectPointData
 	{
 		public String Root;
 		public String VariableName;
-		float UnknownFloat1;
-		short[] Unknown6Shorts;
-		float[] Unknown4Floats;
+		NifQuaternion Rotation;
+		NifVector3 Translation;
+		float Scale;
 
 		public BSConnectPointData(InputStream stream) throws IOException
 		{
 			Root = ByteConvert.readSizedString(stream);
 			VariableName = ByteConvert.readSizedString(stream);
-			UnknownFloat1 = ByteConvert.readFloat(stream);
-			Unknown6Shorts = ByteConvert.readShorts(6, stream);
-			Unknown4Floats = ByteConvert.readFloats(4, stream);
+			Rotation = new NifQuaternion(stream);
+			Translation = new NifVector3(stream);
+			Scale = ByteConvert.readFloat(stream);
 		}
 	}
 
