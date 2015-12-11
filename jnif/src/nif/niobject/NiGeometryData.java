@@ -399,4 +399,51 @@ public abstract class NiGeometryData extends NiObject
 
 	}
 
+	public void loadTangentAndBinormalsFromExtraData(InputStream stream, NifVer nifVer) throws IOException
+	{
+		if (tangentsOpt != null)
+			new Throwable("ALERT tangents already set!!!1!").printStackTrace();
+
+		if (hasNormals)
+		{
+			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			{
+				if (LOAD_OPTIMIZED)
+				{
+					tangentsOpt = new float[numVertices * 3];
+					for (int i = 0; i < numVertices; i++)
+					{
+						tangentsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
+						tangentsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
+						tangentsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+					}
+
+					binormalsOpt = new float[numVertices * 3];
+					for (int i = 0; i < numVertices; i++)
+					{
+						binormalsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
+						binormalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
+						binormalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+					}
+
+				}
+				else
+				{
+					tangents = new NifVector3[numVertices];
+					for (int i = 0; i < numVertices; i++)
+					{
+						tangents[i] = new NifVector3(stream);
+					}
+
+					binormals = new NifVector3[numVertices];
+					for (int i = 0; i < numVertices; i++)
+					{
+						binormals[i] = new NifVector3(stream);
+					}
+
+				}
+			}
+		}
+	}
+
 }

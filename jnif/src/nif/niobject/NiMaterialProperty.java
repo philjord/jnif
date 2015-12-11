@@ -58,10 +58,12 @@ public class NiMaterialProperty extends NiProperty
 		specularColor = new NifColor3(stream);
 		emissiveColor = new NifColor3(stream);
 		glossiness = ByteConvert.readFloat(stream);
-		if (nifVer.LOAD_VER < NifVer.VER_20_2_0_7)
+		//TODO: what the hell was I thining here??
+		//System.out.println("glossiness " +glossiness);
+	//	if (nifVer.LOAD_VER < NifVer.VER_20_2_0_7)
 		{
 			// it appears the older glossiness were the inverse of java3d
-			glossiness = 128f - glossiness;
+	//		glossiness = 128f - glossiness;
 		}
 		alpha = ByteConvert.readFloat(stream);
 		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 21)

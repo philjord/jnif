@@ -34,6 +34,7 @@ public class BSTriShape extends NiTriBasedGeom
 	//public BSVertexData[] vertexData;
 	public float[] verticesOpt;
 	public float[] normalsOpt;
+	public float[] tangentsOpt;
 	public float[] colorsOpt;
 	public float[] uVSetOpt;
 
@@ -72,6 +73,11 @@ public class BSTriShape extends NiTriBasedGeom
 				if ((vertexFormatFlags7 & 0x01) != 0 || vertexType >= 4)
 				{
 					normalsOpt = new float[numVertices * 3];
+				}
+				
+				if ((vertexFormatFlags7 & 0x01) != 0 || vertexType >= 5)
+				{
+					tangentsOpt = new float[numVertices * 3];
 				}
 				
 				if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
@@ -115,9 +121,11 @@ public class BSTriShape extends NiTriBasedGeom
 					}
 
 					if ((vertexFormatFlags7 & 0x01) != 0 || vertexType >= 5)
-					{
-						// tangent
-						ByteConvert.readBytes(4, stream);
+					{												
+						tangentsOpt[i * 3 + 0] = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
+						tangentsOpt[i * 3 + 2] = -(ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
+						tangentsOpt[i * 3 + 1] = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;
+						ByteConvert.readByte(stream);
 					}
 
 					if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
