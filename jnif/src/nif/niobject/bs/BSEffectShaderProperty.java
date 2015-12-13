@@ -62,13 +62,13 @@ public class BSEffectShaderProperty extends NiProperty
 
 	public String GreyscaleTexture;
 
-	public String unknownTexture1;
+	public String EnvMapTexture;
 
-	public String unknownTexture2;
+	public String NormalTexture;
 
-	public String unknownTexture3;
+	public String EnvMaskTexture;
 
-	public int unknownInt1;
+	public float EnvironmentMapScale;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
 	{
@@ -104,10 +104,10 @@ public class BSEffectShaderProperty extends NiProperty
 
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
 		{
-			unknownTexture1 = ByteConvert.readSizedString(stream);//e.g. Shared/Cubemaps/mipblur_DefaultOutside1.dds
-			unknownTexture2 = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
-			unknownTexture3 = ByteConvert.readSizedString(stream);
-			unknownInt1 = ByteConvert.readInt(stream);
+			EnvMapTexture = ByteConvert.readSizedString(stream);//e.g. Shared/Cubemaps/mipblur_DefaultOutside1.dds
+			NormalTexture = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
+			EnvMaskTexture = ByteConvert.readSizedString(stream);
+			EnvironmentMapScale = ByteConvert.readFloat(stream);
 		}
 
 		return success;

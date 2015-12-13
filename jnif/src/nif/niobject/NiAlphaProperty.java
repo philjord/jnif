@@ -11,18 +11,18 @@ public class NiAlphaProperty extends NiProperty
 {
 	/**
 	 <niobject name="NiAlphaProperty" abstract="0" inherit="NiProperty">
-
+	
 	 Transparency. Flags 0x00ED.
 	 
 	 <add name="Flags" type="Flags" default="237">
-
+	
 	 Bit 0 : alpha blending enable
 	 Bits 1-4 : source blend mode
 	 Bits 5-8 : destination blend mode
 	 Bit 9 : alpha test enable
 	 Bit 10-12 : alpha test mode
 	 Bit 13 : no sorter flag ( disables triangle sorting )
-
+	
 	 blend modes (glBlendFunc):
 	 0000 GL_ONE
 	 0001 GL_ZERO
@@ -36,7 +36,7 @@ public class NiAlphaProperty extends NiProperty
 	 1001 GL_ONE_MINUS_DST_ALPHA
 	 1010 GL_SRC_ALPHA_SATURATE
 	 
-
+	
 	 test modes (glAlphaFunc):
 	 000 GL_ALWAYS
 	 001 GL_LESS
@@ -124,7 +124,13 @@ public class NiAlphaProperty extends NiProperty
 
 	public boolean alphaTestEnabled()
 	{
-		return ((flags.flags >> 9) & 0x0001) != 0;
+		boolean alphaTest = ((flags.flags >> 9) & 0x0001) != 0;
+
+		// Temporary Weapon Blood fix for FO4
+		if (this.nVer.LOAD_USER_VER2 == 130)
+			alphaTest |= (flags.flags == 20547);
+
+		return alphaTest;
 	}
 
 	public int alphaTestMode()

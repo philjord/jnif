@@ -9,14 +9,14 @@ public class BSSkinBoneTrans
 {
 	/*<compound name="BSSkinBoneTrans">
 	Fallout 4 Bone Transform
-	<add name="Bounding Sphere" type="Vector3" />
+	<add name="Center" type="Vector3" />
 	<add name="Radius" type="float" />
 	<add name="Rotation" type="Matrix33" />
 	<add name="Translation" type="Vector3" />
 	<add name="Scale" type="float" />
 	</compound>*/
 
-	public NifVector3 BoundingSphere;
+	public NifVector3 Center;
 
 	public float Radius;
 
@@ -28,7 +28,7 @@ public class BSSkinBoneTrans
 
 	public BSSkinBoneTrans(InputStream stream) throws IOException
 	{
-		BoundingSphere = new NifVector3(stream);
+		Center = new NifVector3(stream);
 		Radius = ByteConvert.readFloat(stream);
 		Rotation = new NifMatrix33(stream);
 		Translation = new NifVector3(stream);
