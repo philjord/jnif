@@ -203,47 +203,9 @@ public class NifFileReader
 				in.mark(1000000);
 
 				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
-				{
-					// NEW:
-					// .NiLightRadiusController - possibly good, just like dimmer (test good load)
-					// .BSMeshLODTriShape - data inside and compressed
-					// .BSVertexData - new formats to support though
-					// .BSSkin:2 - inner classes ! but similar to prev?
-					// .BSTriShape - data inside much done
-					// .BSSubIndexTriShape -  more work required close
-					// .BSConnectPoint:2
-
-					// .bhkNPCollisionObject
-					// .bhkPhysicsSystem - big big block, possibly all the old havok gear in one?
-					// .bhkRagdollSystem
-					// .BSPositionData
-
-					// .BSEyeCenterExtraData
-					// .BSClothExtraData
-					//NiPSysInitialRotSpeedVarCtlr
-
-					//BSPackedCombinedSharedGeomDataExtra
-
-					// ALTERED:
-					// .NiGeometry - done
-					// .NiNode - done
-					// .BSEffectShaderProperty - done
-					// .NiExtraData - made not abstract
-					// .BSLightingShaderProperty - more types updating
-					// NiDynamicEffect 					
-
-					// NiParticleSystem - maybe 68 more bytes sometimes maybe??
-
-					// Other:
-					// J3dNiControllerSequence safety check is now wrong??
-
-					// vercond="!((Version >= 20.2.0.7) &amp;&amp; (User Version >= 12) &amp;&amp; (User Version 2 == 130))"
-
-					//	if (objectType.equals("BSSubIndexTriShape"))
-					//		System.out.println("BSSubIndexTriShape size = " + header.blockSizes[i]);
-
-					if ((objectType.equals("BSClothExtraData")//
-							|| objectType.equals("BSPackedCombinedSharedGeomDataExtra") //
+				{				
+					if ((objectType.equals("BSClothExtraData") || //							 
+							objectType.equals("BSPackedCombinedSharedGeomDataExtra") //
 					))
 					{
 						if (header.blockSizes != null)
@@ -256,6 +218,7 @@ public class NifFileReader
 					{
 						obj.readFromStream(in, nifVer);
 					}
+					
 				}
 				else
 				{

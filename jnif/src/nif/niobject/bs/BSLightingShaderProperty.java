@@ -127,6 +127,7 @@ public class BSLightingShaderProperty extends NiObject
 	public NifVector3 RightEyeReflectionCenter;
 
 	//FO4 only
+	public String wetMaterialTemplate;
 	public float SubsurfaceRolloff;
 	public float UnknownFloat1;
 	public float BacklightPower;
@@ -173,7 +174,7 @@ public class BSLightingShaderProperty extends NiObject
 		EmissiveMultiple = ByteConvert.readFloat(stream);
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130)
 		{
-			ByteConvert.readInt(stream);//3,5,11 all seen
+			wetMaterialTemplate = ByteConvert.readIndexString(stream, nifVer);
 		}
 		TextureClampMode = new TexClampMode(stream);
 		Alpha = ByteConvert.readFloat(stream);
