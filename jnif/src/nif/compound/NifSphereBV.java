@@ -9,7 +9,7 @@ public class NifSphereBV
 {
 	/**
 	 <compound name="SphereBV">
-
+	
 	 A sphere.
 	 
 	 <add name="Center" type="Vector3">The sphere's center.</add>
@@ -25,5 +25,10 @@ public class NifSphereBV
 	{
 		center = new NifVector3(stream);
 		radius = ByteConvert.readFloat(stream);
+	}
+
+	public String toString()
+	{
+		return "[NifSphereBV] " + center + " : " + radius;
 	}
 }

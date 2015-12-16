@@ -56,6 +56,6 @@ public class NifVector3
 
 	public String toString()
 	{
-		return "[NPVector3] " + x + " " + y + " " + z;
+		return "[NifVector3] " + x + " " + y + " " + z;
 	}
 }

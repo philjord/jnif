@@ -23,7 +23,7 @@ public abstract class BSShaderLightingProperty extends BSShaderProperty
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
+		
 		unknownInt3 = ByteConvert.readInt(stream);
 
 		return success;

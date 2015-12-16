@@ -204,9 +204,7 @@ public class NifFileReader
 
 				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
 				{				
-					if ((objectType.equals("BSClothExtraData") || //							 
-							objectType.equals("BSPackedCombinedSharedGeomDataExtra") //
-					))
+					if ((objectType.equals("BSClothExtraData") 	))
 					{
 						if (header.blockSizes != null)
 						{

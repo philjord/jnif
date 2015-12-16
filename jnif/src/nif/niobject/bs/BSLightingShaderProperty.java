@@ -150,7 +150,7 @@ public class BSLightingShaderProperty extends NiObject
 		}
 
 		Name = ByteConvert.readIndexString(stream, nifVer);// name of a material file in USER_VER2==130
-
+		
 		NumExtraDataList = ByteConvert.readInt(stream);
 
 		ExtraDataList = new NifRef[NumExtraDataList];
@@ -164,7 +164,7 @@ public class BSLightingShaderProperty extends NiObject
 		if (nifVer.LOAD_USER_VER >= 12)
 		{
 			ShaderFlags1 = new SkyrimShaderPropertyFlags1(stream);
-			ShaderFlags2 = new SkyrimShaderPropertyFlags2(stream);
+			ShaderFlags2 = new SkyrimShaderPropertyFlags2(stream);		
 		}
 
 		UVOffSet = new NifTexCoord(stream);
