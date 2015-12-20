@@ -9,7 +9,7 @@ import nif.ByteConvert;
 public abstract class BSMaterial
 {
 	public String localPath;
-	
+
 	public ArrayList<String> textureList = new ArrayList<String>();;
 
 	// BGSM & BGEM shared variables
@@ -23,8 +23,10 @@ public abstract class BSMaterial
 	public float fUScale;
 	public float fVScale;
 	public float fAlpha;
-
-	// TODO: Alpha blend mode
+	public byte bAlphaBlend;
+	public int iAlphaSrc;
+	public int iAlphaDst;
+	public byte iAlphaTestRef;
 	public byte bAlphaTest;
 	public byte bZBufferWrite;
 	public byte bZBufferTest;
@@ -40,7 +42,6 @@ public abstract class BSMaterial
 	public byte bEnvironmentMapping;
 	public float fEnvironmentMappingMaskScale;
 	public byte bGrayscaleToPaletteColor;
-	
 
 	public BSMaterial(String file)
 	{
@@ -61,7 +62,10 @@ public abstract class BSMaterial
 		fVScale = ByteConvert.readFloat(stream);
 
 		fAlpha = ByteConvert.readFloat(stream);
-		ByteConvert.readBytes(10, stream);
+		bAlphaBlend = ByteConvert.readByte(stream);
+		iAlphaSrc = ByteConvert.readInt(stream);
+		iAlphaDst = ByteConvert.readInt(stream);
+		iAlphaTestRef = ByteConvert.readByte(stream);
 		bAlphaTest = ByteConvert.readByte(stream);
 		bZBufferWrite = ByteConvert.readByte(stream);
 		bZBufferTest = ByteConvert.readByte(stream);

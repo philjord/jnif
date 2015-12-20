@@ -15,7 +15,6 @@ public class ShaderMaterial extends BSMaterial
 	public byte bSubsurfaceLighting;
 	public float fSubsurfaceLightingRolloff;
 	public byte bSpecularEnabled;
-	public float specR, specG, specB;
 	public NifColor3 cSpecularColor;
 	public float fSpecularMult;
 	public float fSmoothness;
@@ -29,7 +28,6 @@ public class ShaderMaterial extends BSMaterial
 	public String sRootMaterialPath;
 	public byte bAnisoLighting;
 	public byte bEmitEnabled;
-
 	public NifColor3 cEmittanceColor;
 	public float fEmittanceMult;
 	public byte bModelSpaceNormals;
@@ -44,7 +42,6 @@ public class ShaderMaterial extends BSMaterial
 	public byte bEnvironmentMappingWindow;
 	public byte bEnvironmentMappingEye;
 	public byte bHair;
-
 	public NifColor3 cHairTintColor;
 	public byte bTree;
 	public byte bFacegen;

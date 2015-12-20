@@ -14,7 +14,6 @@ public class EffectMaterial extends BSMaterial
 	public byte bFalloffColorEnabled;
 	public byte bGrayscaleToPaletteAlpha;
 	public byte bSoftEnabled;
-	public float baseR = 0, baseG = 0, baseB = 0;
 	public NifColor3 cBaseColor;
 	public float fBaseColorScale;
 	public float fFalloffStartAngle;
