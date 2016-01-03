@@ -203,20 +203,8 @@ public class NifFileReader
 				in.mark(1000000);
 
 				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
-				{				
-					if ((objectType.equals("BSClothExtraData") 	))
-					{
-						if (header.blockSizes != null)
-						{
-							byte[] b = new byte[header.blockSizes[i]];
-							in.read(b);
-						}
-					}
-					else
-					{
-						obj.readFromStream(in, nifVer);
-					}
-					
+				{
+					obj.readFromStream(in, nifVer);
 				}
 				else
 				{

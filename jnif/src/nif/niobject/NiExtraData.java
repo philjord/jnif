@@ -6,12 +6,13 @@ import java.io.InputStream;
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifRef;
+import nif.niobject.bs.BSbhkNPObject;
 
 public class NiExtraData extends NiObject
 {
 	/**
 	 <niobject name="NiExtraData" abstract="1" inherit="NiObject">
-
+	
 	 A generic extra data object.
 	 
 	 <add name="Name" type="string" ver1="10.0.1.0">Name of this object.</add>
@@ -27,7 +28,7 @@ public class NiExtraData extends NiObject
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0 && !(this instanceof BSbhkNPObject))
 		{
 			name = ByteConvert.readIndexString(stream, nifVer);
 		}

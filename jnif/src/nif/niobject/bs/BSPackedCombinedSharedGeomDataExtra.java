@@ -10,9 +10,10 @@ import nif.compound.NifMatrix33;
 import nif.compound.NifSphereBV;
 import nif.compound.NifTriangle;
 import nif.compound.NifVector3;
+import nif.niobject.NiExtraData;
 import tools.MiniFloat;
 
-public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
+public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 {
 
 	public int dwordsPerVertex;
@@ -29,15 +30,12 @@ public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
 	public NifTriangle[] triangles;
 	/*
 	
-	124871 total files
-	total size 2,213,609,472
+	Precompile folder physics content
+	124871 total files 	2,213,609,472 total file size	
+	88477 file count 642955258 file size; ending in _OC.NIF with no physics data
+	36394 file count 957196266 file size; ending in _OC.NIF with physics data	 
+	4484 file count 613457948 file size; ending in _Physics.NIF
 	
-	countRegular 88477
-	size regular 642955258 	 
-	countWithHavokRoot 36394
-	sizeWithHavokRoot 957196266
-	countPhysics 4484
-	sizePhysics 613457948
 	
 	f:\game media\fallout4\meshes\precombined\00000fc9_08744b5f_oc.nif
 	1Materials\Architecture\DiamondCity\DiamondRadioTowers01Alpha.BGSMMaterials\Architecture\DiamondCity\DiamondRadioTowers01Alpha.BGSMMaterials\Architecture\DiamondCity\DiamondRadioTowers01Alpha.BGSM
@@ -266,13 +264,16 @@ public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
 	 
 	 
 	 ok ok floats and matrix, but possibly columnmajor or stored backwards or something
+	 
+	 
+	 need to find a scol that is 256 wide and see what shape it makes
 	 *
 	 */
 
 	public int UnknownInt1;
 	public int UnknownInt2;
 	public int NumData;
-	public int[][] Unk1;
+	public int[] Unk1;
 	public Data[] data;
 
 	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
@@ -295,31 +296,28 @@ public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
 
 		NumData = ByteConvert.readInt(stream);
 
-		Unk1 = new int[NumData][2];
+		Unk1 = new int[NumData];
+		fs = new float[NumData][];
 		for (int i = 0; i < NumData; i++)
 		{
-			Unk1[i][0] = ByteConvert.readInt(stream); // always a fixed value
+			fs[i] = new float[4];
+			//Unk1[i] = ByteConvert.readInt(stream);
+			//ByteConvert.readInt(stream);
 
-			Unk1[i][1] = ByteConvert.readInt(stream);
-			//	for (int j = 0; j < 8; j++)
-			{
-				//			System.out.println(" " + j + " " + ByteConvert.readUnsignedByte(stream));
-			}
-			//for (int j = 0; j < 8; j++)
-			{
-				//		System.out.println(" " + j + " " + ((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
-			}
-			//	for (int j = 0; j < 4; j++)
-			{
-				//			System.out.println(" " + j + " " + MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
-			}
-
-			//		for (int j = 0; j < 4; j++)
-			{
-				//			System.out.println(" " + j + " " + ByteConvert.readUnsignedShort(stream));
-			}
-			// NOT FLOATS!
-
+			//	bv[i] = new BSByteVector3(stream);
+			//	System.out.println("bv= " + bv[i]);
+			//	System.out.println(" " + i + "0 " + ByteConvert.readByte(stream));
+			//	System.out.println(" " + i + "1 " + ByteConvert.readByte(stream));
+			//	System.out.println(" " + i + "2 " + ByteConvert.readByte(stream));
+			//	System.out.println(" " + i + "3 " + ByteConvert.readByte(stream));
+			fs[i][0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			fs[i][1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			fs[i][2] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			fs[i][3] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			//System.out.println(" " + i + "0 " + fs[i][0]);
+			//System.out.println(" " + i + "1 " + fs[i][1]);
+			//System.out.println(" " + i + "2 " + fs[i][2]);
+			//System.out.println(" " + i + "3 " + fs[i][3]);
 		}
 
 		data = new Data[NumData];
@@ -330,6 +328,8 @@ public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
 
 		return success;
 	}
+
+	public float[][] fs;
 
 	public static class Data
 	{
@@ -381,12 +381,14 @@ public class BSPackedCombinedSharedGeomDataExtra extends BSExtraData
 
 		public Combined(InputStream stream, NifVer nifVer) throws IOException
 		{
-
+			//most often 0.5ish but sometimes 0 sometimes 1
 			f1 = ByteConvert.readFloat(stream);
+
 			rot = new NifMatrix33(stream); //reversed??inverted?? world space perhaps?
 
 			trans = new NifVector3(stream); // world space
-			scale = ByteConvert.readFloat(stream);
+			scale = ByteConvert.readFloat(stream); //often one but sometime 1.5 or 0.64 or 0.84
+
 			bounds = new NifSphereBV(stream);
 
 		}
