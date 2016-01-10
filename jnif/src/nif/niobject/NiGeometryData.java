@@ -173,7 +173,7 @@ public abstract class NiGeometryData extends NiObject
 			numUVSets = ByteConvert.readUnsignedShort(stream);
 		}
 
-		if (!(this instanceof NiPSysData) && nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12)
+		if (!(this instanceof NiPSysData) && nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && !nifVer.isBP())
 		{
 			unknownInt2 = ByteConvert.readInt(stream);
 		}
@@ -241,6 +241,7 @@ public abstract class NiGeometryData extends NiObject
 				}
 			}
 		}
+
 		center = new NifVector3(stream);
 		radius = ByteConvert.readFloat(stream);
 
