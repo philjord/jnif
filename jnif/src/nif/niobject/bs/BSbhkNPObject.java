@@ -24,13 +24,13 @@ public class BSbhkNPObject extends NiExtraData
 		ByteConvert.readShorts(10, stream);
 		ByteConvert.readInts(5, stream);
 
-		
-		Data = ByteConvert.readBytes(256, stream);
+		// for decoding efforts
+		//Data = ByteConvert.readBytes(256, stream);
 
-		System.out.println("" + new String(Data));
+		//System.out.println("" + new String(Data));
 		
 		verNum = new String(ByteConvert.readBytes(14, stream));
-		System.out.println("verNum " + verNum + " " + nifVer.fileName);
+		//System.out.println("verNum " + verNum + " " + nifVer.fileName);
 
 		ByteConvert.readBytes(10, stream);
 
