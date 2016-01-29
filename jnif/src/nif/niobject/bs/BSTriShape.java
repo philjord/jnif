@@ -186,6 +186,7 @@ public class BSTriShape extends NiTriBasedGeom
 						//TODO: load these
 						if ((vertexFormatFlags7 & 0x04) != 0)
 						{
+							// 4 bone Weight half floats
 							ByteConvert.readInt(stream);
 							ByteConvert.readInt(stream);
 							ByteConvert.readInt(stream);
@@ -193,6 +194,7 @@ public class BSTriShape extends NiTriBasedGeom
 
 						if ((vertexFormatFlags7 & 0x10) != 0)
 						{
+							//4 bone indices bytes
 							ByteConvert.readInt(stream);
 						}
 					}
