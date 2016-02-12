@@ -21,7 +21,7 @@ public class EffectMaterial extends BSMaterial
 	public float fFalloffStartOpacity;
 	public float fFalloffStopOpacity;
 	public float fLightingInfluence;
-	public byte iEnvmapMinLOD;
+	public int iEnvmapMinLOD;
 	public float fSoftDepth;
 
 	public EffectMaterial(String file)
@@ -55,7 +55,7 @@ public class EffectMaterial extends BSMaterial
 		fFalloffStartOpacity = ByteConvert.readFloat(stream);
 		fFalloffStopOpacity = ByteConvert.readFloat(stream);
 		fLightingInfluence = ByteConvert.readFloat(stream);
-		iEnvmapMinLOD = ByteConvert.readByte(stream);
+		iEnvmapMinLOD = ByteConvert.readUnsignedByte(stream);
 		fSoftDepth = ByteConvert.readFloat(stream);
 	}
 }

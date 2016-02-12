@@ -26,9 +26,9 @@ public abstract class BSMaterial
 	public byte bAlphaBlend;
 	public int iAlphaSrc;
 	public int iAlphaDst;
-	public byte iAlphaTestRef;
+	public int iAlphaTestRef;
 	public byte bAlphaTest;
-	public byte bZBufferWrite;
+	public short bZBufferWrite;
 	public byte bZBufferTest;
 	public byte bScreenSpaceReflections;
 	public byte bWetnessControl_ScreenSpaceReflections;
@@ -65,7 +65,7 @@ public abstract class BSMaterial
 		bAlphaBlend = ByteConvert.readByte(stream);
 		iAlphaSrc = ByteConvert.readInt(stream);
 		iAlphaDst = ByteConvert.readInt(stream);
-		iAlphaTestRef = ByteConvert.readByte(stream);
+		iAlphaTestRef = ByteConvert.readUnsignedByte(stream);
 		bAlphaTest = ByteConvert.readByte(stream);
 		bZBufferWrite = ByteConvert.readByte(stream);
 		bZBufferTest = ByteConvert.readByte(stream);
