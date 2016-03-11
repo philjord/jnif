@@ -2,6 +2,8 @@ package nif.niobject.bs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
@@ -10,7 +12,6 @@ import nif.NifVer;
 import nif.compound.BSVertexData;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
-import tools.BufferWrap;
 import tools.MiniFloat;
 
 public class BSTriShape extends NiTriBasedGeom
@@ -35,12 +36,6 @@ public class BSTriShape extends NiTriBasedGeom
 
 	//OPTIMISATION
 	//public BSVertexData[] vertexData;
-	private float[] verticesOpt;
-	private float[] normalsOpt;
-	private float[] tangentsOpt;
-	private float[] binormalsOpt;
-	private float[] colorsOpt;
-	private float[] uVSetOpt;
 	public FloatBuffer verticesOptBuf;
 	public FloatBuffer normalsOptBuf;
 	public FloatBuffer tangentsOptBuf;
@@ -105,88 +100,88 @@ public class BSTriShape extends NiTriBasedGeom
 
 			if (LOAD_OPTIMIZED)
 			{
-				verticesOpt = new float[numVertices * 3];
-				binormalsOpt = new float[numVertices * 3]; // not always filled use tangent!=null
+				verticesOptBuf = createFB(numVertices * 3);
+				binormalsOptBuf = createFB(numVertices * 3); // not always filled use tangent!=null
 
 				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 3)
 				if ((vertexFormatFlags6 & 0x20) != 0)
 				{
-					uVSetOpt = new float[numVertices * 2];
+					uVSetOptBuf = createFB(numVertices * 2);
 				}
 
 				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 4)
 				if ((vertexFormatFlags6 & 0x80) != 0)
 				{
-					normalsOpt = new float[numVertices * 3];
+					normalsOptBuf = createFB(numVertices * 3);
 				}
 
 				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 5)
 				if ((vertexFormatFlags3 & 0x40) != 0)
 				{
-					tangentsOpt = new float[numVertices * 3];
+					tangentsOptBuf = createFB(numVertices * 3);
 				}
 
 				//if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
 				//		|| ((vertexFormatFlags7 & 0x01) == 0 && dwordsPerVertex >= 6))
 				if ((vertexFormatFlags7 & 0x02) != 0)
 				{
-					colorsOpt = new float[numVertices * 4];
+					colorsOptBuf = createFB(numVertices * 4);
 				}
 
 				for (int i = 0; i < numVertices; i++)
 				{
 					if ((vertexFormatFlags7 & 0x40) != 0)
 					{
-						verticesOpt[i * 3 + 0] = ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
-						verticesOpt[i * 3 + 2] = -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
-						verticesOpt[i * 3 + 1] = ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
+						verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 
-						binormalsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
+						binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
 					}
 					else //if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 2)
 					{
-						verticesOpt[i * 3 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
-						verticesOpt[i * 3 + 2] = -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
-						verticesOpt[i * 3 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE;
+						verticesOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 2, -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
 
-						binormalsOpt[i * 3 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
 					}
 
 					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 3)
 					if ((vertexFormatFlags6 & 0x20) != 0)
 					{
-						uVSetOpt[i * 2 + 0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-						uVSetOpt[i * 2 + 1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						uVSetOptBuf.put(i * 2 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+						uVSetOptBuf.put(i * 2 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
 					}
 
 					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 4)
 					if ((vertexFormatFlags6 & 0x80) != 0)
 					{
-						normalsOpt[i * 3 + 0] = (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f;
-						normalsOpt[i * 3 + 2] = -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-						normalsOpt[i * 3 + 1] = (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f;
+						normalsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+						normalsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
+						normalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 
-						binormalsOpt[i * 3 + 2] = -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+						binormalsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
 					}
 
 					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 5)
 					if ((vertexFormatFlags3 & 0x40) != 0)
 					{
-						tangentsOpt[i * 3 + 0] = (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f;
-						tangentsOpt[i * 3 + 2] = -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-						tangentsOpt[i * 3 + 1] = (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f;
+						tangentsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+						tangentsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
+						tangentsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 
-						binormalsOpt[i * 3 + 1] = (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f;
+						binormalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 					}
 
 					//if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
 					//		|| ((vertexFormatFlags7 & 0x01) == 0 && dwordsPerVertex >= 6))
 					if ((vertexFormatFlags7 & 0x02) != 0)
 					{
-						colorsOpt[i * 4 + 0] = ByteConvert.readUnsignedByte(stream) / 255f;
-						colorsOpt[i * 4 + 1] = ByteConvert.readUnsignedByte(stream) / 255f;
-						colorsOpt[i * 4 + 2] = ByteConvert.readUnsignedByte(stream) / 255f;
-						colorsOpt[i * 4 + 3] = ByteConvert.readUnsignedByte(stream) / 255f;
+						colorsOptBuf.put(i * 4 + 0, ByteConvert.readUnsignedByte(stream) / 255f);
+						colorsOptBuf.put(i * 4 + 1, ByteConvert.readUnsignedByte(stream) / 255f);
+						colorsOptBuf.put(i * 4 + 2, ByteConvert.readUnsignedByte(stream) / 255f);
+						colorsOptBuf.put(i * 4 + 3, ByteConvert.readUnsignedByte(stream) / 255f);
 					}
 
 					//if ((vertexFormatFlags7 & 0x01) != 0)
@@ -229,33 +224,6 @@ public class BSTriShape extends NiTriBasedGeom
 
 				}
 
-				//////////////FLIP to buffers now and release float memory					 
-				verticesOptBuf = BufferWrap.makeFloatBuffer(verticesOpt);
-				verticesOpt = null;
-				binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
-				binormalsOpt = null;
-				if ((vertexFormatFlags6 & 0x20) != 0)
-				{
-					uVSetOptBuf = BufferWrap.makeFloatBuffer(uVSetOpt);
-					uVSetOpt = null;
-				}
-				if ((vertexFormatFlags6 & 0x80) != 0)
-				{
-					normalsOptBuf = BufferWrap.makeFloatBuffer(normalsOpt);
-					normalsOpt = null;
-				}
-				if ((vertexFormatFlags3 & 0x40) != 0)
-				{
-					tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
-					tangentsOpt = null;
-				}
-				if ((vertexFormatFlags7 & 0x02) != 0)
-				{
-					colorsOptBuf = BufferWrap.makeFloatBuffer(colorsOpt);
-					colorsOpt = null;
-				}
-				///////////////////////////////////////////////////////////////////
-
 				trianglesOpt = new int[numTriangles * 3];
 				for (int i = 0; i < numTriangles; i++)
 				{
@@ -289,6 +257,14 @@ public class BSTriShape extends NiTriBasedGeom
 		}
 
 		return success;
+	}
+
+	protected static FloatBuffer createFB(int l)
+	{
+		ByteBuffer bb = ByteBuffer.allocateDirect(l * 4);
+		bb.order(ByteOrder.nativeOrder());
+		return bb.asFloatBuffer();
+
 	}
 
 }

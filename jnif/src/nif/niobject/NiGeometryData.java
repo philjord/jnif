@@ -2,6 +2,8 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import nif.ByteConvert;
@@ -12,7 +14,6 @@ import nif.compound.NifTexCoord;
 import nif.compound.NifVector3;
 import nif.enums.ConsistencyType;
 import nif.niobject.particle.NiPSysData;
-import tools.BufferWrap;
 
 public abstract class NiGeometryData extends NiObject
 {
@@ -74,7 +75,6 @@ public abstract class NiGeometryData extends NiObject
 
 	public NifVector3[] vertices;
 	//OPTOMISATIONS
-	private float[] verticesOpt;
 	public FloatBuffer verticesOptBuf;
 
 	public int numUVSets;
@@ -89,17 +89,14 @@ public abstract class NiGeometryData extends NiObject
 
 	public NifVector3[] normals;
 	//OPTOMISATIONS
-	private float[] normalsOpt;
 	public FloatBuffer normalsOptBuf;
 
 	public NifVector3[] binormals;
 	//OPTOMISATIONS
-	private float[] binormalsOpt;
 	public FloatBuffer binormalsOptBuf;
 
 	public NifVector3[] tangents;
 	//OPTOMISATIONS
-	private float[] tangentsOpt;
 	public FloatBuffer tangentsOptBuf;
 
 	public NifVector3 center;
@@ -112,12 +109,10 @@ public abstract class NiGeometryData extends NiObject
 
 	public NifColor4[] vertexColors;
 	//OPTOMISATIONS
-	private float[] vertexColorsOpt;
 	public FloatBuffer vertexColorsOptBuf;
 
 	public NifTexCoord[][] uVSets;
 	//OPTOMISATIONS
-	private float[][] uVSetsOpt;
 	public FloatBuffer[] uVSetsOptBuf;
 
 	public ConsistencyType consistencyType;
@@ -158,15 +153,14 @@ public abstract class NiGeometryData extends NiObject
 		{
 			if (LOAD_OPTIMIZED)
 			{
-				verticesOpt = new float[numVertices * 3];
+				verticesOptBuf = createFB(numVertices * 3);
 				for (int i = 0; i < numVertices; i++)
 				{
-					verticesOpt[i * 3 + 0] = ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
-					verticesOpt[i * 3 + 2] = -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
-					verticesOpt[i * 3 + 1] = ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
+					verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+					verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+					verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 				}
-				verticesOptBuf = BufferWrap.makeFloatBuffer(verticesOpt);
-				verticesOpt = null;
+
 			}
 			else
 			{
@@ -192,16 +186,14 @@ public abstract class NiGeometryData extends NiObject
 		{
 			if (LOAD_OPTIMIZED)
 			{
-				normalsOpt = new float[numVertices * 3];
+				normalsOptBuf = createFB(numVertices * 3);
 				for (int i = 0; i < numVertices; i++)
 				{
-					normalsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
-					normalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
-					normalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+					normalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+					normalsOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream));
+					normalsOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream));
 				}
-				
-				normalsOptBuf = BufferWrap.makeFloatBuffer(normalsOpt);
-				normalsOpt = null;
+
 			}
 			else
 			{
@@ -218,25 +210,21 @@ public abstract class NiGeometryData extends NiObject
 				{
 					if (LOAD_OPTIMIZED)
 					{
-						tangentsOpt = new float[numVertices * 3];
+						tangentsOptBuf = createFB(numVertices * 3);
 						for (int i = 0; i < numVertices; i++)
 						{
-							tangentsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
-							tangentsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
-							tangentsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+							tangentsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+							tangentsOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream));
+							tangentsOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream));
 						}
 
-						binormalsOpt = new float[numVertices * 3];
+						binormalsOptBuf = createFB(numVertices * 3);
 						for (int i = 0; i < numVertices; i++)
 						{
-							binormalsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
-							binormalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
-							binormalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+							binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+							binormalsOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream));
+							binormalsOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream));
 						}
-						tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
-						tangentsOpt = null;
-						binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
-						binormalsOpt = null;
 
 					}
 					else
@@ -271,16 +259,15 @@ public abstract class NiGeometryData extends NiObject
 		{
 			if (LOAD_OPTIMIZED)
 			{
-				vertexColorsOpt = new float[numVertices * 4];
+				vertexColorsOptBuf = createFB(numVertices * 4);
 				for (int i = 0; i < numVertices; i++)
 				{
-					vertexColorsOpt[i * 4 + 0] = ByteConvert.readFloat(stream);
-					vertexColorsOpt[i * 4 + 1] = ByteConvert.readFloat(stream);
-					vertexColorsOpt[i * 4 + 2] = ByteConvert.readFloat(stream);
-					vertexColorsOpt[i * 4 + 3] = ByteConvert.readFloat(stream);
+					vertexColorsOptBuf.put(i * 4 + 0, ByteConvert.readFloat(stream));
+					vertexColorsOptBuf.put(i * 4 + 1, ByteConvert.readFloat(stream));
+					vertexColorsOptBuf.put(i * 4 + 2, ByteConvert.readFloat(stream));
+					vertexColorsOptBuf.put(i * 4 + 3, ByteConvert.readFloat(stream));
 				}
-				vertexColorsOptBuf = BufferWrap.makeFloatBuffer(vertexColorsOpt);
-				vertexColorsOpt = null;
+
 			}
 			else
 			{
@@ -288,7 +275,7 @@ public abstract class NiGeometryData extends NiObject
 				for (int i = 0; i < numVertices; i++)
 				{
 					vertexColors[i] = new NifColor4(stream);
-				}				
+				}
 			}
 		}
 
@@ -313,22 +300,17 @@ public abstract class NiGeometryData extends NiObject
 		}
 		if (LOAD_OPTIMIZED)
 		{
-			uVSetsOpt = new float[actNumUVSets][numVertices * 2];
-			for (int j = 0; j < actNumUVSets; j++)
-			{
-				for (int i = 0; i < numVertices; i++)
-				{
-					uVSetsOpt[j][i * 2 + 0] = ByteConvert.readFloat(stream);
-					uVSetsOpt[j][i * 2 + 1] = ByteConvert.readFloat(stream);
-				}
-			}
-			
 			uVSetsOptBuf = new FloatBuffer[actNumUVSets];
 			for (int j = 0; j < actNumUVSets; j++)
 			{
-				uVSetsOptBuf[j] = BufferWrap.makeFloatBuffer(uVSetsOpt[j]);
-				uVSetsOpt[j] = null;
+				uVSetsOptBuf[j] = createFB(numVertices * 2);
+				for (int i = 0; i < numVertices; i++)
+				{
+					uVSetsOptBuf[j].put(i * 2 + 0, ByteConvert.readFloat(stream));
+					uVSetsOptBuf[j].put(i * 2 + 1, ByteConvert.readFloat(stream));
+				}
 			}
+
 		}
 		else
 		{
@@ -339,7 +321,7 @@ public abstract class NiGeometryData extends NiObject
 				{
 					uVSets[j][i] = new NifTexCoord(stream);
 				}
-			}		
+			}
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
@@ -351,8 +333,6 @@ public abstract class NiGeometryData extends NiObject
 		{
 			additionalData = new NifRef(NiAdditionalGeometryData.class, stream);
 		}
-
-	 
 
 		return success;
 	}
@@ -368,26 +348,21 @@ public abstract class NiGeometryData extends NiObject
 			{
 				if (LOAD_OPTIMIZED)
 				{
-					tangentsOpt = new float[numVertices * 3];
+					tangentsOptBuf = createFB(numVertices * 3);
 					for (int i = 0; i < numVertices; i++)
 					{
-						tangentsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
-						tangentsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
-						tangentsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+						tangentsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+						tangentsOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream));
+						tangentsOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream));
 					}
 
-					binormalsOpt = new float[numVertices * 3];
+					binormalsOptBuf = createFB(numVertices * 3);
 					for (int i = 0; i < numVertices; i++)
 					{
-						binormalsOpt[i * 3 + 0] = ByteConvert.readFloat(stream);
-						binormalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
-						binormalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
+						binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+						binormalsOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream));
+						binormalsOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream));
 					}
-
-					tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
-					tangentsOpt = null;
-					binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
-					binormalsOpt = null;
 
 				}
 				else
@@ -407,6 +382,14 @@ public abstract class NiGeometryData extends NiObject
 				}
 			}
 		}
+	}
+
+	protected static FloatBuffer createFB(int l)
+	{
+		ByteBuffer bb = ByteBuffer.allocateDirect(l * 4);
+		bb.order(ByteOrder.nativeOrder());
+		return bb.asFloatBuffer();
+
 	}
 
 }

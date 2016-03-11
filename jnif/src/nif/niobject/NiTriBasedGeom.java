@@ -22,4 +22,6 @@ public abstract class NiTriBasedGeom extends NiGeometry
 
 		return success;
 	}
+	
+
 }
