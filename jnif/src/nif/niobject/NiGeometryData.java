@@ -2,7 +2,7 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.nio.FloatBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -12,6 +12,7 @@ import nif.compound.NifTexCoord;
 import nif.compound.NifVector3;
 import nif.enums.ConsistencyType;
 import nif.niobject.particle.NiPSysData;
+import tools.BufferWrap;
 
 public abstract class NiGeometryData extends NiObject
 {
@@ -72,8 +73,9 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasVertices;
 
 	public NifVector3[] vertices;
-	//OPTOMISATION
-	public float[] verticesOpt;
+	//OPTOMISATIONS
+	private float[] verticesOpt;
+	public FloatBuffer verticesOptBuf;
 
 	public int numUVSets;
 
@@ -86,16 +88,19 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasNormals;
 
 	public NifVector3[] normals;
-	//OPTOMISATION
-	public float[] normalsOpt;
+	//OPTOMISATIONS
+	private float[] normalsOpt;
+	public FloatBuffer normalsOptBuf;
 
 	public NifVector3[] binormals;
-	//OPTOMISATION
-	public float[] binormalsOpt;
+	//OPTOMISATIONS
+	private float[] binormalsOpt;
+	public FloatBuffer binormalsOptBuf;
 
 	public NifVector3[] tangents;
-	//OPTOMISATION
-	public float[] tangentsOpt;
+	//OPTOMISATIONS
+	private float[] tangentsOpt;
+	public FloatBuffer tangentsOptBuf;
 
 	public NifVector3 center;
 
@@ -106,12 +111,14 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasVertexColors;
 
 	public NifColor4[] vertexColors;
-	//OPTOMISATION
-	public float[] vertexColorsOpt;
+	//OPTOMISATIONS
+	private float[] vertexColorsOpt;
+	public FloatBuffer vertexColorsOptBuf;
 
 	public NifTexCoord[][] uVSets;
-	//OPTOMISATION
-	public float[][] uVSetsOpt;
+	//OPTOMISATIONS
+	private float[][] uVSetsOpt;
+	public FloatBuffer[] uVSetsOptBuf;
 
 	public ConsistencyType consistencyType;
 
@@ -158,6 +165,8 @@ public abstract class NiGeometryData extends NiObject
 					verticesOpt[i * 3 + 2] = -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
 					verticesOpt[i * 3 + 1] = ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE;
 				}
+				verticesOptBuf = BufferWrap.makeFloatBuffer(verticesOpt);
+				verticesOpt = null;
 			}
 			else
 			{
@@ -190,6 +199,9 @@ public abstract class NiGeometryData extends NiObject
 					normalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
 					normalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
 				}
+				
+				normalsOptBuf = BufferWrap.makeFloatBuffer(normalsOpt);
+				normalsOpt = null;
 			}
 			else
 			{
@@ -221,6 +233,10 @@ public abstract class NiGeometryData extends NiObject
 							binormalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
 							binormalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
 						}
+						tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
+						tangentsOpt = null;
+						binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
+						binormalsOpt = null;
 
 					}
 					else
@@ -263,6 +279,8 @@ public abstract class NiGeometryData extends NiObject
 					vertexColorsOpt[i * 4 + 2] = ByteConvert.readFloat(stream);
 					vertexColorsOpt[i * 4 + 3] = ByteConvert.readFloat(stream);
 				}
+				vertexColorsOptBuf = BufferWrap.makeFloatBuffer(vertexColorsOpt);
+				vertexColorsOpt = null;
 			}
 			else
 			{
@@ -270,7 +288,7 @@ public abstract class NiGeometryData extends NiObject
 				for (int i = 0; i < numVertices; i++)
 				{
 					vertexColors[i] = new NifColor4(stream);
-				}
+				}				
 			}
 		}
 
@@ -304,6 +322,13 @@ public abstract class NiGeometryData extends NiObject
 					uVSetsOpt[j][i * 2 + 1] = ByteConvert.readFloat(stream);
 				}
 			}
+			
+			uVSetsOptBuf = new FloatBuffer[actNumUVSets];
+			for (int j = 0; j < actNumUVSets; j++)
+			{
+				uVSetsOptBuf[j] = BufferWrap.makeFloatBuffer(uVSetsOpt[j]);
+				uVSetsOpt[j] = null;
+			}
 		}
 		else
 		{
@@ -314,7 +339,7 @@ public abstract class NiGeometryData extends NiObject
 				{
 					uVSets[j][i] = new NifTexCoord(stream);
 				}
-			}
+			}		
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
@@ -326,83 +351,15 @@ public abstract class NiGeometryData extends NiObject
 		{
 			additionalData = new NifRef(NiAdditionalGeometryData.class, stream);
 		}
+
+	 
+
 		return success;
-	}
-
-	public void addDisplayRows(ArrayList<Object[]> list)
-	{
-		super.addDisplayRows(list);
-
-		list.add(new Object[] { "NiGeometryData", "unknownInt1", "" + unknownInt1 });
-
-		list.add(new Object[] { "NiGeometryData", "numVertices", "" + numVertices });
-
-		list.add(new Object[] { "NiGeometryData", "keepFlags", "" + keepFlags });
-		list.add(new Object[] { "NiGeometryData", "compressFlags", "" + compressFlags });
-
-		list.add(new Object[] { "NiGeometryData", "hasVertices", "" + hasVertices });
-
-		if (hasVertices)
-		{
-			list.add(new Object[] { "NiGeometryData", "vertices", "ArrayOf NifVector3f " + vertices.length });
-		}
-
-		list.add(new Object[] { "NiGeometryData", "numUVSets", "" + numUVSets });
-
-		if (nVer.LOAD_VER == NifVer.VER_20_2_0_7 && nVer.LOAD_USER_VER == 12)
-		{
-			list.add(new Object[] { "NiGeometryData", "unknownInt2", "" + unknownInt2 });
-
-		}
-		list.add(new Object[] { "NiGeometryData", "hasNormals", "" + hasNormals });
-
-		if (hasNormals)
-		{
-			list.add(new Object[] { "NiGeometryData", "normals", "ArrayOf NifVector3f " + normals.length });
-
-			if ((numUVSets & 61440) != 0)
-			{
-				list.add(new Object[] { "NiGeometryData", "binormals", "ArrayOf NifVector3f " + binormals.length });
-				list.add(new Object[] { "NiGeometryData", "tangents", "ArrayOf NifVector3f " + tangents.length });
-			}
-		}
-		list.add(new Object[] { "NiGeometryData", "center", "" + center });
-
-		list.add(new Object[] { "NiGeometryData", "radius", "" + radius });
-
-		if (nVer.LOAD_VER == NifVer.VER_20_3_0_9 && nVer.LOAD_USER_VER == 131072)
-		{
-			list.add(new Object[] { "NiGeometryData", "unknown13Shorts", "" + unknown13Shorts });
-		}
-
-		list.add(new Object[] { "NiGeometryData", "hasVertexColors", "" + hasVertexColors });
-
-		if (hasVertexColors)
-		{
-			list.add(new Object[] { "NiGeometryData", "vertexColors", "ArrayOf NifColor4 " + vertexColors.length });
-		}
-
-		//claculated actual value based on version
-		if (nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nVer.LOAD_USER_VER >= 11 && !nVer.isBP())
-		{
-			actNumUVSets = numUVSets & 1;
-		}
-		else
-		{
-			actNumUVSets = numUVSets & 63;
-		}
-
-		list.add(new Object[] { "NiGeometryData", "uVSets", "2DArrayOf NifTexCoord " + actNumUVSets + " " + numVertices });
-
-		list.add(new Object[] { "NiGeometryData", "consistencyType", "" + consistencyType });
-
-		list.add(new Object[] { "NiGeometryData", "additionalData", "" + additionalData });
-
 	}
 
 	public void loadTangentAndBinormalsFromExtraData(InputStream stream, NifVer nifVer) throws IOException
 	{
-		if (tangentsOpt != null)
+		if (tangentsOptBuf != null)
 			new Throwable("ALERT tangents already set!!!1!").printStackTrace();
 
 		if (hasNormals)
@@ -426,6 +383,11 @@ public abstract class NiGeometryData extends NiObject
 						binormalsOpt[i * 3 + 2] = -ByteConvert.readFloat(stream);
 						binormalsOpt[i * 3 + 1] = ByteConvert.readFloat(stream);
 					}
+
+					tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
+					tangentsOpt = null;
+					binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
+					binormalsOpt = null;
 
 				}
 				else

@@ -2,6 +2,7 @@ package nif.niobject.bs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 import nif.ByteConvert;
@@ -9,6 +10,7 @@ import nif.NifVer;
 import nif.compound.BSVertexData;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
+import tools.BufferWrap;
 import tools.MiniFloat;
 
 public class BSTriShape extends NiTriBasedGeom
@@ -33,12 +35,18 @@ public class BSTriShape extends NiTriBasedGeom
 
 	//OPTIMISATION
 	//public BSVertexData[] vertexData;
-	public float[] verticesOpt;
-	public float[] normalsOpt;
-	public float[] tangentsOpt;
-	public float[] binormalsOpt;
-	public float[] colorsOpt;
-	public float[] uVSetOpt;
+	private float[] verticesOpt;
+	private float[] normalsOpt;
+	private float[] tangentsOpt;
+	private float[] binormalsOpt;
+	private float[] colorsOpt;
+	private float[] uVSetOpt;
+	public FloatBuffer verticesOptBuf;
+	public FloatBuffer normalsOptBuf;
+	public FloatBuffer tangentsOptBuf;
+	public FloatBuffer binormalsOptBuf;
+	public FloatBuffer colorsOptBuf;
+	public FloatBuffer uVSetOptBuf;
 
 	//OPTIMISATION
 	//public NifTriangle[] triangles;
@@ -218,7 +226,35 @@ public class BSTriShape extends NiTriBasedGeom
 							ByteConvert.readInt(stream);
 						}
 					}*/
+
 				}
+
+				//////////////FLIP to buffers now and release float memory					 
+				verticesOptBuf = BufferWrap.makeFloatBuffer(verticesOpt);
+				verticesOpt = null;
+				binormalsOptBuf = BufferWrap.makeFloatBuffer(binormalsOpt);
+				binormalsOpt = null;
+				if ((vertexFormatFlags6 & 0x20) != 0)
+				{
+					uVSetOptBuf = BufferWrap.makeFloatBuffer(uVSetOpt);
+					uVSetOpt = null;
+				}
+				if ((vertexFormatFlags6 & 0x80) != 0)
+				{
+					normalsOptBuf = BufferWrap.makeFloatBuffer(normalsOpt);
+					normalsOpt = null;
+				}
+				if ((vertexFormatFlags3 & 0x40) != 0)
+				{
+					tangentsOptBuf = BufferWrap.makeFloatBuffer(tangentsOpt);
+					tangentsOpt = null;
+				}
+				if ((vertexFormatFlags7 & 0x02) != 0)
+				{
+					colorsOptBuf = BufferWrap.makeFloatBuffer(colorsOpt);
+					colorsOpt = null;
+				}
+				///////////////////////////////////////////////////////////////////
 
 				trianglesOpt = new int[numTriangles * 3];
 				for (int i = 0; i < numTriangles; i++)
