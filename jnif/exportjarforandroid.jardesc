@@ -11,17 +11,6 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=jnif/src&lt;nif.compound"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.fx"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.interpolator"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.enums"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.particle"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.bhk"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.bgsm"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.basic"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.bs"/>
-        <javaElement handleIdentifier="=jnif/src&lt;nif.niobject.controller"/>
+        <javaElement handleIdentifier="=jnif/src"/>
     </selectedElements>
 </jardesc>
