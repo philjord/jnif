@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -22,7 +22,7 @@ public class SkyrimWaterShaderFlags
 	 */
 	public byte flags;
 
-	public SkyrimWaterShaderFlags(InputStream stream) throws IOException
+	public SkyrimWaterShaderFlags(ByteBuffer stream) throws IOException
 	{
 		flags = ByteConvert.readByte(stream);
 	}

@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -22,7 +22,7 @@ public class NifLODRange
 
 	public float far;
 
-	public NifLODRange(InputStream stream) throws IOException
+	public NifLODRange(ByteBuffer stream) throws IOException
 	{
 		near = ByteConvert.readFloat(stream);
 		far = ByteConvert.readFloat(stream);

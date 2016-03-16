@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -37,7 +37,7 @@ public class NifFurniturePosition
 
 	public short EntryProperties;
 
-	public NifFurniturePosition(InputStream stream, NifVer nifVer) throws IOException
+	public NifFurniturePosition(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 
 		offset = new NifVector3(stream);

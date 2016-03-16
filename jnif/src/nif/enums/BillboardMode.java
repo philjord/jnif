@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class BillboardMode
 
 	public short mode;
 
-	public BillboardMode(InputStream stream) throws IOException
+	public BillboardMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readShort(stream);
 	}

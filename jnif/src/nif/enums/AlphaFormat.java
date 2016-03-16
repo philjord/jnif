@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -25,7 +25,7 @@ public class AlphaFormat
 
 	public int format;
 
-	public AlphaFormat(InputStream stream) throws IOException
+	public AlphaFormat(ByteBuffer stream) throws IOException
 	{
 		format = ByteConvert.readInt(stream);
 	}

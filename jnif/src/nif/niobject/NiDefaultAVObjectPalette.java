@@ -1,6 +1,6 @@
 package nif.niobject;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -25,7 +25,7 @@ public class NiDefaultAVObjectPalette extends NiAVObjectPalette
 
 	public NifAVObject[] objs;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 

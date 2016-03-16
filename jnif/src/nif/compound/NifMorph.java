@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -44,7 +44,7 @@ public class NifMorph
 
 	public NifVector3[] vectors;
 
-	public NifMorph(int numVertices, InputStream stream, NifVer nifVer) throws IOException
+	public NifMorph(int numVertices, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		this.nVer = nifVer;
 

@@ -1,7 +1,7 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.compound.NifStringPalette;
@@ -21,7 +21,7 @@ public class NiStringPalette extends NiObject
 
 	public NifStringPalette palette;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		palette = new NifStringPalette(stream);

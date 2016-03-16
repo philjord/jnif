@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -32,7 +32,7 @@ public class NifSkinPartition
 	    <add name="Has Bone Indices" type="bool">Do we have bone indices?</add>
 	    <add name="Bone Indices" type="byte" arr1="Num Vertices" arr2="Num Weights Per Vertex" cond="Has Bone Indices">Bone indices, they index into &#039;Bones&#039;.</add>
 		<add name="Unknown Short" type="ushort" vercond="User Version >= 12">Unknown</add>
-
+	
 	    <!-- related to the file posted in tracker item #3117836:
 	        http://sourceforge.net/tracker/?func=detail&aid=3117836&group_id=149157&atid=776343 -->
 	    <add name="Unknown 83 C3" type="ushort" ver1="10.2.0.0" ver2="10.2.0.0" vercond="User Version == 1" ></add>
@@ -57,17 +57,17 @@ public class NifSkinPartition
 
 	public short[] bones;
 
-	public boolean hasVertexMap;
+	public boolean hasVertexMap = true;
 
 	public short[] vertexMap;
 
-	public boolean hasVertexWeights;
+	public boolean hasVertexWeights = true;
 
 	public float[][] vertexWeights;
 
 	public short[] stripLengths;
 
-	public boolean hasStrips;
+	public boolean hasStrips = true;
 
 	public short[][] strips;
 
@@ -79,7 +79,7 @@ public class NifSkinPartition
 
 	public short UnknownShort;
 
-	public NifSkinPartition(InputStream stream, NifVer nifVer) throws IOException
+	public NifSkinPartition(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 
 		numVertices = ByteConvert.readShort(stream);
@@ -92,17 +92,22 @@ public class NifSkinPartition
 		{
 			bones[i] = ByteConvert.readShort(stream);
 		}
-		hasVertexMap = ByteConvert.readBool(stream, nifVer);
+
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			hasVertexMap = ByteConvert.readBool(stream, nifVer);
+
 		if (hasVertexMap)
 		{
-
 			vertexMap = new short[numVertices];
 			for (int i = 0; i < numVertices; i++)
 			{
 				vertexMap[i] = ByteConvert.readShort(stream);
 			}
 		}
-		hasVertexWeights = ByteConvert.readBool(stream, nifVer);
+
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			hasVertexWeights = ByteConvert.readBool(stream, nifVer);
+
 		if (hasVertexWeights)
 		{
 			vertexWeights = new float[numVertices][numWeightsPerVertex];
@@ -116,24 +121,30 @@ public class NifSkinPartition
 		{
 			stripLengths[i] = ByteConvert.readShort(stream);
 		}
-		hasStrips = ByteConvert.readBool(stream, nifVer);
+
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0)
+			hasStrips = ByteConvert.readBool(stream, nifVer);
+
 		if (hasStrips)
 		{
-			strips = new short[numStrips][];
-			for (int i = 0; i < numStrips; i++)
+			if (numStrips > 0)
 			{
-				strips[i] = ByteConvert.readShorts(stripLengths[i], stream);
+				strips = new short[numStrips][];
+				for (int i = 0; i < numStrips; i++)
+				{
+					strips[i] = ByteConvert.readShorts(stripLengths[i], stream);
+				}
+			}
+			else
+			{
+				triangles = new NifTriangle[numTriangles];
+				for (int i = 0; i < numTriangles; i++)
+				{
+					triangles[i] = new NifTriangle(stream);
+				}
 			}
 		}
-
-		if (numStrips == 0)
-		{
-			triangles = new NifTriangle[numTriangles];
-			for (int i = 0; i < numTriangles; i++)
-			{
-				triangles[i] = new NifTriangle(stream);
-			}
-		}
+		
 		hasBoneIndices = ByteConvert.readBool(stream, nifVer);
 		if (hasBoneIndices)
 		{

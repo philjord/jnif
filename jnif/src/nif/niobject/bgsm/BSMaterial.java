@@ -1,7 +1,7 @@
 package nif.niobject.bgsm;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import nif.ByteConvert;
@@ -48,7 +48,7 @@ public abstract class BSMaterial
 		this.localPath = file;
 	}
 
-	public void readFile(InputStream stream) throws IOException
+	public void readFile(ByteBuffer stream) throws IOException
 	{
 		version = ByteConvert.readInt(stream);
 		tileFlags = ByteConvert.readInt(stream);

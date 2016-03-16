@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifSphereBV
 
 	public float radius;
 
-	public NifSphereBV(InputStream stream) throws IOException
+	public NifSphereBV(ByteBuffer stream) throws IOException
 	{
 		center = new NifVector3(stream);
 		radius = ByteConvert.readFloat(stream);

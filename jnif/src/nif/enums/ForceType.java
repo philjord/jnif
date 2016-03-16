@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class ForceType
 
 	public int type;
 
-	public ForceType(InputStream stream) throws IOException
+	public ForceType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

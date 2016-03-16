@@ -1,6 +1,6 @@
 package nif.niobject.controller;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -32,7 +32,7 @@ public class NiControllerManager extends NiTimeController
 
 	public NifRef objectPalette;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 

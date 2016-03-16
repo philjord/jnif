@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -16,7 +16,7 @@ public class LightMode
 
 	public int mode;
 
-	public LightMode(InputStream stream) throws IOException
+	public LightMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

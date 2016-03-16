@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -20,7 +20,7 @@ public class EffectType
 
 	public int type;
 
-	public EffectType(InputStream stream) throws IOException
+	public EffectType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

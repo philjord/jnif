@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class NifTBC
 
 	public float c;
 
-	public NifTBC(InputStream stream) throws IOException
+	public NifTBC(ByteBuffer stream) throws IOException
 	{
 		t = ByteConvert.readFloat(stream);
 		b = ByteConvert.readFloat(stream);

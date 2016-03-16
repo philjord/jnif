@@ -1,7 +1,7 @@
 package nif.niobject.bgsm;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.compound.NifColor3;
@@ -29,7 +29,7 @@ public class EffectMaterial extends BSMaterial
 		super(file);
 	}
 
-	public void readFile(InputStream stream) throws IOException
+	public void readFile(ByteBuffer stream) throws IOException
 	{
 		//MUST have read off first 4 bytes by now!!
 		super.readFile(stream);

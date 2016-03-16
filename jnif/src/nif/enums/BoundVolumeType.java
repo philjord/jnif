@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class BoundVolumeType
 
 	public int type;
 
-	public BoundVolumeType(InputStream stream) throws IOException
+	public BoundVolumeType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

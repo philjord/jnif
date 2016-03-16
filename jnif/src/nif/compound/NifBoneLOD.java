@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -20,7 +20,7 @@ public class NifBoneLOD
 
 	public String BoneName;
 
-	public NifBoneLOD(InputStream stream, NifVer nifVer) throws IOException
+	public NifBoneLOD(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 
 		Distance = ByteConvert.readInt(stream);

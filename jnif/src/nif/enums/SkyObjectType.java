@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class SkyObjectType
 
 	public int value;
 
-	public SkyObjectType(InputStream stream) throws IOException
+	public SkyObjectType(ByteBuffer stream) throws IOException
 	{
 		value = ByteConvert.readInt(stream);
 	}

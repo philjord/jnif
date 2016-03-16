@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -276,7 +276,7 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 	public int[] Unk1;
 	public Data[] data;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
@@ -344,7 +344,7 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 		public int UnkInt1;
 		public int UnkInt2;
 
-		public Data(InputStream stream, NifVer nifVer) throws IOException
+		public Data(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			numTris = ByteConvert.readInt(stream);
 			numLODs = ByteConvert.readInt(stream);
@@ -379,7 +379,7 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 		public float scale; // bounds matches up
 		public NifSphereBV bounds;
 
-		public Combined(InputStream stream, NifVer nifVer) throws IOException
+		public Combined(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			//most often 0.5ish but sometimes 0 sometimes 1
 			f1 = ByteConvert.readFloat(stream);

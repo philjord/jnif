@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -29,7 +29,7 @@ public class NifExportInfo
 
 	public String exportInfo3;
 
-	public NifExportInfo(NifVer nifVer, InputStream stream) throws IOException
+	public NifExportInfo(NifVer nifVer, ByteBuffer stream) throws IOException
 	{
 		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_2)
 		{

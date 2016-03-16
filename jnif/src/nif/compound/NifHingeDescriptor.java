@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -75,7 +75,7 @@ public class NifHingeDescriptor
 
 	public byte unknownByte3;
 
-	public NifHingeDescriptor(InputStream stream, NifVer nifVer) throws IOException
+	public NifHingeDescriptor(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		pivotA = new NifVector4(stream);
 		perp2AxleInA1 = new NifVector4(stream);

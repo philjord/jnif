@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class NifUnionBV
 
 	public NifBoundingVolume[] boundingVolumes;
 
-	public NifUnionBV(InputStream stream) throws IOException
+	public NifUnionBV(ByteBuffer stream) throws IOException
 	{
 		numBV = ByteConvert.readInt(stream);
 		boundingVolumes = new NifBoundingVolume[numBV];

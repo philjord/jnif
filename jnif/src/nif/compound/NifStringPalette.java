@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -23,7 +23,7 @@ public class NifStringPalette
 
 	//public String[] strings;
 
-	public NifStringPalette(InputStream stream) throws IOException
+	public NifStringPalette(ByteBuffer stream) throws IOException
 	{
 		palette = ByteConvert.readSizedString(stream);
 		length = ByteConvert.readInt(stream);

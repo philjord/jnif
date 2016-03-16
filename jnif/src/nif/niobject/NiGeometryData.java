@@ -1,10 +1,10 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -119,7 +119,7 @@ public abstract class NiGeometryData extends NiObject
 
 	public NifRef additionalData;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		if (nifVer.LOAD_VER >= NifVer.VER_10_2_0_0)
@@ -337,7 +337,7 @@ public abstract class NiGeometryData extends NiObject
 		return success;
 	}
 
-	public void loadTangentAndBinormalsFromExtraData(InputStream stream, NifVer nifVer) throws IOException
+	public void loadTangentAndBinormalsFromExtraData(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		if (tangentsOptBuf != null)
 			new Throwable("ALERT tangents already set!!!1!").printStackTrace();

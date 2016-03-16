@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -34,7 +34,7 @@ public class NifAdditionalDataBlock
 
 	public byte[][] data;
 
-	public NifAdditionalDataBlock(InputStream stream, NifVer nifVer) throws IOException
+	public NifAdditionalDataBlock(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		hasData = ByteConvert.readBool(stream, nifVer);
 		if (hasData)

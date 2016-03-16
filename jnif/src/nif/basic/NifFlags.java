@@ -1,7 +1,7 @@
 package nif.basic;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -17,7 +17,7 @@ public class NifFlags
 
 	public short flags = -1;
 
-	public NifFlags(InputStream stream) throws IOException
+	public NifFlags(ByteBuffer stream) throws IOException
 	{
 		flags = ByteConvert.readShort(stream);
 	}

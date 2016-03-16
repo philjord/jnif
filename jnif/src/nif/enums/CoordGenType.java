@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -22,7 +22,7 @@ public class CoordGenType
 
 	public int type;
 
-	public CoordGenType(InputStream stream) throws IOException
+	public CoordGenType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

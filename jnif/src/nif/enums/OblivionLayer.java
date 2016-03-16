@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -128,7 +128,7 @@ public class OblivionLayer
 
 	public int layer;
 
-	public OblivionLayer(InputStream stream) throws IOException
+	public OblivionLayer(ByteBuffer stream) throws IOException
 	{
 		layer = ByteConvert.readByte(stream);
 	}

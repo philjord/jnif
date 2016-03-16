@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -22,7 +22,7 @@ public class EmitFrom
 
 	public int from;
 
-	public EmitFrom(InputStream stream) throws IOException
+	public EmitFrom(ByteBuffer stream) throws IOException
 	{
 		from = ByteConvert.readInt(stream);
 	}

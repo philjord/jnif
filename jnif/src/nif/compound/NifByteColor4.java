@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class NifByteColor4
 
 	public byte a;
 
-	public NifByteColor4(InputStream stream) throws IOException
+	public NifByteColor4(ByteBuffer stream) throws IOException
 	{
 		r = ByteConvert.readByte(stream);
 		g = ByteConvert.readByte(stream);

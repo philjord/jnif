@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -27,7 +27,7 @@ public class NifBoundingBox
 
 	public NifVector3 radius;
 
-	public NifBoundingBox(InputStream stream) throws IOException
+	public NifBoundingBox(ByteBuffer stream) throws IOException
 	{
 		unknownInt = ByteConvert.readInt(stream);
 

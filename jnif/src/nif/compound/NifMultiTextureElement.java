@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -40,7 +40,7 @@ public class NifMultiTextureElement
 
 	public short unknownShort3;
 
-	public NifMultiTextureElement(InputStream stream, NifVer nifVer) throws IOException
+	public NifMultiTextureElement(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		hasImage = ByteConvert.readBool(stream, nifVer);
 		if (hasImage)

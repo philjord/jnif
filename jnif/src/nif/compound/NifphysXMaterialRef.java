@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.basic.NifRef;
@@ -23,7 +23,7 @@ public class NifphysXMaterialRef
 
 	public NifRef materialDesc;
 
-	public NifphysXMaterialRef(InputStream stream) throws IOException
+	public NifphysXMaterialRef(ByteBuffer stream) throws IOException
 	{
 
 		number = ByteConvert.readByte(stream);

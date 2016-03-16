@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class NifBonePoseArray
 
 	public NifMatrix33[] unknownArray;
 
-	public NifBonePoseArray(InputStream stream) throws IOException
+	public NifBonePoseArray(ByteBuffer stream) throws IOException
 	{
 		numUnknownArray = ByteConvert.readInt(stream);
 		unknownInts = new int[numUnknownArray];

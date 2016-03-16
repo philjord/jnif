@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class NifbhkCMSDTransform
 {
@@ -18,7 +18,7 @@ public class NifbhkCMSDTransform
 
 	public NifQuaternionXYZW Rotation;
 
-	public NifbhkCMSDTransform(InputStream stream) throws IOException
+	public NifbhkCMSDTransform(ByteBuffer stream) throws IOException
 	{
 		Translation = new NifVector4(stream);
 		Rotation = new NifQuaternionXYZW(stream);

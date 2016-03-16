@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class BSSkinBoneTrans
 
 	public float Scale;
 
-	public BSSkinBoneTrans(InputStream stream) throws IOException
+	public BSSkinBoneTrans(ByteBuffer stream) throws IOException
 	{
 		Center = new NifVector3(stream);
 		Radius = ByteConvert.readFloat(stream);

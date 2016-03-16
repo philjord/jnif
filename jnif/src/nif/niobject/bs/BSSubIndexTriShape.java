@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -14,7 +14,7 @@ public class BSSubIndexTriShape extends BSTriShape
 	public BSSITSSegment[] SubIndexPart1;
 	public SubIndexPart2 SubIndexPart2;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		if (dataSize > 0)
@@ -44,7 +44,7 @@ public class BSSubIndexTriShape extends BSTriShape
 		public int SegmentOffset;
 		public int UnknownInt1;
 
-		public BSSITSSubSegment(InputStream stream) throws IOException
+		public BSSITSSubSegment(ByteBuffer stream) throws IOException
 		{
 			TriangleOffset = ByteConvert.readInt(stream);
 			TriangleCount = ByteConvert.readInt(stream);
@@ -61,7 +61,7 @@ public class BSSubIndexTriShape extends BSTriShape
 		public int NumRecords;
 		public BSSITSSubSegment[] SubIndexRecord;
 
-		public BSSITSSegment(InputStream stream) throws IOException
+		public BSSITSSegment(ByteBuffer stream) throws IOException
 		{
 			TriangleOffset = ByteConvert.readInt(stream);
 			TriangleCount = ByteConvert.readInt(stream);
@@ -82,7 +82,7 @@ public class BSSubIndexTriShape extends BSTriShape
 		public int NumData;
 		public float[] ExtraData;
 
-		public SubIndexRecordB(InputStream stream) throws IOException
+		public SubIndexRecordB(ByteBuffer stream) throws IOException
 		{
 			UnknownInt1 = ByteConvert.readInt(stream);
 			UnknownInt2 = ByteConvert.readInt(stream);
@@ -99,7 +99,7 @@ public class BSSubIndexTriShape extends BSTriShape
 		public SubIndexRecordB[] SubIndexRecord;
 		public String SSFFile;
 
-		public SubIndexPart2(InputStream stream) throws IOException
+		public SubIndexPart2(ByteBuffer stream) throws IOException
 		{
 			NumA2 = ByteConvert.readInt(stream);
 			NumB2 = ByteConvert.readInt(stream);

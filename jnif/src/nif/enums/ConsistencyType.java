@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class ConsistencyType
 
 	public short type;
 
-	public ConsistencyType(InputStream stream) throws IOException
+	public ConsistencyType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readShort(stream);
 	}

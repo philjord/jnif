@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -76,7 +76,7 @@ public class SkyrimShaderPropertyFlags2
 
 	public int flags; // uint
 
-	public SkyrimShaderPropertyFlags2(InputStream stream) throws IOException
+	public SkyrimShaderPropertyFlags2(ByteBuffer stream) throws IOException
 	{
 		flags = ByteConvert.readInt(stream);
 	}

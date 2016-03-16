@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -33,7 +33,7 @@ public class NifArkTexture
 
 	public byte[] unknownBytes;
 
-	public NifArkTexture(InputStream stream, NifVer nifVer) throws IOException
+	public NifArkTexture(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		textureName = ByteConvert.readIndexString(stream, nifVer);
 		unknownInt3 = ByteConvert.readInt(stream);

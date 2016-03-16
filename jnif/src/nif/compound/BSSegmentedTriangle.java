@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -25,7 +25,7 @@ public class BSSegmentedTriangle
 
 	public byte unknownByte1;
 
-	public BSSegmentedTriangle(InputStream stream) throws IOException
+	public BSSegmentedTriangle(ByteBuffer stream) throws IOException
 	{
 		unknownInt1 = ByteConvert.readInt(stream);
 		unknownInt2 = ByteConvert.readInt(stream);

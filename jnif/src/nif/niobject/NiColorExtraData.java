@@ -1,7 +1,7 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.compound.NifColor4;
@@ -20,7 +20,7 @@ public class NiColorExtraData extends NiExtraData
 
 	public NifColor4 data;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		data = new NifColor4(stream);

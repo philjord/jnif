@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -37,7 +37,7 @@ public class NifKeyGroup
 
 	public Class<?> T;
 
-	public NifKeyGroup(Class<?> T, InputStream stream, NifVer nifVer) throws IOException
+	public NifKeyGroup(Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		this.T = T;
 		numKeys = ByteConvert.readInt(stream);

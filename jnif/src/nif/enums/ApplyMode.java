@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -23,7 +23,7 @@ public class ApplyMode
 
 	public int applyMode;
 
-	public ApplyMode(InputStream stream) throws IOException
+	public ApplyMode(ByteBuffer stream) throws IOException
 	{
 		applyMode = ByteConvert.readInt(stream);
 	}

@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -22,7 +22,7 @@ public class TexTransform
 
 	public int transformType;
 
-	public TexTransform(InputStream stream) throws IOException
+	public TexTransform(ByteBuffer stream) throws IOException
 	{
 		transformType = ByteConvert.readInt(stream);
 	}

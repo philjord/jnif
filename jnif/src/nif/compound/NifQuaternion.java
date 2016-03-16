@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -27,7 +27,7 @@ public class NifQuaternion
 
 	public float z;
 
-	public NifQuaternion(InputStream stream) throws IOException
+	public NifQuaternion(ByteBuffer stream) throws IOException
 	{
 		w = ByteConvert.readFloat(stream);
 		x = ByteConvert.readFloat(stream);

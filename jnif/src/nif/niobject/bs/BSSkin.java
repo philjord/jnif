@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -40,7 +40,7 @@ public class BSSkin
 		public int NumUnknown;
 		public NifVector3[] Unkown;
 
-		public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);
 			Target = new NifPtr(NiObject.class, stream);
@@ -67,7 +67,7 @@ public class BSSkin
 		public int NumBones;
 		public BSSkinBoneTrans[] Bones;
 
-		public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);
 			NumBones = ByteConvert.readInt(stream);

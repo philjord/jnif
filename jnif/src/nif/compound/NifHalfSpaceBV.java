@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class NifHalfSpaceBV
 {
@@ -15,7 +15,7 @@ public class NifHalfSpaceBV
 
 	public NifVector3 center;
 
-	public NifHalfSpaceBV(InputStream stream) throws IOException
+	public NifHalfSpaceBV(ByteBuffer stream) throws IOException
 	{
 		normal = new NifVector3(stream);
 		center = new NifVector3(stream);

@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -28,7 +28,7 @@ public class NifSkinTransform
 
 	public float scale;
 
-	public NifSkinTransform(InputStream stream) throws IOException
+	public NifSkinTransform(ByteBuffer stream) throws IOException
 	{
 		rotation = new NifMatrix33(stream);
 		translation = new NifVector3(stream);

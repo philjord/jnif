@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -39,7 +39,7 @@ public class BSTreadTransfSubInfo
 
 	public int unknownInt8;
 
-	public BSTreadTransfSubInfo(InputStream stream) throws IOException
+	public BSTreadTransfSubInfo(ByteBuffer stream) throws IOException
 	{
 
 		unknownInt1 = ByteConvert.readInt(stream);

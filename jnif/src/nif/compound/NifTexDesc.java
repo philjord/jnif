@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -77,7 +77,7 @@ public class NifTexDesc
 
 	public short UnknownShort1;
 
-	public NifTexDesc(InputStream stream, NifVer nifVer) throws IOException
+	public NifTexDesc(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		source = new NifRef(NiSourceTexture.class, stream);
 		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)

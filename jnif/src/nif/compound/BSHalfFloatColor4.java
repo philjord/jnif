@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import tools.MiniFloat;
@@ -17,7 +17,7 @@ public class BSHalfFloatColor4
 
 	public float a;
 
-	public BSHalfFloatColor4(InputStream stream) throws IOException
+	public BSHalfFloatColor4(ByteBuffer stream) throws IOException
 	{
 		r = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
 		g = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));

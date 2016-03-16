@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.enums.HavokMaterial;
@@ -35,7 +35,7 @@ public class NifOblivionSubShape
 
 	public HavokMaterial material;
 
-	public NifOblivionSubShape(InputStream stream) throws IOException
+	public NifOblivionSubShape(ByteBuffer stream) throws IOException
 	{
 		layer = new OblivionLayer(stream);
 		colFilter = ByteConvert.readByte(stream);

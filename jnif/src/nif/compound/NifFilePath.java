@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -22,7 +22,7 @@ public class NifFilePath
 
 	public String string;
 
-	public NifFilePath(InputStream stream, NifVer nifVer) throws IOException
+	public NifFilePath(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		string = ByteConvert.readIndexString(stream, nifVer);
 	}

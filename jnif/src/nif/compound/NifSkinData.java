@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -33,7 +33,7 @@ public class NifSkinData
 
 	public NifSkinWeight[] vertexWeights;
 
-	public NifSkinData(boolean hasVertexWeights, InputStream stream) throws IOException
+	public NifSkinData(boolean hasVertexWeights, ByteBuffer stream) throws IOException
 	{
 		nifSkinTransform = new NifSkinTransform(stream);
 		boundingSphereOffset = new NifVector3(stream);

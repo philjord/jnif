@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -74,7 +74,7 @@ public class BSShaderFlags
 
 	public int flags;
 
-	public BSShaderFlags(InputStream stream) throws IOException
+	public BSShaderFlags(ByteBuffer stream) throws IOException
 	{
 		flags = ByteConvert.readInt(stream);
 	}

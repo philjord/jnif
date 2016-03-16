@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -28,7 +28,7 @@ public class NifByteArray
 
 	public byte[] data;
 
-	public NifByteArray(InputStream stream) throws IOException
+	public NifByteArray(ByteBuffer stream) throws IOException
 	{
 		dataSize = ByteConvert.readInt(stream);
 		data = ByteConvert.readBytes(dataSize, stream);

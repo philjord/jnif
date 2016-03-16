@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -35,7 +35,7 @@ public class NifCapsuleBV
 
 	public float unknownFloat2;
 
-	public NifCapsuleBV(InputStream stream) throws IOException
+	public NifCapsuleBV(ByteBuffer stream) throws IOException
 	{
 		center = new NifVector3(stream);
 		origin = new NifVector3(stream);

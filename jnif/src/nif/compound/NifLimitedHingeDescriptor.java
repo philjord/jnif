@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -44,6 +44,8 @@ public class NifLimitedHingeDescriptor
 
 	public NifVector4 axleB;
 
+	public NifVector4 perp2AxleInB1;
+
 	public NifVector4 perp2AxleInB2;
 
 	public float minAngle;
@@ -52,29 +54,46 @@ public class NifLimitedHingeDescriptor
 
 	public float maxFriction;
 
-	public float unknownFloat1;
+	public boolean enableMotor;
 
-	public float unknownFloat2;
+	public NifMotor nifMotor;
 
-	public float unknownFloat3;
-
-	public NifLimitedHingeDescriptor(InputStream stream, NifVer nifVer) throws IOException
+	public NifLimitedHingeDescriptor(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
-		pivotA = new NifVector4(stream);
-		axleA = new NifVector4(stream);
-		perp2AxleInA1 = new NifVector4(stream);
-		perp2AxleInA2 = new NifVector4(stream);
-		pivotB = new NifVector4(stream);
-		axleB = new NifVector4(stream);
-		perp2AxleInB2 = new NifVector4(stream);
+
+		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5 || (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 16))
+		{
+			pivotA = new NifVector4(stream);
+			axleA = new NifVector4(stream);
+			perp2AxleInA1 = new NifVector4(stream);
+			perp2AxleInA2 = new NifVector4(stream);
+			pivotB = new NifVector4(stream);
+			axleB = new NifVector4(stream);
+			perp2AxleInB2 = new NifVector4(stream);
+		}
+		else if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 >= 16)
+		{
+			axleA = new NifVector4(stream);
+			perp2AxleInA1 = new NifVector4(stream);
+			perp2AxleInA2 = new NifVector4(stream);
+			pivotA = new NifVector4(stream);
+			axleB = new NifVector4(stream);
+			perp2AxleInB1 = new NifVector4(stream);
+			perp2AxleInB2 = new NifVector4(stream);
+			pivotB = new NifVector4(stream);
+		}
+
 		minAngle = ByteConvert.readFloat(stream);
 		maxAngle = ByteConvert.readFloat(stream);
 		maxFriction = ByteConvert.readFloat(stream);
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7)
+
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 > 16)
 		{
-			unknownFloat1 = ByteConvert.readFloat(stream);
-			unknownFloat2 = ByteConvert.readFloat(stream);
-			unknownFloat3 = ByteConvert.readFloat(stream);
+			enableMotor = ByteConvert.readBool(stream, nifVer);
+			if (enableMotor)
+			{
+				nifMotor = new NifMotor(stream, nifVer);
+			}
 		}
 	}
 }

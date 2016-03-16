@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.compound.NifVector3;
@@ -21,7 +21,7 @@ public class BSMultiBoundAABB extends BSMultiBoundData
 
 	public NifVector3 Extent;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		Position = new NifVector3(stream);

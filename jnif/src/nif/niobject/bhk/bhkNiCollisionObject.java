@@ -1,7 +1,7 @@
 package nif.niobject.bhk;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.basic.NifFlags;
@@ -14,11 +14,11 @@ public abstract class bhkNiCollisionObject extends NiCollisionObject
 	/**
 	 
 	 <niobject name="bhkNiCollisionObject" abstract="1" inherit="NiCollisionObject">
-
+	
 	 Havok related collision object?
 	 
 	 <add name="Flags" type="ushort" default="1">
-
+	
 	 Set to "1" for most objects. Bits: 0=Active 2=Notify 3=Set Local 6=Reset
 	 
 	 </add>
@@ -31,10 +31,10 @@ public abstract class bhkNiCollisionObject extends NiCollisionObject
 
 	public NifRef body;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		flags =new NifFlags(stream);
+		flags = new NifFlags(stream);
 		body = new NifRef(NiObject.class, stream);
 
 		return success;

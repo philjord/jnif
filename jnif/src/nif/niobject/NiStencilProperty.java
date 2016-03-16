@@ -1,7 +1,7 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -13,35 +13,29 @@ import nif.enums.StencilAction;
 public class NiStencilProperty extends NiProperty
 {
 	/**
-	 <niobject name="NiStencilProperty" abstract="0" inherit="NiProperty" ver1="4.1.0.12">
-
-	 Allows control of stencil testing.
-	 
-	 <add name="Flags" type="Flags" ver2="10.0.1.2">Property flags.</add>
-	 <add name="Stencil Enabled" type="byte" ver2="20.0.0.5">Enables or disables the stencil test.</add>
-	 <add name="Stencil Function" type="CompareMode" ver2="20.0.0.5">Selects the compare mode function.</add>
-	 <add name="Stencil Ref" type="uint" ver2="20.0.0.5">Unknown.  Default is 0.</add>
-	 <add name="Stencil Mask" type="uint" default="4294967295" ver2="20.0.0.5">A bit mask. The default is 0xffffffff.</add>
-	 <add name="Fail Action" type="StencilAction" ver2="20.0.0.5"/>
-	 <add name="Z Fail Action" type="StencilAction" ver2="20.0.0.5"/>
-	 <add name="Pass Action" type="StencilAction" ver2="20.0.0.5"/>
-	 <add name="Draw Mode" default="3" type="FaceDrawMode" ver2="20.0.0.5">
-	 Used to enabled double sided faces. Default is 3 (DRAW_BOTH).
-	 </add>
-	 <add name="Flags" type="Flags" ver1="20.1.0.3">
-
-	 Property flags:
-	 0.. 0(?) = Stencil Enable
-	 1.. 3 = Fail Action
-	 4.. 6 = Z Fail Action
-	 7.. 9 = Pass Action
-	 10..11 = Draw Mode
-	 12..14 = Test Func
-	 
-	 </add>
-	 <add name="Stencil Ref" type="uint" ver1="20.1.0.3">Unknown.  Default is 0.</add>
-	 <add name="Stencil Mask" type="uint" default="4294967295" ver1="20.1.0.3">A bit mask. The default is 0xffffffff.</add>
-	 </niobject>
+	<niobject name="NiStencilProperty" abstract="0" inherit="NiProperty">
+	    Allows control of stencil testing.
+	    <add name="Flags" type="Flags" ver2="10.0.1.2">Property flags.</add>
+	    <add name="Stencil Enabled" type="byte" ver2="20.0.0.5">Enables or disables the stencil test.</add>
+	    <add name="Stencil Function" type="StencilCompareMode" ver2="20.0.0.5">Selects the compare mode function (see: glStencilFunc).</add>
+	    <add name="Stencil Ref" type="uint" ver2="20.0.0.5">Unknown.  Default is 0.</add>
+	    <add name="Stencil Mask" type="uint" default="4294967295" ver2="20.0.0.5">A bit mask. The default is 0xffffffff.</add>
+	    <add name="Fail Action" type="StencilAction" ver2="20.0.0.5"/>
+	    <add name="Z Fail Action" type="StencilAction" ver2="20.0.0.5"/>
+	    <add name="Pass Action" type="StencilAction" ver2="20.0.0.5"/>
+	    <add name="Draw Mode" default="DRAW_BOTH" type="FaceDrawMode" ver2="20.0.0.5">Used to enabled double sided faces. Default is 3 (DRAW_BOTH).</add>
+	    <add name="Flags" type="Flags" default="19840" ver1="20.1.0.3">
+	        Property flags:
+	        Bit 0: Stencil Enable
+	        Bits 1-3: Fail Action
+	        Bits 4-6: Z Fail Action
+	        Bits 7-9: Pass Action
+	        Bits 10-11: Draw Mode
+	        Bits 12-14: Stencil Function
+	    </add>
+	    <add name="Stencil Ref" type="uint" ver1="20.1.0.3">Unknown.  Default is 0.</add>
+	    <add name="Stencil Mask" type="uint" default="4294967295" ver1="20.1.0.3">A bit mask. The default is 0xffffffff.</add>
+	</niobject>
 	 */
 
 	private boolean stencilEnabled;
@@ -62,9 +56,15 @@ public class NiStencilProperty extends NiProperty
 
 	private NifFlags flags;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
+
+		if (nifVer.LOAD_VER <= NifVer.VER_10_0_1_2)
+		{
+			flags = new NifFlags(stream);
+		}
+
 		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
 		{
 			stencilEnabled = ByteConvert.readBool(stream, nifVer);

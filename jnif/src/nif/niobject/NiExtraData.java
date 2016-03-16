@@ -1,7 +1,7 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -25,7 +25,7 @@ public class NiExtraData extends NiObject
 
 	public NifRef NextExtraData;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		if (nifVer.LOAD_VER >= NifVer.VER_10_0_1_0 && !(this instanceof BSbhkNPObject))

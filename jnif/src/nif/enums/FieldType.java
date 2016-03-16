@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -16,7 +16,7 @@ public class FieldType
 
 	public int type;
 
-	public FieldType(InputStream stream) throws IOException
+	public FieldType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

@@ -1,6 +1,6 @@
 package nif.niobject.particle;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -22,7 +22,7 @@ public class NiPSysDragFieldModifier extends NiPSysFieldModifier
 
 	public NifVector3 direction;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		useDirection = ByteConvert.readBool(stream, nifVer);

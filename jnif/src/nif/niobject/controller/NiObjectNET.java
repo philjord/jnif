@@ -1,7 +1,7 @@
 package nif.niobject.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import nif.ByteConvert;
@@ -43,7 +43,7 @@ public abstract class NiObjectNET extends NiObject
 
 	public NifRef controller;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		name = ByteConvert.readIndexString(stream, nifVer);

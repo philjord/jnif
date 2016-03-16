@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -34,7 +34,7 @@ public class MotionQuality
 
 	public int quality;
 
-	public MotionQuality(InputStream stream) throws IOException
+	public MotionQuality(ByteBuffer stream) throws IOException
 	{
 		quality = ByteConvert.readByte(stream);
 	}

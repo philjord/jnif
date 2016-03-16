@@ -1,7 +1,7 @@
 package nif.niobject.interpolator;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.compound.NifVector3;
@@ -20,7 +20,7 @@ public class NiBlendPoint3Interpolator extends NiBlendInterpolator
 
 	public NifVector3 pointValue;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		pointValue = new NifVector3(stream);

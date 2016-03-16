@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -74,16 +74,16 @@ public class NifHeader
 		nifVer = new NifVer(fileName, 0, 0, 0);
 	}
 
-	public boolean readFromStream(InputStream stream) throws IOException
+	public boolean readFromStream(ByteBuffer stream) throws IOException
 	{
 		// header loads till first linefeed (ascii 10) or 64 max (not checked)
 		int len = 0;
-		char c = (char) stream.read();
+		char c = (char) stream.get();
 		len++;
 		while (c != 10 && len < 65)
 		{
 			headerString += c;
-			c = (char) stream.read();
+			c = (char) stream.get();
 			len++;
 		}
 		// if version bad return
@@ -202,7 +202,7 @@ public class NifHeader
 		return out;
 	}
 
-	private boolean checkVersion(String ver)
+	public static boolean checkVersion(String ver)
 	{
 
 		// make sure this is a NIF file

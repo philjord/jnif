@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -23,7 +23,7 @@ public class FaceDrawMode
 
 	public int mode;
 
-	public FaceDrawMode(InputStream stream) throws IOException
+	public FaceDrawMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

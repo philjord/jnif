@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -25,7 +25,7 @@ public class StencilAction
 
 	public int action;
 
-	public StencilAction(InputStream stream) throws IOException
+	public StencilAction(ByteBuffer stream) throws IOException
 	{
 		action = ByteConvert.readInt(stream);
 	}

@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class ChannelType
 
 	public int type;
 
-	public ChannelType(InputStream stream) throws IOException
+	public ChannelType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

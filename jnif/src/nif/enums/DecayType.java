@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -19,7 +19,7 @@ public class DecayType
 
 	public int type;
 
-	public DecayType(InputStream stream) throws IOException
+	public DecayType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -43,7 +43,7 @@ public class NifTexSource
 
 	public NifRef pixelData;
 
-	public NifTexSource(InputStream stream, NifVer nifVer) throws IOException
+	public NifTexSource(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		useExternal = ByteConvert.readBool(stream, nifVer);
 		if (useExternal)

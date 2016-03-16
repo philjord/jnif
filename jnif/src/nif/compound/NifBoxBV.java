@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class NifBoxBV
 
 	public float extent;
 
-	public NifBoxBV(InputStream stream) throws IOException
+	public NifBoxBV(ByteBuffer stream) throws IOException
 	{
 		center = new NifVector3(stream);
 		axis = new NifVector3(stream);

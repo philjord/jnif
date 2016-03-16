@@ -1,7 +1,7 @@
 package nif.basic;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Vector;
 
 import nif.ByteConvert;
@@ -11,22 +11,28 @@ public class NifPtr
 
 	/**
 	 * <basic name="Ptr" count="0" niflibtype="*" nifskopetype="uplink" istemplate="1">
-
+	
 	 A signed 32-bit integer, referring to a object before this one in the hierarchy.  Examples:  Bones, gravity objects.
 	 
 	 </basic>
 	 */
 	public static Vector<NifPtr> allPtrs = new Vector<NifPtr>();
 
+	public static int maxRefId = Integer.MAX_VALUE;
+
 	public int ptr = -1;
 
 	public Class<?> ptrType;
 
-	public NifPtr(Class<?> ptrType, InputStream stream) throws IOException
+	public NifPtr(Class<?> ptrType, ByteBuffer stream) throws IOException
 	{
 		this.ptrType = ptrType;
 		ptr = ByteConvert.readInt(stream);
 		allPtrs.add(this);
+		if (ptr < -1 || ptr > maxRefId)
+		{
+			throw new RuntimeException("Bad ptr value " + ptr);
+		}
 	}
 
 	public String toString()

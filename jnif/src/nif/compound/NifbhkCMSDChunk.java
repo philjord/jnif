@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -52,7 +52,7 @@ public class NifbhkCMSDChunk
 
 	public short[] Indices2WeldInfo;
 
-	public NifbhkCMSDChunk(InputStream stream) throws IOException
+	public NifbhkCMSDChunk(ByteBuffer stream) throws IOException
 	{
 		translation = new NifVector4(stream);
 		materialIndex = ByteConvert.readInt(stream);

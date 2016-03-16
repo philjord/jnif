@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -55,7 +55,7 @@ public class NifKey
 	 * @throws IOException
 	 */
 
-	public NifKey(KeyType type, Class<?> T, InputStream stream, NifVer nifVer) throws IOException
+	public NifKey(KeyType type, Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		this.type = type;
 		this.T = T;
@@ -81,7 +81,7 @@ public class NifKey
 	 NPColor4
 	 NPVector3
 	 NPString	*/
-	private static Object readObj(Class<?> T, InputStream stream, NifVer nifVer) throws IOException
+	private static Object readObj(Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		if (T.equals(Byte.class))
 		{

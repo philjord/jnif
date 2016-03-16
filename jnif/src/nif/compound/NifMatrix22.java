@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -27,7 +27,7 @@ public class NifMatrix22
 
 	public float m22;
 
-	public NifMatrix22(InputStream stream) throws IOException
+	public NifMatrix22(ByteBuffer stream) throws IOException
 	{
 		m11 = ByteConvert.readFloat(stream);
 		m21 = ByteConvert.readFloat(stream);

@@ -1,24 +1,22 @@
 package nif.niobject.bgsm;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-
-import nif.ProgressInputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel.MapMode;
 
 public class BgsmFile
 {
-	
-	public static BSMaterial readMaterialFile(String fileName, InputStream inStr) throws IOException
+
+	public static BSMaterial readMaterialFile(String fileName, ByteBuffer in) throws IOException
 	{
-		if (inStr != null)
+		if (in != null)
 		{
-			ProgressInputStream in = new ProgressInputStream(inStr);
+			in.order(ByteOrder.LITTLE_ENDIAN);
 			byte[] buf = new byte[4];
-			in.read(buf);
+			in.get(buf);
 			String headerString = new String(buf);
 			if (headerString.equals("BGEM"))
 			{
@@ -34,8 +32,7 @@ public class BgsmFile
 			}
 			else
 			{
-				in.close();
-				throw new IOException("BAD Material file header: " + headerString);				 
+				throw new IOException("BAD Material file header: " + headerString);
 			}
 
 		}
@@ -48,9 +45,9 @@ public class BgsmFile
 
 	public static BSMaterial readMaterialFile(File file) throws IOException
 	{
-		BufferedInputStream nifIn = new BufferedInputStream(new FileInputStream(file));
+		RandomAccessFile nifIn = new RandomAccessFile(file, "r");
 
-		BSMaterial m = readMaterialFile(file.getCanonicalPath(), nifIn);
+		BSMaterial m = readMaterialFile(file.getCanonicalPath(), nifIn.getChannel().map(MapMode.READ_ONLY, 0, file.length()));
 		nifIn.close();
 		return m;
 	}

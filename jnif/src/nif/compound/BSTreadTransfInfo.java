@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class BSTreadTransfInfo
 
 	public BSTreadTransfSubInfo[] data;
 
-	public BSTreadTransfInfo(InputStream stream) throws IOException
+	public BSTreadTransfInfo(ByteBuffer stream) throws IOException
 	{
 		unknownFloat1 = ByteConvert.readFloat(stream);
 		data = new BSTreadTransfSubInfo[2];

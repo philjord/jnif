@@ -1,6 +1,6 @@
 package nif.niobject;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.basic.NifFlags;
@@ -18,7 +18,7 @@ public class NiSpecularProperty extends NiProperty
 
 	public NifFlags flags;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		flags = new NifFlags(stream);

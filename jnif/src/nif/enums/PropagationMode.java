@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -19,7 +19,7 @@ public class PropagationMode
 
 	public int mode;
 
-	public PropagationMode(InputStream stream) throws IOException
+	public PropagationMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

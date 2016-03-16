@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -27,7 +27,7 @@ public class NifPolygon
 
 	public short triangleOffset;
 
-	public NifPolygon(InputStream stream) throws IOException
+	public NifPolygon(ByteBuffer stream) throws IOException
 	{
 		numVertices = ByteConvert.readShort(stream);
 		vertexOffset = ByteConvert.readShort(stream);

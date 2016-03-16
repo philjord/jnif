@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -28,7 +28,7 @@ public class BSDecalPlacementVectorExtraData extends NiExtraData
 
 	public NifDecalVectorArray[] vectorBlocks;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		unknownFloat1 = ByteConvert.readFloat(stream);

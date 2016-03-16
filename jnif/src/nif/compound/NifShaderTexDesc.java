@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -25,7 +25,7 @@ public class NifShaderTexDesc
 
 	public int mapIndex;
 
-	public NifShaderTexDesc(InputStream stream, NifVer nifVer) throws IOException
+	public NifShaderTexDesc(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		isUsed = ByteConvert.readBool(stream, nifVer);
 		if (isUsed)

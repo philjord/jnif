@@ -1,11 +1,12 @@
 package nif;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel.MapMode;
 import java.util.HashMap;
 
 import nif.basic.NifPtr;
@@ -66,9 +67,11 @@ public class NifFileReader
 	 */
 	public static NifFile readNif(File file) throws IOException
 	{
-		BufferedInputStream nifIn = new BufferedInputStream(new FileInputStream(file));
+		//BufferedInputStream nifIn = new BufferedInputStream(new FileInputStream(file));
+		RandomAccessFile nifIn = new RandomAccessFile(file, "r");
+		ByteBuffer buf = nifIn.getChannel().map(MapMode.READ_ONLY, 0, file.length());
 
-		NifFile nifFile = readNif(file.getCanonicalPath(), nifIn);
+		NifFile nifFile = readNif(file.getCanonicalPath(), buf);
 		nifIn.close();
 		return nifFile;
 	}
@@ -80,13 +83,14 @@ public class NifFileReader
 	 * @return
 	 * @throws IOException
 	 */
-	public static synchronized NifFile readNif(String fileName, InputStream inStr) throws IOException
+	public static synchronized NifFile readNif(String fileName, ByteBuffer in) throws IOException
 	{
+		in.order(ByteOrder.LITTLE_ENDIAN);
 		// make sure these are cleared in case of exceptional exit last usage
 		NifRef.allRefs.clear();
 		NifPtr.allPtrs.clear();
 
-		ProgressInputStream in = new ProgressInputStream(inStr);
+		//ProgressInputStream in = new ProgressInputStream(inStr);
 
 		NifHeader header = new NifHeader(fileName);
 		NifVer nifVer = header.nifVer;
@@ -103,9 +107,9 @@ public class NifFileReader
 			System.out.println("Header " + header);
 		}
 
-		if (nifVer.LOAD_VER < NifVer.VER_4_0_0_2)
+		if (nifVer.LOAD_VER < NifVer.VER_3_3_0_13)
 		{
-			System.out.println("NIF VERSION TOO LOW!! < NifVer.VER_4_0_0_2 " + nifVer.LOAD_VER + "  min = " + NifVer.VER_4_0_0_2);
+			System.out.println("NIF VERSION TOO LOW!! < NifVer.VER_3_3_0_13 " + nifVer.LOAD_VER + "  min = " + NifVer.VER_3_3_0_13);
 			return null;
 		}
 
@@ -119,6 +123,9 @@ public class NifFileReader
 		boolean unknownBlocksFound = false;
 
 		NiObject[] blocks = new NiObject[numBlocks];
+		NifRef.maxRefId = numBlocks - 1;// to test on the fly
+		NifPtr.maxRefId = numBlocks - 1;// to test on the fly
+
 		String objectType = null;
 		for (int i = 0; i < numBlocks; i++)
 		{
@@ -197,10 +204,10 @@ public class NifFileReader
 			{
 
 				// set the position to the current based on whatever the header read off
-				long prevBytePos = in.getBytesRead();
+				int prevBytePos = in.position();
 
 				// mark in case of over read
-				in.mark(1000000);
+				//in.mark(1000000);
 
 				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12 && nifVer.LOAD_USER_VER2 == 130))
 				{
@@ -211,7 +218,7 @@ public class NifFileReader
 					obj.readFromStream(in, nifVer);
 				}
 
-				long bytesReadOff = in.getBytesRead() - prevBytePos;
+				int bytesReadOff = in.position() - prevBytePos;
 
 				if (bytesReadOff < 0)
 					System.out.println("Negative bytes read! Shenanigans.");
@@ -223,10 +230,10 @@ public class NifFileReader
 							+ " should have read off " + header.blockSizes[i] + " but in fact read off " + bytesReadOff + " diff= "
 							+ (header.blockSizes[i] - bytesReadOff));
 
-					// We've read parts of the next block too, let's reset it and reread what it should have been
-					in.reset();
-					in.skip(header.blockSizes[i]);
-
+					// We've read too little or parts of the next block too, let's reset it and reread what it should have been
+					in.position(prevBytePos);
+					byte[] dumper = new byte[header.blockSizes[i]];
+					in.get(dumper);
 				}
 
 				if (IS_DEBUG && obj instanceof NiObjectNET)
@@ -252,8 +259,7 @@ public class NifFileReader
 		NifFooter footer = new NifFooter();
 		footer.readFromStream(in);
 
-		// This should fail, and trigger the in.eof() flag
-		if (in.read() != -1)
+		if (in.hasRemaining())
 		{
 			throw new IOException("End of file not reached.  This NIF may be corrupt or improperly supported.");
 		}
@@ -302,7 +308,7 @@ public class NifFileReader
 				else
 				{
 					countOfErrorsReported++;
-					System.out.println("bad ref.ref " + ref.ref + " in file " + fileName);
+					// already reported at read time of ref System.out.println("bad ref.ref " + ref.ref + " in file " + fileName);
 				}
 
 				if (countOfErrorsReported > 10)
@@ -336,7 +342,7 @@ public class NifFileReader
 				else
 				{
 					countOfErrorsReported++;
-					System.out.println("bad ptr.ptr " + ptr.ptr + " in file " + fileName);
+					// already reported at read time of ptr System.out.println("bad ptr.ptr " + ptr.ptr + " in file " + fileName);
 				}
 
 				if (countOfErrorsReported > 10)

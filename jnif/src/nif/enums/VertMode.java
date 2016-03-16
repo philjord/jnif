@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class VertMode
 
 	public int mode;
 
-	public VertMode(InputStream stream) throws IOException
+	public VertMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

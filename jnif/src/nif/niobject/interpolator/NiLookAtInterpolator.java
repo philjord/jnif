@@ -1,6 +1,6 @@
 package nif.niobject.interpolator;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -48,7 +48,7 @@ public class NiLookAtInterpolator extends NiInterpolator
 
 	public NifRef unknownLink3;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		unknownShort = ByteConvert.readShort(stream);

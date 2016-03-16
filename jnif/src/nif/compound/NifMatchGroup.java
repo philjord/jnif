@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifMatchGroup
 
 	public short[] vertexIndices;
 
-	public NifMatchGroup(InputStream stream) throws IOException
+	public NifMatchGroup(ByteBuffer stream) throws IOException
 	{
 		numVertices = ByteConvert.readShort(stream);
 		vertexIndices = new short[numVertices];

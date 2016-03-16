@@ -1,7 +1,6 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -53,7 +52,7 @@ public class BSTriShape extends NiTriBasedGeom
 	public static int flags7ToSizeDisagreements = 0;
 	public static HashMap<Integer, Integer> flags7ToSize = new HashMap<Integer, Integer>();
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 

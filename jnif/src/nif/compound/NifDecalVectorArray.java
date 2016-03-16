@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class NifDecalVectorArray
 
 	public NifVector3[] normals;
 
-	public NifDecalVectorArray(InputStream stream) throws IOException
+	public NifDecalVectorArray(ByteBuffer stream) throws IOException
 	{
 
 		numVectors = ByteConvert.readShort(stream);

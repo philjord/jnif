@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifbhkCMSDMaterial
 
 	 
 
-	public NifbhkCMSDMaterial(InputStream stream) throws IOException
+	public NifbhkCMSDMaterial(ByteBuffer stream) throws IOException
 	{		
 		MaterialID = ByteConvert.readInt(stream);
 		UnknownInteger = ByteConvert.readInt(stream);

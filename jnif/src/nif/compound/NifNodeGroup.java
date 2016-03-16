@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.basic.NifRef;
@@ -23,7 +23,7 @@ public class NifNodeGroup
 
 	public NifRef[] nodes;
 
-	public NifNodeGroup(InputStream stream) throws IOException
+	public NifNodeGroup(ByteBuffer stream) throws IOException
 	{
 		numNodes = ByteConvert.readInt(stream);
 		nodes = new NifRef[numNodes];

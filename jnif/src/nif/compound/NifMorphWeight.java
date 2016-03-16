@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.basic.NifRef;
@@ -20,7 +20,7 @@ public class NifMorphWeight
 
 	public float weight;
 
-	public NifMorphWeight(InputStream stream) throws IOException
+	public NifMorphWeight(ByteBuffer stream) throws IOException
 	{
 		interpolator = new NifRef(NiInterpolator.class, stream);
 		weight = ByteConvert.readInt(stream);

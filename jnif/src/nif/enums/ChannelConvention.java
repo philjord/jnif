@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -20,7 +20,7 @@ public class ChannelConvention
 
 	public int convention;
 
-	public ChannelConvention(InputStream stream) throws IOException
+	public ChannelConvention(ByteBuffer stream) throws IOException
 	{
 		convention = ByteConvert.readInt(stream);
 	}

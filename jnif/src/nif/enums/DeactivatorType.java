@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class DeactivatorType
 
 	public int type;
 
-	public DeactivatorType(InputStream stream) throws IOException
+	public DeactivatorType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readByte(stream);
 	}

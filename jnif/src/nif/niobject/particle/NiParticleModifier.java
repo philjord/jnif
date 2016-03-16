@@ -1,7 +1,7 @@
 package nif.niobject.particle;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.basic.NifPtr;
@@ -25,7 +25,7 @@ public abstract class NiParticleModifier extends NiObject
 
 	public NifPtr controller;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		nextModifier = new NifRef(NiParticleModifier.class, stream);

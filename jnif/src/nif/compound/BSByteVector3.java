@@ -1,14 +1,14 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
 public class BSByteVector3 extends NifVector3
 {
 
-	public BSByteVector3(InputStream stream) throws IOException
+	public BSByteVector3(ByteBuffer stream) throws IOException
 	{
 		super();
 		x = (ByteConvert.readByte(stream) / 255.0f) * 2.0f - 1.0f;

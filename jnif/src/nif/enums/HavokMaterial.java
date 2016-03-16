@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -74,7 +74,7 @@ public class HavokMaterial
 
 	public int material; // uint
 
-	public HavokMaterial(InputStream stream) throws IOException
+	public HavokMaterial(ByteBuffer stream) throws IOException
 	{
 		material = ByteConvert.readInt(stream);
 	}

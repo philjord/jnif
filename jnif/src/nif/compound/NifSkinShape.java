@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.basic.NifPtr;
 import nif.basic.NifRef;
@@ -24,7 +24,7 @@ public class NifSkinShape
 
 	public NifRef skinInstance;
 
-	public NifSkinShape(InputStream stream) throws IOException
+	public NifSkinShape(ByteBuffer stream) throws IOException
 	{
 		shape = new NifPtr(NiTriBasedGeom.class, stream);
 		skinInstance = new NifRef(NiSkinInstance.class, stream);

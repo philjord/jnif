@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -27,7 +27,7 @@ public class NifhkTriangle
 
 	public NifVector3 normal;
 
-	public NifhkTriangle(InputStream stream, NifVer nifVer) throws IOException
+	public NifhkTriangle(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		triangle = new NifTriangle(stream);
 		unknownShort = ByteConvert.readShort(stream);

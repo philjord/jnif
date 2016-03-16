@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.enums.BoundVolumeType;
 
@@ -30,7 +30,7 @@ public class NifBoundingVolume
 
 	public NifHalfSpaceBV halfSpace;
 
-	public NifBoundingVolume(InputStream stream) throws IOException
+	public NifBoundingVolume(ByteBuffer stream) throws IOException
 	{
 		collisionType = new BoundVolumeType(stream);
 		if (collisionType.type == BoundVolumeType.SPHERE_BV)

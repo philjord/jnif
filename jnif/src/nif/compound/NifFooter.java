@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -35,7 +35,7 @@ public class NifFooter
 	public int[] roots;
 
 	//list < uint > & link_stack
-	public boolean readFromStream(InputStream stream) throws IOException
+	public boolean readFromStream(ByteBuffer stream) throws IOException
 	{
 		numRoots = ByteConvert.readInt(stream);
 		roots = new int[numRoots];

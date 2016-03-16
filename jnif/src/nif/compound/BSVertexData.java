@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import tools.MiniFloat;
@@ -136,7 +136,7 @@ public class BSVertexData
 	
 	 */
 
-	public BSVertexData(int vertexFormatFlags7, int vertexFormatFlags6, int vertexFormatFlags3, int dwordsPerVertex, InputStream stream)
+	public BSVertexData(int vertexFormatFlags7, int vertexFormatFlags6, int vertexFormatFlags3, int dwordsPerVertex, ByteBuffer stream)
 			throws IOException
 	{
 		this.vertexFormatFlags7 = vertexFormatFlags7;

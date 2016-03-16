@@ -1,7 +1,7 @@
 package nif.niobject.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.niobject.particle.NiParticleSystemController;
@@ -17,7 +17,7 @@ public class NiBSPArrayController extends NiParticleSystemController
 	 
 	 */
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		return success;

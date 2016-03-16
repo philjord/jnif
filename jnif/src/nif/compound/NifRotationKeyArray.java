@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.enums.KeyType;
@@ -24,7 +24,7 @@ public class NifRotationKeyArray
 
 	public NifQuatKey[] keys;
 
-	public NifRotationKeyArray(InputStream stream) throws IOException
+	public NifRotationKeyArray(ByteBuffer stream) throws IOException
 	{
 		numKeys = ByteConvert.readInt(stream);
 		type = new KeyType(stream);

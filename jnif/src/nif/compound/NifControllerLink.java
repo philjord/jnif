@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -106,7 +106,7 @@ public class NifControllerLink
 
 	public NifStringOffset variable2Offset;
 
-	public NifControllerLink(InputStream stream, NifVer nifVer) throws IOException
+	public NifControllerLink(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		interpolator = new NifRef(NiInterpolator.class, stream);
 		controller = new NifRef(NiTimeController.class, stream);

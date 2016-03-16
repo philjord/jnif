@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.enums.OblivionLayer;
@@ -28,7 +28,7 @@ public class NifOblivionColFilter
 
 	public short unknownShort;
 
-	public NifOblivionColFilter(InputStream stream) throws IOException
+	public NifOblivionColFilter(ByteBuffer stream) throws IOException
 	{
 		layer = new OblivionLayer(stream);
 		colFilter = ByteConvert.readByte(stream);

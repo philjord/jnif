@@ -1,7 +1,7 @@
 package nif.niobject.interpolator;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -22,7 +22,7 @@ public class NiBlendFloatInterpolator extends NiBlendInterpolator
 	// so tecture transform would go from time 0 to 10, f = 0 to 1 moving the U of texture f*U.length
 	public float floatValue;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		floatValue = ByteConvert.readFloat(stream);

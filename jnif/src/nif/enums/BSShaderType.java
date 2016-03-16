@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -30,7 +30,7 @@ public class BSShaderType
 
 	public int type;
 
-	public BSShaderType(InputStream stream) throws IOException
+	public BSShaderType(ByteBuffer stream) throws IOException
 	{
 		type = ByteConvert.readInt(stream);
 	}

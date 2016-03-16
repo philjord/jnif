@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -24,7 +24,7 @@ public class NifVector3
 
 	public float z;
 
-	public NifVector3(InputStream stream) throws IOException
+	public NifVector3(ByteBuffer stream) throws IOException
 	{
 		x = ByteConvert.readFloat(stream);
 		y = ByteConvert.readFloat(stream);

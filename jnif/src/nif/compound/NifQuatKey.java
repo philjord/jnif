@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.enums.KeyType;
@@ -31,7 +31,7 @@ public class NifQuatKey
 
 	public NifTBC tBC;
 
-	public NifQuatKey(KeyType type, InputStream stream) throws IOException
+	public NifQuatKey(KeyType type, ByteBuffer stream) throws IOException
 	{
 		this.type = type;
 		if (type.type != 4)

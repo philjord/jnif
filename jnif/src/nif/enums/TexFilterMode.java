@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -29,7 +29,7 @@ public class TexFilterMode
 
 	public int mode;
 
-	public TexFilterMode(InputStream stream) throws IOException
+	public TexFilterMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

@@ -1,6 +1,6 @@
 package nif.niobject.controller;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.basic.NifRef;
@@ -19,7 +19,7 @@ public abstract class NiSingleInterpController extends NiInterpController
 
 	public NifRef interpolator;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		if (nifVer.LOAD_VER >= NifVer.VER_10_2_0_0)

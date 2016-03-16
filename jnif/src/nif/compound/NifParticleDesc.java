@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -31,7 +31,7 @@ public class NifParticleDesc
 
 	public int unknownInt;
 
-	public NifParticleDesc(InputStream stream) throws IOException
+	public NifParticleDesc(ByteBuffer stream) throws IOException
 	{
 		translation = new NifVector3(stream);
 		unknownFloat1 = ByteConvert.readFloat(stream);

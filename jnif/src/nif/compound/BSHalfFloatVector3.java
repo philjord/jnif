@@ -1,14 +1,14 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
-import tools.MiniFloat;
 import nif.ByteConvert;
+import tools.MiniFloat;
 
 public class BSHalfFloatVector3 extends NifVector3
 {
-	public BSHalfFloatVector3(InputStream stream) throws IOException
+	public BSHalfFloatVector3(ByteBuffer stream) throws IOException
 	{
 		super();
 		x = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));

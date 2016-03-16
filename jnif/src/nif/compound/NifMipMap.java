@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -25,7 +25,7 @@ public class NifMipMap
 
 	public int offset;
 
-	public NifMipMap(InputStream stream) throws IOException
+	public NifMipMap(ByteBuffer stream) throws IOException
 	{
 		width = ByteConvert.readInt(stream);
 		height = ByteConvert.readInt(stream);

@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class SolverDeactivation
 
 	public int deactivation;
 
-	public SolverDeactivation(InputStream stream) throws IOException
+	public SolverDeactivation(ByteBuffer stream) throws IOException
 	{
 		deactivation = ByteConvert.readByte(stream);
 	}

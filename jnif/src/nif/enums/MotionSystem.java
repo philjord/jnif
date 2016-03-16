@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -43,7 +43,7 @@ public class MotionSystem
 
 	public int system;
 
-	public MotionSystem(InputStream stream) throws IOException
+	public MotionSystem(ByteBuffer stream) throws IOException
 	{
 		system = ByteConvert.readByte(stream);
 	}

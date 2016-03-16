@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -33,7 +33,7 @@ public class NifAdditionalDataInfo
 
 	public byte unknownByte1;
 
-	public NifAdditionalDataInfo(InputStream stream) throws IOException
+	public NifAdditionalDataInfo(ByteBuffer stream) throws IOException
 	{
 		dataType = ByteConvert.readInt(stream);
 		blockSize = ByteConvert.readInt(stream);

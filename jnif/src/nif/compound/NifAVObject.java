@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.basic.NifPtr;
@@ -23,7 +23,7 @@ public class NifAVObject
 
 	public NifPtr object;
 
-	public NifAVObject(InputStream stream) throws IOException
+	public NifAVObject(ByteBuffer stream) throws IOException
 	{
 		name = ByteConvert.readSizedString(stream);
 		object = new NifPtr(NiAVObject.class, stream);

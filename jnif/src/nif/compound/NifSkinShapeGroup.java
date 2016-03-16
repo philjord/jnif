@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -23,7 +23,7 @@ public class NifSkinShapeGroup
 
 	public NifSkinShape[] linkPairs;
 
-	public NifSkinShapeGroup(InputStream stream) throws IOException
+	public NifSkinShapeGroup(ByteBuffer stream) throws IOException
 	{
 		numLinkPairs = ByteConvert.readInt(stream);
 

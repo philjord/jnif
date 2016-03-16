@@ -1,7 +1,7 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -33,7 +33,7 @@ public class NiCollisionData extends NiCollisionObject
 
 	public NifBoundingVolume boundingVolume;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		propagationMode = new PropagationMode(stream);

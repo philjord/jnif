@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class PixelLayout
 
 	public int pixelLayout; // uint
 
-	public PixelLayout(InputStream stream) throws IOException
+	public PixelLayout(ByteBuffer stream) throws IOException
 	{
 		pixelLayout = ByteConvert.readInt(stream);
 	}

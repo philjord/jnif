@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -18,7 +18,7 @@ public class MipMapFormat
 
 	public int format; // uint
 
-	public MipMapFormat(InputStream stream) throws IOException
+	public MipMapFormat(ByteBuffer stream) throws IOException
 	{
 		format = ByteConvert.readInt(stream);
 	}

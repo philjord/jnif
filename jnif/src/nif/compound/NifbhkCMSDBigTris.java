@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class NifbhkCMSDBigTris
 	public int UnknownInt1;
 	public short UnknownShort1;
 
-	public NifbhkCMSDBigTris(InputStream stream) throws IOException
+	public NifbhkCMSDBigTris(ByteBuffer stream) throws IOException
 	{
 		Triangle1  = ByteConvert.readShort(stream);
 		Triangle2  = ByteConvert.readShort(stream);

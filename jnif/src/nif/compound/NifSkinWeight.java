@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifSkinWeight
 
 	public float weight;
 
-	public NifSkinWeight(InputStream stream) throws IOException
+	public NifSkinWeight(ByteBuffer stream) throws IOException
 	{
 		index = ByteConvert.readShort(stream);
 		weight = ByteConvert.readFloat(stream);

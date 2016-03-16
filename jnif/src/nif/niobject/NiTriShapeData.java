@@ -1,7 +1,8 @@
 package nif.niobject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -31,12 +32,13 @@ public class NiTriShapeData extends NiTriBasedGeomData
 	public NifTriangle[] triangles;
 	//OPTOMISATION
 	public int[] trianglesOpt;
+	public IntBuffer trianglesOptBuf;
 
 	public int numMatchGroups;
 
 	public NifMatchGroup[] matchGroups;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		numTrianglePoints = ByteConvert.readInt(stream);
@@ -56,11 +58,9 @@ public class NiTriShapeData extends NiTriBasedGeomData
 					trianglesOpt[i * 3 + 1] = ByteConvert.readUnsignedShort(stream);
 					trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
 				}
-
 			}
 			else
 			{
-
 				triangles = new NifTriangle[numTriangles];
 				for (int i = 0; i < numTriangles; i++)
 				{

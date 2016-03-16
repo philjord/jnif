@@ -1,6 +1,6 @@
 package nif.niobject.particle;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -40,7 +40,7 @@ public class NiParticleSystem extends NiParticles
 
 	public NifRef[] modifiers;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		if (nifVer.LOAD_USER_VER >= 12 && !nifVer.isBP())

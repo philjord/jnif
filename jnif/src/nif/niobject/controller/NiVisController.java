@@ -1,6 +1,6 @@
 package nif.niobject.controller;
 
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 import nif.basic.NifRef;
@@ -20,7 +20,7 @@ public class NiVisController extends NiBoolInterpController
 
 	public NifRef Data;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws java.io.IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 

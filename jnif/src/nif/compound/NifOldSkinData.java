@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -26,7 +26,7 @@ public class NifOldSkinData
 
 	public NifVector3 unknownVector;
 
-	public NifOldSkinData(InputStream stream) throws IOException
+	public NifOldSkinData(ByteBuffer stream) throws IOException
 	{
 		vertexWeight = ByteConvert.readFloat(stream);
 		vertexIndex = ByteConvert.readShort(stream);

@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -29,7 +29,7 @@ public class TexType
 
 	public int texType;
 
-	public TexType(InputStream stream) throws IOException
+	public TexType(ByteBuffer stream) throws IOException
 	{
 		texType = ByteConvert.readInt(stream);
 	}

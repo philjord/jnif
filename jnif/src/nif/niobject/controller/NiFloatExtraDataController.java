@@ -1,7 +1,7 @@
 package nif.niobject.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -23,7 +23,7 @@ public class NiFloatExtraDataController extends NiExtraDataController
 
 	public String controllerData2;
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		controllerData2 = ByteConvert.readIndexString(stream, nifVer);

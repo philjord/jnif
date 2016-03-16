@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -15,7 +15,7 @@ public class SortingMode
 
 	public int mode;
 
-	public SortingMode(InputStream stream) throws IOException
+	public SortingMode(ByteBuffer stream) throws IOException
 	{
 		mode = ByteConvert.readInt(stream);
 	}

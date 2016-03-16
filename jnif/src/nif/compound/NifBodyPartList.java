@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifBodyPartList
 
 	public short bodyPart;
 
-	public NifBodyPartList(InputStream stream) throws IOException
+	public NifBodyPartList(ByteBuffer stream) throws IOException
 	{
 		unknownShort = ByteConvert.readShort(stream);
 		bodyPart = ByteConvert.readShort(stream);

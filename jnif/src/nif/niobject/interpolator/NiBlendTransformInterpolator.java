@@ -1,7 +1,7 @@
 package nif.niobject.interpolator;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.NifVer;
 
@@ -14,7 +14,7 @@ public class NiBlendTransformInterpolator extends NiBlendInterpolator
 	 </niobject>
 	 */
 
-	public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		return success;

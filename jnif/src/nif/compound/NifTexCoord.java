@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -21,7 +21,7 @@ public class NifTexCoord
 
 	public float v;
 
-	public NifTexCoord(InputStream stream) throws IOException
+	public NifTexCoord(ByteBuffer stream) throws IOException
 	{
 		u = ByteConvert.readFloat(stream);
 		v = ByteConvert.readFloat(stream);

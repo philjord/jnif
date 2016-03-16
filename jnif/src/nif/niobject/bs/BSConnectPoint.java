@@ -1,7 +1,7 @@
 package nif.niobject.bs;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -32,7 +32,7 @@ public class BSConnectPoint
 		public int NumConnectPoints;
 		public BSConnectPointData[] ConnectPoints;
 
-		public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);
 			NumConnectPoints = ByteConvert.readInt(stream);
@@ -51,7 +51,7 @@ public class BSConnectPoint
 		public int NumTargets;
 		public String[] Target;
 
-		public boolean readFromStream(InputStream stream, NifVer nifVer) throws IOException
+		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);
 			unknownByte = ByteConvert.readByte(stream);
@@ -81,7 +81,7 @@ public class BSConnectPoint
 		NifVector3 Translation;
 		float Scale;
 
-		public BSConnectPointData(InputStream stream) throws IOException
+		public BSConnectPointData(ByteBuffer stream) throws IOException
 		{
 			Root = ByteConvert.readSizedString(stream);
 			VariableName = ByteConvert.readSizedString(stream);

@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -36,7 +36,7 @@ public class NifParticle
 
 	public short vertexID;
 
-	public NifParticle(InputStream stream) throws IOException
+	public NifParticle(ByteBuffer stream) throws IOException
 	{
 		velocity = new NifVector3(stream);
 		unknownVector = new NifVector3(stream);

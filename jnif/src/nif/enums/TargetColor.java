@@ -1,7 +1,7 @@
 package nif.enums;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 
@@ -20,7 +20,7 @@ public class TargetColor
 
 	public short color;
 
-	public TargetColor(InputStream stream) throws IOException
+	public TargetColor(ByteBuffer stream) throws IOException
 	{
 		color = ByteConvert.readShort(stream);
 	}

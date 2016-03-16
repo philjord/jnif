@@ -1,7 +1,7 @@
 package nif.compound;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.enums.ChannelConvention;
@@ -29,7 +29,7 @@ public class NifChannelData
 
 	public byte unknownByte1;
 
-	public NifChannelData(InputStream stream) throws IOException
+	public NifChannelData(ByteBuffer stream) throws IOException
 	{
 		type = new ChannelType(stream);
 		convention = new ChannelConvention(stream);
