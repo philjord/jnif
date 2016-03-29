@@ -25,6 +25,7 @@ public class NifMotor
 		unknownFloat1 = ByteConvert.readFloat(stream);
 		unknownFloat2 = ByteConvert.readFloat(stream);
 		//TODO: not like nif.xml empirical - tell jonwd7 see F:\game_media\Fallout3\meshes\dlc04\creatures\hillfolk1\skeleton.nif
+		//In fact not right yet _male\skeleton.nif i=44 type= bhkMalleableConstraint should have read off 181 but in fact read off 186 diff= -5
 		boolean readMore = ByteConvert.readBool(stream, nifVer);
 		if (readMore)
 		{
