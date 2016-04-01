@@ -17,6 +17,8 @@ public class NiBinaryExtraData extends NiExtraData
 	 </niobject>
 	 */
 
+	
+	//Note once this is converted to somethign else, it will be set to null!
 	public NifByteArray binaryData;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
