@@ -28,6 +28,19 @@ public class NifColor3
 		b = ByteConvert.readFloat(stream);
 	}
 
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+
+		if (o instanceof NifColor3)
+		{
+			NifColor3 o2 = (NifColor3) o;
+			return this.r == o2.r && this.g == o2.g && this.b == o2.b;
+		}
+		return false;
+	}
+
 	public String toString()
 	{
 		return "[NPColor3]" + r + " " + g + " " + b;

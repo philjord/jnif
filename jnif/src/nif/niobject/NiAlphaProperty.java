@@ -104,6 +104,21 @@ public class NiAlphaProperty extends NiProperty
 		flags = new NifFlags(stream);
 		threshold = ByteConvert.readUnsignedByte(stream);
 
+		//morrowind doesn't appear to have the concept of alpha testing in the flags
+		if (nifVer.LOAD_VER < NifVer.VER_10_0_1_0)
+		{
+			if (flags.flags == 237)
+			{
+				flags.flags = 4608  ;//+ 237; //FIXME: a good value or decision here
+				threshold = 64;// must pick a goody here?
+			}
+			else if (flags.flags == 13 || flags.flags == 4097)
+			{
+				// 4097 looks like a bug to me
+				flags.flags = 4608 + 13;
+				//threshold = 64;
+			}
+		}
 		return success;
 	}
 
