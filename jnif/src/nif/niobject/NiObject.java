@@ -17,6 +17,7 @@ public abstract class NiObject
 
 	public NifVer nVer;
 
+	public int refId = -1;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
@@ -26,8 +27,7 @@ public abstract class NiObject
 
 	public void addDisplayRows(ArrayList<Object[]> list)
 	{
-		list.add(new Object[]
-		{ "NiObject", "nifVer", "" + nVer });
+		list.add(new Object[] { "NiObject", "nifVer", "" + nVer });
 	}
 
 	public String toString()

@@ -198,6 +198,7 @@ public class NifFileReader
 				index = i;
 			}
 
+			obj.refId = index;
 			blocks[index] = obj;
 
 			try
