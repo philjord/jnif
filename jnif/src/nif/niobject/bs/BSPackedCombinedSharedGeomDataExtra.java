@@ -2,6 +2,7 @@ package nif.niobject.bs;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -273,8 +274,8 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 	public int UnknownInt1;
 	public int UnknownInt2;
 	public int NumData;
-	public int[] Unk1;
-	public Data[] data;
+	public BSPackedGeomObject[] BSPackedGeomObject;
+	public BSPackedGeomData[] BSPackedGeomData;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
@@ -296,71 +297,109 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 
 		NumData = ByteConvert.readInt(stream);
 
-		Unk1 = new int[NumData];
-		fs = new float[NumData][];
+		BSPackedGeomObject = new BSPackedGeomObject[NumData];
 		for (int i = 0; i < NumData; i++)
 		{
-			fs[i] = new float[4];
-			//Unk1[i] = ByteConvert.readInt(stream);
-			//ByteConvert.readInt(stream);
-
-			//	bv[i] = new BSByteVector3(stream);
-			//	System.out.println("bv= " + bv[i]);
-			//	System.out.println(" " + i + "0 " + ByteConvert.readByte(stream));
-			//	System.out.println(" " + i + "1 " + ByteConvert.readByte(stream));
-			//	System.out.println(" " + i + "2 " + ByteConvert.readByte(stream));
-			//	System.out.println(" " + i + "3 " + ByteConvert.readByte(stream));
-			fs[i][0] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-			fs[i][1] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-			fs[i][2] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-			fs[i][3] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-			//System.out.println(" " + i + "0 " + fs[i][0]);
-			//System.out.println(" " + i + "1 " + fs[i][1]);
-			//System.out.println(" " + i + "2 " + fs[i][2]);
-			//System.out.println(" " + i + "3 " + fs[i][3]);
+			BSPackedGeomObject[i] = new BSPackedGeomObject(stream, nifVer);
 		}
 
-		data = new Data[NumData];
+		BSPackedGeomData = new BSPackedGeomData[NumData];
 		for (int i = 0; i < NumData; i++)
 		{
-			data[i] = new Data(stream, nifVer);
+			BSPackedGeomData[i] = new BSPackedGeomData(stream, nifVer);
 		}
+
+		// now to investigate object vs radius relationship
+		/*		for (int i = 0; i < NumData; i++)
+				{
+					BSPackedGeomObject o = BSPackedGeomObject[i];
+					BSPackedGeomData d = BSPackedGeomData[i];
+		
+					float r = d.BSPackedGeomDataCombined[0].BoundingSphere.radius / d.BSPackedGeomDataCombined[0].Scale;
+					int h = o.ObjectHash;
+		
+					if (d.BSPackedGeomDataCombined[0].Scale == 1)
+					{
+						hashToRadius.put(h, r);
+						hashToUnknown.put(h, o);
+					}
+		
+		
+				}*/
 
 		return success;
 	}
 
-	public float[][] fs;
+	public static HashMap<Integer, Float> hashToRadius = new HashMap<Integer, Float>();
+	public static HashMap<Integer, BSPackedGeomObject> hashToUnknown = new HashMap<Integer, BSPackedGeomObject>();
 
-	public static class Data
+	public static class BSPackedGeomObject
 	{
-		public int numTris;
-		public int numLODs;
-		public int[][] LODs;
+		public int UnknownInt1;
+		public int ObjectHash;//?
+		public byte[] bs;
+		public short s1;
+		public short s2;
+		public float f1;
+		public float f2;
+
+		//short+2 bytevector
+
+		// or byte+vector(one is always at 0,0,0)
+		// and a byte + bytevector
+
+		public BSPackedGeomObject(ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			UnknownInt1 = ByteConvert.readInt(stream);
+			//ObjectHash = ByteConvert.readInt(stream);
+
+			bs = ByteConvert.readBytes(4, stream);
+			ObjectHash = ByteConvert.toInt(bs);
+			s1 = ByteConvert.toShort(new byte[] { bs[0], bs[1] });
+			s2 = ByteConvert.toShort(new byte[] { bs[1], bs[2] });
+			f1 = MiniFloat.toFloat(s1);
+			f2 = MiniFloat.toFloat(s2);
+
+			//ByteConvert.readByte(stream);
+			//ByteConvert.readByte(stream);
+			//System.out.println("1 "+new BSByteVector3(stream));
+			//ByteConvert.readByte(stream);
+			//ByteConvert.readByte(stream);
+			//System.out.println("2 "+new BSByteVector3(stream));
+			//ByteConvert.readByte(stream);
+			//ByteConvert.readByte(stream);
+		}
+	}
+
+	public static class BSPackedGeomData
+	{
+		public int NumVerts;
+		public int LODLevels;
+		public BSPackedGeomDataLOD[] LODs;
 
 		public int NumCombined;
 
-		public Combined[] Combined;
+		public BSPackedGeomDataCombined[] BSPackedGeomDataCombined;
 
 		public int UnkInt1;
 		public int UnkInt2;
 
-		public Data(ByteBuffer stream, NifVer nifVer) throws IOException
+		public BSPackedGeomData(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
-			numTris = ByteConvert.readInt(stream);
-			numLODs = ByteConvert.readInt(stream);
-			// total lods only sometimes = numTris
-			LODs = new int[numLODs][2];
-			for (int i = 0; i < numLODs; i++)
+			NumVerts = ByteConvert.readInt(stream);
+			LODLevels = ByteConvert.readInt(stream);
+			LODs = new BSPackedGeomDataLOD[LODLevels];
+			for (int i = 0; i < LODLevels; i++)
 			{
-				LODs[i][0] = ByteConvert.readInt(stream);// tri count				
-				LODs[i][1] = ByteConvert.readInt(stream);// distance
+				LODs[i] = new BSPackedGeomDataLOD(stream, nifVer);
 			}
 
 			NumCombined = ByteConvert.readInt(stream);
-			Combined = new Combined[NumCombined];
+			BSPackedGeomDataCombined = new BSPackedGeomDataCombined[NumCombined];
+
 			for (int i = 0; i < NumCombined; i++)
 			{
-				Combined[i] = new Combined(stream, nifVer);
+				BSPackedGeomDataCombined[i] = new BSPackedGeomDataCombined(stream, nifVer);
 			}
 
 			// No they are really similar amoungst packed that are next to each other?
@@ -370,27 +409,39 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 		}
 	}
 
-	public static class Combined
+	public static class BSPackedGeomDataCombined
 	{
-		public float f1;
-		public NifMatrix33 rot;
+		public float GrayscaletoPaletteScale;
+		public NifMatrix33 Rotation;
 
-		public NifVector3 trans;
-		public float scale; // bounds matches up
-		public NifSphereBV bounds;
+		public NifVector3 Translation;
+		public float Scale;
+		public NifSphereBV BoundingSphere;
 
-		public Combined(ByteBuffer stream, NifVer nifVer) throws IOException
+		public BSPackedGeomDataCombined(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			//most often 0.5ish but sometimes 0 sometimes 1
-			f1 = ByteConvert.readFloat(stream);
+			GrayscaletoPaletteScale = ByteConvert.readFloat(stream);
 
-			rot = new NifMatrix33(stream); //reversed??inverted?? world space perhaps?
+			Rotation = new NifMatrix33(stream); //reversed??inverted?? world space perhaps?
 
-			trans = new NifVector3(stream); // world space
-			scale = ByteConvert.readFloat(stream); //often one but sometime 1.5 or 0.64 or 0.84
+			Translation = new NifVector3(stream); // world space
+			Scale = ByteConvert.readFloat(stream); //often one but sometime 1.5 or 0.64 or 0.84
 
-			bounds = new NifSphereBV(stream);
+			BoundingSphere = new NifSphereBV(stream);
 
+		}
+	}
+
+	public static class BSPackedGeomDataLOD
+	{
+		public int TriangleCount;
+		public int TriangleOffset;
+
+		public BSPackedGeomDataLOD(ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			TriangleCount = ByteConvert.readInt(stream);
+			TriangleOffset = ByteConvert.readInt(stream);
 		}
 	}
 

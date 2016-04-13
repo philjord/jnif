@@ -22,8 +22,9 @@ public class BSTriShape extends NiTriBasedGeom
 	public int vertexFormatFlags3;
 	public int vertexFormat4;
 	public int vertexFormat5;
-	public int vertexFormatFlags6;
-	public int vertexFormatFlags7;
+	//public int vertexFormatFlags6;
+	//public int vertexFormatFlags7;
+	public VertexFormat vertexFormat;
 	public int vertexFormat8;
 	public int numTriangles;
 	public int numVertices;
@@ -41,16 +42,19 @@ public class BSTriShape extends NiTriBasedGeom
 	public FloatBuffer colorsOptBuf;
 	public FloatBuffer uVSetOptBuf;
 
+	float[] BoneWeights;
+	int[] BoneIndices;
+
 	//OPTIMISATION
 	//public NifTriangle[] triangles;
 	public int[] trianglesOpt;
 
-/*	public static HashMap<String, Integer> allFormatToCount = new HashMap<String, Integer>();
-
-	//In the presence of 7&1==1
-	public static int flags7ToSizeDisagreements = 0;
-	public static HashMap<Integer, Integer> flags7ToSize = new HashMap<Integer, Integer>();
-*/
+	/*	public static HashMap<String, Integer> allFormatToCount = new HashMap<String, Integer>();
+	
+		//In the presence of 7&1==1
+		public static int flags7ToSizeDisagreements = 0;
+		public static HashMap<Integer, Integer> flags7ToSize = new HashMap<Integer, Integer>();
+	*/
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -60,121 +64,115 @@ public class BSTriShape extends NiTriBasedGeom
 		vertexFormatFlags3 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat4 = ByteConvert.readUnsignedByte(stream);
 		vertexFormat5 = ByteConvert.readUnsignedByte(stream);
-		vertexFormatFlags6 = ByteConvert.readUnsignedByte(stream);
-		vertexFormatFlags7 = ByteConvert.readUnsignedByte(stream);
+		// haha an int of vertex format
+		//vertexFormatFlags6 = ByteConvert.readUnsignedByte(stream);
+		//vertexFormatFlags7 = ByteConvert.readUnsignedByte(stream);
+		vertexFormat = new VertexFormat(stream);
+
 		vertexFormat8 = ByteConvert.readUnsignedByte(stream);
 		numTriangles = ByteConvert.readInt(stream);
 		numVertices = ByteConvert.readUnsignedShort(stream);
 
 		dataSize = ByteConvert.readInt(stream);
 
-/*		String format = "dwpv " + dwordsPerVertex + " f2:" + vertexFormat2 + " f3:" + vertexFormatFlags3 + " f4:" + vertexFormat4 + " f5:"
-				+ vertexFormat5 + " f6:" + vertexFormatFlags6 + " f7:" + vertexFormatFlags7 + " f8:" + vertexFormat8;
-				//System.out.println("format " + format);
-
-			if( vertexFormatFlags7==0&& dwordsPerVertex>0)
-			{
-				System.out.println(""+nVer.fileName);
-				System.out.println("format " + format);
-			}
-
-		if (allFormatToCount.get(format) == null)
-			allFormatToCount.put(format, 1);
-		else
-			allFormatToCount.put(format, allFormatToCount.get(format) + 1);
-*/
+		/*		String format = "dwpv " + dwordsPerVertex + " f2:" + vertexFormat2 + " f3:" + vertexFormatFlags3 + " f4:" + vertexFormat4 + " f5:"
+						+ vertexFormat5 + " f6:" + vertexFormatFlags6 + " f7:" + vertexFormatFlags7 + " f8:" + vertexFormat8;
+						//System.out.println("format " + format);
+		
+					if( vertexFormatFlags7==0&& dwordsPerVertex>0)
+					{
+						System.out.println(""+nVer.fileName);
+						System.out.println("format " + format);
+					}
+		
+				if (allFormatToCount.get(format) == null)
+					allFormatToCount.put(format, 1);
+				else
+					allFormatToCount.put(format, allFormatToCount.get(format) + 1);
+		*/
 		if (dataSize > 0)
 		{
 			////////////////////////decode code
-/*			int bytesPerVert = ((dataSize - (numTriangles * 6)) / numVertices);
-
-			if ((vertexFormatFlags7 & 0x01) != 0)
-			{
-				if (flags7ToSize.get(vertexFormatFlags7) != null && flags7ToSize.get(vertexFormatFlags7) != bytesPerVert)
-					flags7ToSizeDisagreements++;
-				flags7ToSize.put(vertexFormatFlags7, bytesPerVert);
-			}*/
+			/*			int bytesPerVert = ((dataSize - (numTriangles * 6)) / numVertices);
+			
+						if ((vertexFormatFlags7 & 0x01) != 0)
+						{
+							if (flags7ToSize.get(vertexFormatFlags7) != null && flags7ToSize.get(vertexFormatFlags7) != bytesPerVert)
+								flags7ToSizeDisagreements++;
+							flags7ToSize.put(vertexFormatFlags7, bytesPerVert);
+						}*/
 			///////////////////////
 
 			if (LOAD_OPTIMIZED)
 			{
 				verticesOptBuf = createFB(numVertices * 3);
-				binormalsOptBuf = createFB(numVertices * 3); // not always filled use tangent!=null
 
-				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 3)
-				if ((vertexFormatFlags6 & 0x20) != 0)
+				if (vertexFormat.isSet(VertexFormat.VF_UVs))
 				{
 					uVSetOptBuf = createFB(numVertices * 2);
 				}
 
-				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 4)
-				if ((vertexFormatFlags6 & 0x80) != 0)
+				if (vertexFormat.isSet(VertexFormat.VF_Normals))
 				{
 					normalsOptBuf = createFB(numVertices * 3);
+					binormalsOptBuf = createFB(numVertices * 3);
+					if (vertexFormat.isSet(VertexFormat.VF_Tangents))
+					{
+						tangentsOptBuf = createFB(numVertices * 3);
+					}
 				}
 
-				//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 5)
-				if ((vertexFormatFlags3 & 0x40) != 0)
-				{
-					tangentsOptBuf = createFB(numVertices * 3);
-				}
-
-				//if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
-				//		|| ((vertexFormatFlags7 & 0x01) == 0 && dwordsPerVertex >= 6))
-				if ((vertexFormatFlags7 & 0x02) != 0)
+				if (vertexFormat.isSet(VertexFormat.VF_Vertex_Colors))
 				{
 					colorsOptBuf = createFB(numVertices * 4);
 				}
 
 				for (int i = 0; i < numVertices; i++)
 				{
-					if ((vertexFormatFlags7 & 0x40) != 0)
+					if (vertexFormat.isSet(VertexFormat.VF_Vertex))
 					{
-						verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-						verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-						verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+						if (vertexFormat.isSet(VertexFormat.VF_Full_Precision))
+						{
+							verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+							verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+							verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 
-						binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+							binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+						}
+						else
+						{
+							verticesOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+							verticesOptBuf.put(i * 3 + 2, -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+							verticesOptBuf.put(i * 3 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+
+							binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+						}
 					}
-					else //if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 2)
-					{
-						verticesOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
-						verticesOptBuf.put(i * 3 + 2, -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
-						verticesOptBuf.put(i * 3 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
 
-						binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
-					}
-
-					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 3)
-					if ((vertexFormatFlags6 & 0x20) != 0)
+					if (vertexFormat.isSet(VertexFormat.VF_UVs))
 					{
 						uVSetOptBuf.put(i * 2 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
 						uVSetOptBuf.put(i * 2 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
 					}
 
-					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 4)
-					if ((vertexFormatFlags6 & 0x80) != 0)
+					if (vertexFormat.isSet(VertexFormat.VF_Normals))
 					{
 						normalsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 						normalsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
 						normalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 
 						binormalsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
+						if (vertexFormat.isSet(VertexFormat.VF_Tangents))
+						{
+							tangentsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+							tangentsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
+							tangentsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+
+							binormalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+						}
 					}
 
-					//if ((vertexFormatFlags7 & 0x01) != 0 || dwordsPerVertex >= 5)
-					if ((vertexFormatFlags3 & 0x40) != 0)
-					{
-						tangentsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-						tangentsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
-						tangentsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-
-						binormalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-					}
-
-					//if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
-					//		|| ((vertexFormatFlags7 & 0x01) == 0 && dwordsPerVertex >= 6))
-					if ((vertexFormatFlags7 & 0x02) != 0)
+					if (vertexFormat.isSet(VertexFormat.VF_Vertex_Colors))
 					{
 						colorsOptBuf.put(i * 4 + 0, ByteConvert.readUnsignedByte(stream) / 255f);
 						colorsOptBuf.put(i * 4 + 1, ByteConvert.readUnsignedByte(stream) / 255f);
@@ -182,43 +180,21 @@ public class BSTriShape extends NiTriBasedGeom
 						colorsOptBuf.put(i * 4 + 3, ByteConvert.readUnsignedByte(stream) / 255f);
 					}
 
-					//if ((vertexFormatFlags7 & 0x01) != 0)
+					if (vertexFormat.isSet(VertexFormat.VF_Skinned))
 					{
-						//TODO: load these
-						if ((vertexFormatFlags7 & 0x04) != 0)
-						{
-							// 4 bone Weight half floats
-							ByteConvert.readInt(stream);
-							ByteConvert.readInt(stream);
-							ByteConvert.readInt(stream);
-						}
-
-						if ((vertexFormatFlags7 & 0x10) != 0)
-						{
-							//4 bone indices bytes
-							ByteConvert.readInt(stream);
-						}
+						BoneWeights = new float[4];
+						for (int b = 0; b < 4; b++)
+							BoneWeights[b] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+						BoneIndices = new int[4];
+						for (int b = 0; b < 4; b++)
+							BoneIndices[b] = ByteConvert.readUnsignedByte(stream);
 					}
-					/*else
+
+					if (vertexFormat.isSet(VertexFormat.VF_Male_Eyes))
 					{
-						
-						if (dwordsPerVertex >= 7)
-						{
-							ByteConvert.readInt(stream);
-						}
-						if (dwordsPerVertex >= 8)
-						{
-							ByteConvert.readInt(stream);
-						}
-						if (dwordsPerVertex >= 9)
-						{
-							ByteConvert.readInt(stream);
-						}
-						if (dwordsPerVertex >= 10)
-						{
-							ByteConvert.readInt(stream);
-						}
-					}*/
+						//<add name="Unknown Int 2" type="uint" cond="(ARG &amp; 4096) != 0" />
+						ByteConvert.readInt(stream);
+					}
 
 				}
 
@@ -236,7 +212,7 @@ public class BSTriShape extends NiTriBasedGeom
 				vertexData = new BSVertexData[numVertices];
 				for (int v = 0; v < numVertices; v++)
 				{
-					vertexData[v] = new BSVertexData(vertexFormatFlags7, vertexFormatFlags6, vertexFormatFlags3, dwordsPerVertex, stream);
+					vertexData[v] = new BSVertexData(vertexFormat, stream);
 					//System.out.println("" + v + " " + vertexData[v]);
 				}
 
@@ -263,6 +239,39 @@ public class BSTriShape extends NiTriBasedGeom
 		bb.order(ByteOrder.nativeOrder());
 		return bb.asFloatBuffer();
 
+	}
+
+	public static class VertexFormat
+	{
+		public int vertexFlags;
+
+		public VertexFormat(ByteBuffer stream) throws IOException
+		{
+			vertexFlags = ByteConvert.readUnsignedShort(stream);
+		}
+
+		public boolean isSet(int flagBit)
+		{
+			return ((vertexFlags >> flagBit) & 0x01) != 0;
+		}
+
+		//bits
+		public static int VF_Unknown_1 = 0;
+		public static int VF_Unknown_2 = 1;
+		public static int VF_Unknown_3 = 2;
+		public static int VF_Unknown_4 = 3;
+		public static int VF_Vertex = 4;
+		public static int VF_UVs = 5;
+		public static int VF_Unknown_5 = 6;
+		public static int VF_Normals = 7;
+		public static int VF_Tangents = 8;
+		public static int VF_Vertex_Colors = 9;
+		public static int VF_Skinned = 10;
+		public static int VF_Unknown_6 = 11;
+		public static int VF_Male_Eyes = 12;
+		public static int VF_Unknown_7 = 13;
+		public static int VF_Full_Precision = 14;
+		public static int VF_Unknown_8 = 15;
 	}
 
 }

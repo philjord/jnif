@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
+import nif.niobject.bs.BSTriShape.VertexFormat;
 import tools.MiniFloat;
 
 public class BSVertexData
 {
-	public int vertexFormatFlags7;
-	public int vertexFormatFlags6;
-	public int vertexFormatFlags3;
-	public int dwordsPerVertex;// * 4 = num bytes per vertex
+	public VertexFormat vertexFormat;
 
 	public NifVector3 vertex;
 	public float bitangentX;
@@ -136,95 +134,59 @@ public class BSVertexData
 	
 	 */
 
-	public BSVertexData(int vertexFormatFlags7, int vertexFormatFlags6, int vertexFormatFlags3, int dwordsPerVertex, ByteBuffer stream)
-			throws IOException
+	public BSVertexData(VertexFormat vertexFormat, ByteBuffer stream) throws IOException
 	{
-		this.vertexFormatFlags7 = vertexFormatFlags7;
-		this.vertexFormatFlags6 = vertexFormatFlags6;
-		this.vertexFormatFlags3 = vertexFormatFlags3;
-		this.dwordsPerVertex = dwordsPerVertex;
-
-		if ((vertexFormatFlags7 & 0x40) != 0)
+		this.vertexFormat = vertexFormat;
+		if (vertexFormat.isSet(VertexFormat.VF_Vertex))
 		{
-			vertex = new NifVector3(stream);
-			if ((vertexFormatFlags6 & 0x80) != 1 && (vertexFormatFlags3 & 0x40) != 1)
+			if (vertexFormat.isSet(VertexFormat.VF_Full_Precision))
+			{
+				vertex = new NifVector3(stream);
 				bitangentX = ByteConvert.readFloat(stream);
+			}
 			else
-				unknownShort1 = ByteConvert.readFloat(stream);
-		}
-		else //if ((vertexFormatFlags7 & 0x01) != 0 || bytesPerVertex >= 2)
-		{
-			vertex = new BSHalfFloatVector3(stream);
-
-			if ((vertexFormatFlags6 & 0x80) != 1 && (vertexFormatFlags3 & 0x40) != 1)
+			{
+				vertex = new BSHalfFloatVector3(stream);
 				bitangentX = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-			else
-				unknownShort1 = ByteConvert.readUnsignedShort(stream);
+			}
 		}
 
-		//if ((vertexFormatFlags7 & 0x01) != 0 || bytesPerVertex >= 3)
-		if ((vertexFormatFlags6 & 0x20) != 0)
+		if (vertexFormat.isSet(VertexFormat.VF_UVs))
 		{
 			texCoord = new BSHalfFloatTexCoord2(stream);
 		}
 
-		//if ((vertexFormatFlags7 & 0x01) != 0 || bytesPerVertex >= 4)
-		if ((vertexFormatFlags6 & 0x80) != 0)
+		if (vertexFormat.isSet(VertexFormat.VF_Normals))
 		{
 			normal = new BSByteVector3(stream);
 			bitangentY = ((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+			if (vertexFormat.isSet(VertexFormat.VF_Tangents))
+			{
+				tangent = new BSByteVector3(stream);
+				bitangentZ = ((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
+			}
 		}
 
-		//if ((vertexFormatFlags7 & 0x01) != 0 || bytesPerVertex >= 5)
-		if ((vertexFormatFlags3 & 0x40) != 0)
-		{
-			tangent = new BSByteVector3(stream);
-			bitangentZ = ((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-		}
-
-		//if (((vertexFormatFlags7 & 0x01) != 0 && (vertexFormatFlags7 & 0x02) != 0)
-		//		|| ((vertexFormatFlags7 & 0x01) == 0 && bytesPerVertex >= 6))
-		if ((vertexFormatFlags7 & 0x02) != 0)
+		if (vertexFormat.isSet(VertexFormat.VF_Vertex_Colors))
 		{
 			color = new BSByteColor4(stream);
 		}
 
-		//if ((vertexFormatFlags7 & 0x01) != 0)
+		if (vertexFormat.isSet(VertexFormat.VF_Skinned))
 		{
-			if ((vertexFormatFlags7 & 0x04) != 0)
-			{
-				for (int i = 0; i < 4; i++)
-					BoneWeights[i] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-				for (int i = 0; i < 4; i++)
-					BoneIndices[i] = ByteConvert.readUnsignedByte(stream);
-			}
-
-			if ((vertexFormatFlags7 & 0x10) != 0)
-			{
-				ByteConvert.readInt(stream);
-			}
+			BoneWeights = new float[4];
+			for (int b = 0; b < 4; b++)
+				BoneWeights[b] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			BoneIndices = new int[4];
+			for (int b = 0; b < 4; b++)
+				BoneIndices[b] = ByteConvert.readUnsignedByte(stream);
 		}
-		/*	else
-			{
-				//TODO: 9 could in fact be grabbing bone data (and 10)
-				if (bytesPerVertex >= 7)
-				{
-					ByteConvert.readInt(stream);
-				}
-				if (bytesPerVertex >= 8)
-				{
-					ByteConvert.readInt(stream);
-				}
-				if (bytesPerVertex >= 9)
-				{
-					ByteConvert.readInt(stream);
-				}
-				if (bytesPerVertex >= 10)
-				{
-					ByteConvert.readInt(stream);
-				}
-			}*/
 
+		if (vertexFormat.isSet(VertexFormat.VF_Male_Eyes))
+		{
+			//<add name="Unknown Int 2" type="uint" cond="(ARG &amp; 4096) != 0" />
+			ByteConvert.readInt(stream);
+		}
 	}
 
 	public String toString()

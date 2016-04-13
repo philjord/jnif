@@ -24,11 +24,7 @@ public class BSEyeCenterExtraData extends NiExtraData
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		NumData = ByteConvert.readInt(stream);
-		Data = new float[NumData];
-		for (int v = 0; v < NumData; v++)
-		{
-			Data[v] = ByteConvert.readFloat(stream);
-		}
+		Data = ByteConvert.readFloats(NumData, stream);
 		return success;
 	}
 }

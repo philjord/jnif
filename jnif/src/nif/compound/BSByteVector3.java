@@ -22,4 +22,9 @@ public class BSByteVector3 extends NifVector3
 			z = 0;
 		}
 	}
+	
+	public String toString()
+	{
+		return "[BSByteVector3] " + x + " " + y + " " + z;
+	}
 }
