@@ -136,16 +136,28 @@ public class BSTriShape extends NiTriBasedGeom
 							verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 							verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 							verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-
-							binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+							if (vertexFormat.isSet(VertexFormat.VF_Normals))
+							{
+								binormalsOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream));
+							}
+							else
+							{
+								ByteConvert.readFloat(stream);//discard
+							}
 						}
 						else
 						{
 							verticesOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
 							verticesOptBuf.put(i * 3 + 2, -MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
 							verticesOptBuf.put(i * 3 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
-
-							binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+							if (vertexFormat.isSet(VertexFormat.VF_Normals))
+							{
+								binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+							}
+							else
+							{
+								MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));//discard
+							}
 						}
 					}
 
