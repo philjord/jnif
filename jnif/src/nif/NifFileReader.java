@@ -278,6 +278,54 @@ public class NifFileReader
 			}
 		}
 
+		//Example of anaylyzing the nif file
+/*		for (int i = 0; i < blocks.length; i++)
+		{
+			NiObject niObject = blocks[i];
+			if (niObject instanceof NiGeometry)
+			{
+
+				NiGeometry niGeometry = (NiGeometry) niObject;
+				int NiTexturingPropertyC = 0;
+				int BSShaderLightingPropertyC = 0;
+				int BSLightingShaderPropertyC = 0;
+				int BSEffectShaderPropertyC = 0;
+				for (int p = 0; p < niGeometry.numProperties; p++)
+				{
+					int ref = niGeometry.properties[p].ref;
+					if (ref > 0)
+					{
+						NiObject prop = blocks[niGeometry.properties[p].ref];
+						if (prop instanceof NiTexturingProperty)
+							NiTexturingPropertyC++;
+						if (prop instanceof BSShaderLightingProperty)
+							BSShaderLightingPropertyC++;
+						if (prop instanceof BSLightingShaderProperty)
+							BSLightingShaderPropertyC++;
+						if (prop instanceof BSEffectShaderProperty)
+							BSEffectShaderPropertyC++;
+					}
+				}
+				
+				//Officially ok  NiTexturingPropertyC 1 BSShaderLightingPropertyC 1 fallout3
+				
+				int tot = NiTexturingPropertyC + BSShaderLightingPropertyC + BSLightingShaderPropertyC + BSEffectShaderPropertyC;
+				if (tot > 1&& !(NiTexturingPropertyC==1&&BSShaderLightingPropertyC==1&&BSLightingShaderPropertyC==0&&BSEffectShaderPropertyC==0))
+				{
+					System.err.print("Geom! ");
+					if (NiTexturingPropertyC > 0)
+						System.err.print(" NiTexturingPropertyC " + NiTexturingPropertyC);
+					if (BSShaderLightingPropertyC > 0)
+						System.err.print(" BSShaderLightingPropertyC " + BSShaderLightingPropertyC);
+					if (BSLightingShaderPropertyC > 0)
+						System.err.print(" BSLightingShaderPropertyC " + BSLightingShaderPropertyC);
+					if (BSEffectShaderPropertyC > 0)
+						System.err.print(" BSEffectShaderPropertyC " + BSEffectShaderPropertyC);
+					System.err.println(" " + nifVer.fileName);
+				}
+			}
+		}*/
+
 		if (!unknownBlocksFound)
 		{
 			int countOfErrorsReported = 0;// after 10 we'll fail out and return null
