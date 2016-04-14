@@ -109,14 +109,14 @@ public class NiAlphaProperty extends NiProperty
 		{
 			if (flags.flags == 237)
 			{
-				flags.flags = 4608  ;//+ 237; //FIXME: a good value or decision here
+				flags.flags = 4608 + 237; 
 				threshold = 64;// must pick a goody here?
 			}
 			else if (flags.flags == 13 || flags.flags == 4097)
 			{
 				// 4097 looks like a bug to me
 				flags.flags = 4608 + 13;
-				//threshold = 64;
+				threshold = 64;
 			}
 		}
 		return success;
