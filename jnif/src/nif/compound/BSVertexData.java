@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.niobject.bs.BSTriShape.VertexFormat;
-import tools.MiniFloat;
+import nif.tools.MiniFloat;
 
 public class BSVertexData
 {

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import tools.io.LittleEndianPrimitiveBytes;
+import nif.tools.io.LittleEndianPrimitiveBytes;
 
 public class ByteConvert extends LittleEndianPrimitiveBytes
 {

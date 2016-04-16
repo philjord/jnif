@@ -10,7 +10,7 @@ import nif.NifVer;
 import nif.compound.BSVertexData;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
-import tools.MiniFloat;
+import nif.tools.MiniFloat;
 
 public class BSTriShape extends NiTriBasedGeom
 {

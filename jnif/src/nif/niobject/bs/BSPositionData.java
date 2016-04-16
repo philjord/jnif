@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.niobject.NiExtraData;
-import tools.MiniFloat;
+import nif.tools.MiniFloat;
 
 public class BSPositionData extends NiExtraData
 {

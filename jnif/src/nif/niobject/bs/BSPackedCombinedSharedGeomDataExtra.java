@@ -12,7 +12,7 @@ import nif.compound.NifSphereBV;
 import nif.compound.NifTriangle;
 import nif.compound.NifVector3;
 import nif.niobject.NiExtraData;
-import tools.MiniFloat;
+import nif.tools.MiniFloat;
 
 public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 {

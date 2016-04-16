@@ -1,4 +1,4 @@
-package tools.io;
+package nif.tools.io;
 
 import java.io.IOException;
 import java.io.InputStream;

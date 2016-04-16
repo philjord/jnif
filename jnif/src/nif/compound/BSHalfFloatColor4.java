@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
-import tools.MiniFloat;
+import nif.tools.MiniFloat;
 
 public class BSHalfFloatColor4
 {

@@ -1,4 +1,4 @@
-package tools;
+package nif.tools;
 
 
 public class MiniFloat
