@@ -15,7 +15,7 @@ import nif.tools.MiniFloat;
 public class BSTriShape extends NiTriBasedGeom
 {
 	public static boolean LOAD_OPTIMIZED = true;
-	public static final float ES_TO_METERS_SCALE = 0.02f;
+	public static final float ES_TO_METERS_SCALE = 0.0254f / 2f;//0.02f;
 
 	public int dwordsPerVertex;
 	public int vertexFormat2;

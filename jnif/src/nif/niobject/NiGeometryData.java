@@ -17,7 +17,7 @@ import nif.niobject.particle.NiPSysData;
 public abstract class NiGeometryData extends NiObject
 {
 	public static boolean LOAD_OPTIMIZED = true;
-	public static final float ES_TO_METERS_SCALE = 0.02f;
+	public static final float ES_TO_METERS_SCALE = 0.0254f / 2f;//0.02f;
 
 	/**
 	  <niobject name="NiGeometryData" abstract="1" inherit="NiObject">
