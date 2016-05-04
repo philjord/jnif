@@ -73,7 +73,7 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasVertices;
 
 	public NifVector3[] vertices;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer verticesOptBuf;
 
 	public int numUVSets;
@@ -87,15 +87,15 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasNormals;
 
 	public NifVector3[] normals;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer normalsOptBuf;
 
 	public NifVector3[] binormals;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer binormalsOptBuf;
 
 	public NifVector3[] tangents;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer tangentsOptBuf;
 
 	public NifVector3 center;
@@ -107,16 +107,30 @@ public abstract class NiGeometryData extends NiObject
 	public boolean hasVertexColors;
 
 	public NifColor4[] vertexColors;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer vertexColorsOptBuf;
 
 	public NifTexCoord[][] uVSets;
-	//OPTOMISATIONS
+	//OPTIMIZISATION
 	public FloatBuffer[] uVSetsOptBuf;
 
 	public ConsistencyType consistencyType;
 
 	public NifRef additionalData;
+
+	//OPTIMIZISATION
+	public boolean buffersFilled = false;
+
+	//MEGA_OPTIMIZISATION
+	public int interleavedStride = -1;
+	public int geoToCoordOffset = -1;
+	public int geoToColorsOffset = -1;
+	public int geoToNormalsOffset = -1;
+	public int[] geoToTexCoordOffset = new int[1];
+	public int[] geoToVattrOffset = new int[2];
+
+	public ByteBuffer interleavedBuffer;
+	public ByteBuffer coordBuffer;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
@@ -150,6 +164,20 @@ public abstract class NiGeometryData extends NiObject
 		hasVertices = ByteConvert.readBool(stream, nifVer);
 		if (hasVertices)
 		{
+
+			if (nifVer.niGeometryDataToLoadMorphably.contains(new Integer(this.refId)))
+			{
+				//blah blah
+			}
+
+			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+			{
+				if (nifVer.niGeometryDataExtraDataArriving.contains(new Integer(this.refId)))
+				{
+					//blah
+				}
+			}
+
 			if (LOAD_OPTIMIZED)
 			{
 				verticesOptBuf = createFB(numVertices * 3);

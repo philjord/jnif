@@ -1,5 +1,7 @@
 package nif;
 
+import java.util.ArrayList;
+
 public class NifVer
 {
 	/**
@@ -45,8 +47,8 @@ public class NifVer
 	 <version num="20.6.0.0">KrazyRain</version>
 	 <version num="20.6.5.0">Epic Mickey</version>
 	 <version num="30.0.0.2">Emerge</version>
-
-
+	
+	
 	 */
 
 	//Skyrim version= 20.2.0.7, User version 1= 11, User Version 2=83.
@@ -156,4 +158,11 @@ public class NifVer
 	{
 		return (LOAD_VER == NifVer.VER_20_3_0_9 && (LOAD_USER_VER == 9 || LOAD_USER_VER == 11 || LOAD_USER_VER == 12));
 	}
+
+	//TODO: nifVer is handed to all node to loading, so it is really more like teh niffile root, 
+	//and should have the header adn everything availible from it, it should be the header really
+
+	public ArrayList<Integer> niGeometryDataToLoadMorphably = new ArrayList<Integer>();
+	public ArrayList<Integer> niGeometryDataExtraDataArriving = new ArrayList<Integer>();
+
 }

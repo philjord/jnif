@@ -49,12 +49,6 @@ public class BSTriShape extends NiTriBasedGeom
 	//public NifTriangle[] triangles;
 	public int[] trianglesOpt;
 
-	/*	public static HashMap<String, Integer> allFormatToCount = new HashMap<String, Integer>();
-	
-		//In the presence of 7&1==1
-		public static int flags7ToSizeDisagreements = 0;
-		public static HashMap<Integer, Integer> flags7ToSize = new HashMap<Integer, Integer>();
-	*/
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -75,34 +69,8 @@ public class BSTriShape extends NiTriBasedGeom
 
 		dataSize = ByteConvert.readInt(stream);
 
-		/*		String format = "dwpv " + dwordsPerVertex + " f2:" + vertexFormat2 + " f3:" + vertexFormatFlags3 + " f4:" + vertexFormat4 + " f5:"
-						+ vertexFormat5 + " f6:" + vertexFormatFlags6 + " f7:" + vertexFormatFlags7 + " f8:" + vertexFormat8;
-						//System.out.println("format " + format);
-		
-					if( vertexFormatFlags7==0&& dwordsPerVertex>0)
-					{
-						System.out.println(""+nVer.fileName);
-						System.out.println("format " + format);
-					}
-		
-				if (allFormatToCount.get(format) == null)
-					allFormatToCount.put(format, 1);
-				else
-					allFormatToCount.put(format, allFormatToCount.get(format) + 1);
-		*/
 		if (dataSize > 0)
 		{
-			////////////////////////decode code
-			/*			int bytesPerVert = ((dataSize - (numTriangles * 6)) / numVertices);
-			
-						if ((vertexFormatFlags7 & 0x01) != 0)
-						{
-							if (flags7ToSize.get(vertexFormatFlags7) != null && flags7ToSize.get(vertexFormatFlags7) != bytesPerVert)
-								flags7ToSizeDisagreements++;
-							flags7ToSize.put(vertexFormatFlags7, bytesPerVert);
-						}*/
-			///////////////////////
-
 			if (LOAD_OPTIMIZED)
 			{
 				verticesOptBuf = createFB(numVertices * 3);

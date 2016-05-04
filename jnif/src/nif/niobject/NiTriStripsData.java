@@ -2,6 +2,7 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -33,6 +34,10 @@ public class NiTriStripsData extends NiTriBasedGeomData
 	public boolean hasPoints;
 
 	public int[][] points;
+	
+	
+	//MEGA_OPTIMIZISATION
+	public ShortBuffer indBuf;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{

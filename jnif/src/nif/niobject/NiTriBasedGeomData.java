@@ -20,8 +20,7 @@ public abstract class NiTriBasedGeomData extends NiGeometryData
 
 	public int numTriangles;
 	
-	//OPTOMIZISATION
-	public boolean buffersFilled = false;
+
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
