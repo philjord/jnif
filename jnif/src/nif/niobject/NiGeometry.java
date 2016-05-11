@@ -71,8 +71,8 @@ public abstract class NiGeometry extends NiAVObject
 
 			skin = new NifRef(NiSkinInstance.class, stream);
 
-			// record for data to know when loading later
-			if (skin.ref != -1)
+			// record for data to know when loading later, skinned or controlled things must have a seperate coords channel
+			if (skin.ref != -1 || this.controller.ref != -1)
 				nifVer.niGeometryDataToLoadMorphably.add(new Integer(data.ref));
 
 			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)

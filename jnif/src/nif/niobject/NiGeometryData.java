@@ -17,6 +17,7 @@ import nif.niobject.particle.NiPSysData;
 public abstract class NiGeometryData extends NiObject
 {
 	public static boolean LOAD_OPTIMIZED = true;
+	public static boolean LOAD_MEGA_OPTIMIZED = true;
 	public static final float ES_TO_METERS_SCALE = 0.0254f / 2f;//0.02f;
 
 	/**
@@ -165,29 +166,41 @@ public abstract class NiGeometryData extends NiObject
 		if (hasVertices)
 		{
 
-			if (nifVer.niGeometryDataToLoadMorphably.contains(new Integer(this.refId)))
-			{
-				//blah blah
-			}
-
-			if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
-			{
-				if (nifVer.niGeometryDataExtraDataArriving.contains(new Integer(this.refId)))
-				{
-					//blah
-				}
-			}
-
 			if (LOAD_OPTIMIZED)
 			{
-				verticesOptBuf = createFB(numVertices * 3);
-				for (int i = 0; i < numVertices; i++)
+			/*	if (LOAD_MEGA_OPTIMIZED)
 				{
-					verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-					verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-					verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-				}
+					//TODO: is reading off and allocating a smaller set of data worthwhile?
+					// For mega optimized we assume coord, normals, and uv
+					// if we meet colors then we need to dump and rebuild the data
+					// or keep color in it's own buffer? seems reasonable
+					// if we are oblivion the bitans are already known
+					// for fallout the bitans only are known at the uv and has normal stage
+					// so honestly I'm going to be rebuilding it anyone, might as well do it
+					// at the J3dNiTriBasedGeom stage and discard?
+					if (nifVer.niGeometryDataToLoadMorphably.contains(new Integer(this.refId)))
+					{
+						//blah blah
+					}
 
+					if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+					{
+						if (nifVer.niGeometryDataExtraDataArriving.contains(new Integer(this.refId)))
+						{
+							//blah
+						}
+					}
+				}
+				else*/
+				{
+					verticesOptBuf = createFB(numVertices * 3);
+					for (int i = 0; i < numVertices; i++)
+					{
+						verticesOptBuf.put(i * 3 + 0, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 2, -ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+						verticesOptBuf.put(i * 3 + 1, ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+					}
+				}
 			}
 			else
 			{

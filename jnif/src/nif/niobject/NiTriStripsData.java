@@ -2,7 +2,6 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
@@ -12,7 +11,7 @@ public class NiTriStripsData extends NiTriBasedGeomData
 	/**
 	 
 	 <niobject name="NiTriStripsData" abstract="0" inherit="NiTriBasedGeomData" ver1="4.1.0.12">
-
+	
 	 Holds mesh data using strips of triangles.
 	 
 	 <add name="Num Strips" type="ushort">Number of OpenGL triangle strips that are present.</add>
@@ -34,10 +33,6 @@ public class NiTriStripsData extends NiTriBasedGeomData
 	public boolean hasPoints;
 
 	public int[][] points;
-	
-	
-	//MEGA_OPTIMIZISATION
-	public ShortBuffer indBuf;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{

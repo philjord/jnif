@@ -2,7 +2,6 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nif.ByteConvert;
@@ -37,9 +36,6 @@ public class NiTriShapeData extends NiTriBasedGeomData
 	public int numMatchGroups;
 
 	public NifMatchGroup[] matchGroups;
-
-	//MEGA_OPTIMIZISATION
-	public ShortBuffer indBuf;
 
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
