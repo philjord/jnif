@@ -168,30 +168,30 @@ public abstract class NiGeometryData extends NiObject
 
 			if (LOAD_OPTIMIZED)
 			{
-			/*	if (LOAD_MEGA_OPTIMIZED)
-				{
-					//TODO: is reading off and allocating a smaller set of data worthwhile?
-					// For mega optimized we assume coord, normals, and uv
-					// if we meet colors then we need to dump and rebuild the data
-					// or keep color in it's own buffer? seems reasonable
-					// if we are oblivion the bitans are already known
-					// for fallout the bitans only are known at the uv and has normal stage
-					// so honestly I'm going to be rebuilding it anyone, might as well do it
-					// at the J3dNiTriBasedGeom stage and discard?
-					if (nifVer.niGeometryDataToLoadMorphably.contains(new Integer(this.refId)))
+				/*	if (LOAD_MEGA_OPTIMIZED)
 					{
-						//blah blah
-					}
-
-					if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
-					{
-						if (nifVer.niGeometryDataExtraDataArriving.contains(new Integer(this.refId)))
+						//TODO: is reading off and allocating a smaller set of data worthwhile?
+						// For mega optimized we assume coord, normals, and uv
+						// if we meet colors then we need to dump and rebuild the data
+						// or keep color in it's own buffer? seems reasonable
+						// if we are oblivion the bitans are already known
+						// for fallout the bitans only are known at the uv and has normal stage
+						// so honestly I'm going to be rebuilding it anyone, might as well do it
+						// at the J3dNiTriBasedGeom stage and discard?
+						if (nifVer.niGeometryDataToLoadMorphably.contains(new Integer(this.refId)))
 						{
-							//blah
+							//blah blah
+						}
+				
+						if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_101 && nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
+						{
+							if (nifVer.niGeometryDataExtraDataArriving.contains(new Integer(this.refId)))
+							{
+								//blah
+							}
 						}
 					}
-				}
-				else*/
+					else*/
 				{
 					verticesOptBuf = createFB(numVertices * 3);
 					for (int i = 0; i < numVertices; i++)
@@ -288,14 +288,24 @@ public abstract class NiGeometryData extends NiObject
 
 		center = new NifVector3(stream);
 		radius = ByteConvert.readFloat(stream);
+		if (LOAD_OPTIMIZED)
+		{
+			center.x = center.x * ES_TO_METERS_SCALE;
+			float y = center.y;
+			center.y = center.z * ES_TO_METERS_SCALE;
+			center.z = -y * ES_TO_METERS_SCALE;
+			radius *= ES_TO_METERS_SCALE;
+		}
 
 		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9 && nifVer.LOAD_USER_VER == 131072)
+
 		{
 			unknown13Shorts = ByteConvert.readShorts(13, stream);
 		}
 
 		hasVertexColors = ByteConvert.readBool(stream, nifVer);
 		if (hasVertexColors)
+
 		{
 			if (LOAD_OPTIMIZED)
 			{
@@ -320,25 +330,30 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
+
 		{
 			numUVSets = ByteConvert.readUnsignedShort(stream);
 		}
 
 		if (nifVer.LOAD_VER <= NifVer.VER_4_0_0_2)
+
 		{
 			hasUV = ByteConvert.readBool(stream, nifVer);
 		}
 
 		//calculated actual value based on version
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP())
+
 		{
 			actNumUVSets = numUVSets & 1;
 		}
 		else
+
 		{
 			actNumUVSets = numUVSets & 63;
 		}
 		if (LOAD_OPTIMIZED)
+
 		{
 			uVSetsOptBuf = new FloatBuffer[actNumUVSets];
 			for (int j = 0; j < actNumUVSets; j++)
@@ -353,6 +368,7 @@ public abstract class NiGeometryData extends NiObject
 
 		}
 		else
+
 		{
 			uVSets = new NifTexCoord[actNumUVSets][numVertices];
 			for (int j = 0; j < actNumUVSets; j++)
@@ -365,16 +381,19 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
+
 		{
 			consistencyType = new ConsistencyType(stream);
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
+
 		{
 			additionalData = new NifRef(NiAdditionalGeometryData.class, stream);
 		}
 
 		return success;
+
 	}
 
 	public void loadTangentAndBinormalsFromExtraData(ByteBuffer stream, NifVer nifVer) throws IOException
