@@ -1,9 +1,10 @@
-package nif.niobject;
+package nif.niobject.particle;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.NifVer;
+import nif.niobject.NiNode;
 
 public class NiBSParticleNode extends NiNode
 {

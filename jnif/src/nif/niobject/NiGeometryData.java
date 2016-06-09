@@ -298,14 +298,12 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		if (nifVer.LOAD_VER == NifVer.VER_20_3_0_9 && nifVer.LOAD_USER_VER == 131072)
-
 		{
 			unknown13Shorts = ByteConvert.readShorts(13, stream);
 		}
 
 		hasVertexColors = ByteConvert.readBool(stream, nifVer);
 		if (hasVertexColors)
-
 		{
 			if (LOAD_OPTIMIZED)
 			{
@@ -330,30 +328,25 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		if (nifVer.LOAD_VER <= NifVer.VER_4_2_2_0)
-
 		{
 			numUVSets = ByteConvert.readUnsignedShort(stream);
 		}
 
 		if (nifVer.LOAD_VER <= NifVer.VER_4_0_0_2)
-
 		{
 			hasUV = ByteConvert.readBool(stream, nifVer);
 		}
 
 		//calculated actual value based on version
 		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP())
-
 		{
 			actNumUVSets = numUVSets & 1;
 		}
 		else
-
 		{
 			actNumUVSets = numUVSets & 63;
 		}
 		if (LOAD_OPTIMIZED)
-
 		{
 			uVSetsOptBuf = new FloatBuffer[actNumUVSets];
 			for (int j = 0; j < actNumUVSets; j++)
@@ -368,7 +361,6 @@ public abstract class NiGeometryData extends NiObject
 
 		}
 		else
-
 		{
 			uVSets = new NifTexCoord[actNumUVSets][numVertices];
 			for (int j = 0; j < actNumUVSets; j++)
@@ -381,13 +373,11 @@ public abstract class NiGeometryData extends NiObject
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_10_0_1_0)
-
 		{
 			consistencyType = new ConsistencyType(stream);
 		}
 
 		if ((!(this instanceof NiPSysData) || nifVer.LOAD_USER_VER < 12) && nifVer.LOAD_VER >= NifVer.VER_20_0_0_4)
-
 		{
 			additionalData = new NifRef(NiAdditionalGeometryData.class, stream);
 		}
