@@ -178,7 +178,7 @@ public class NiParticlesData extends NiGeometryData
 		{
 			HasUVQuadrants = ByteConvert.readBool(stream, nifVer);
 
-			NumUVQuadrants = ByteConvert.readShort(stream);
+			NumUVQuadrants = ByteConvert.readByte(stream);
 			if (HasUVQuadrants)
 			{
 				UVQuadrants = new NifVector4[NumUVQuadrants];
@@ -189,8 +189,7 @@ public class NiParticlesData extends NiGeometryData
 			}
 		}
 
-		//!!!This is not according to the spec!! >=11 is wrong
-		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER > 11 && !nifVer.isBP())
+		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && !nifVer.isBP())
 		{
 			UnknownByte2 = ByteConvert.readByte(stream);
 		}
