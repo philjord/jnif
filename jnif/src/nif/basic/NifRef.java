@@ -5,9 +5,11 @@ import java.nio.ByteBuffer;
 import java.util.Vector;
 
 import nif.ByteConvert;
+import nif.NifFileReader;
 
 public class NifRef
 {
+	
 
 	/**
 	 * <basic name="Ref" count="0" niflibtype="Ref" nifskopetype="link" istemplate="1">
@@ -34,13 +36,16 @@ public class NifRef
 		//		if (ref < -1 || ref > 20000)
 		//			new Throwable("Bad ref " + ref + " " + refType).printStackTrace();
 
-		allRefs.add(this);
-		if (ref < -1 || ref > maxRefId)
-		{
-			throw new RuntimeException("Bad ref value " + ref);
+		if(NifFileReader.REVIEW_REFS_POST_LOAD) {
+			allRefs.add(this);
+			if (ref < -1 || ref > maxRefId)
+			{
+				throw new RuntimeException("Bad ref value " + ref);
+			}
 		}
 	}
 
+	@Override
 	public String toString()
 	{
 		return "[NifRef] " + ref + " " + refType;

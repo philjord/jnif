@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Vector;
 
 import nif.ByteConvert;
+import nif.NifFileReader;
 
 public class NifPtr
 {
@@ -28,13 +29,17 @@ public class NifPtr
 	{
 		this.ptrType = ptrType;
 		ptr = ByteConvert.readInt(stream);
-		allPtrs.add(this);
-		if (ptr < -1 || ptr > maxRefId)
-		{
-			throw new RuntimeException("Bad ptr value " + ptr);
+		
+		if(NifFileReader.REVIEW_REFS_POST_LOAD) {
+			allPtrs.add(this);
+			if (ptr < -1 || ptr > maxRefId)
+			{
+				throw new RuntimeException("Bad ptr value " + ptr);
+			}
 		}
 	}
 
+	@Override
 	public String toString()
 	{
 		return "[NPPtr] " + ptr + " " + ptrType;
