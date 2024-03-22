@@ -83,7 +83,25 @@ public class NifMatrix44
 		m34 = ByteConvert.readFloat(stream);
 		m44 = ByteConvert.readFloat(stream);
 	}
-
+	public NifMatrix44(ByteBuffer stream, int offset) throws IOException
+	{
+		m11 = stream.getFloat(offset + 0);
+		m21 = stream.getFloat(offset + 4);
+		m31 = stream.getFloat(offset + 8);
+		m41 = stream.getFloat(offset + 12);
+		m12 = stream.getFloat(offset + 16);
+		m22 = stream.getFloat(offset + 20);
+		m32 = stream.getFloat(offset + 24);
+		m42 = stream.getFloat(offset + 28);
+		m13 = stream.getFloat(offset + 32);
+		m23 = stream.getFloat(offset + 36);
+		m33 = stream.getFloat(offset + 40);
+		m43 = stream.getFloat(offset + 44);
+		m14 = stream.getFloat(offset + 48);
+		m24 = stream.getFloat(offset + 52);
+		m34 = stream.getFloat(offset + 56);
+		m44 = stream.getFloat(offset + 60);
+	}
 	public float[] data()
 	{
 		return new float[] { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 };

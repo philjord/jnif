@@ -43,6 +43,21 @@ public class NifVector4
 		}
 	}
 
+	public NifVector4(ByteBuffer stream, int offset) {
+		x = stream.getFloat(offset + 0);
+		y = stream.getFloat(offset + 4);
+		z = stream.getFloat(offset + 8);
+		w = stream.getFloat(offset + 12);
+
+		if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z) || Float.isNaN(w))
+		{
+			x = 0;
+			y = 0;
+			z = 0;
+			w = 0;
+		}
+	}
+
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifVector4)

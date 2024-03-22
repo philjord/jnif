@@ -2,7 +2,6 @@ package nif.niobject;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;

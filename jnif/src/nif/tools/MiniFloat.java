@@ -59,4 +59,42 @@ public class MiniFloat
 				+ (0x800000 >>> val - 102) // round depending on cut off
 		>>> 126 - val); // div by 2^(1-(exp-127+15)) and >> 13 | exp=0
 	}
+	
+	
+	//https://stackoverflow.com/questions/37105764/how-to-convert-to-from-an-8-bit-float-representation
+	// Note I want unsigened float, so perhaps 4,4?
+	//https://stackoverflow.com/questions/46003325/minifloat-format
+	
+	//FIXME:!!!!!!!!! NOT DONE!
+		public static float toFloatU8(byte hbits)
+		{
+			int mant = hbits & 0b00000111; // 3 bits mantissa
+			int exp = hbits & 0b01111000; // 4 bits exponent
+			if (exp == 0b01111000) // NaN/Inf
+				exp = 0x3fc00; // -> NaN/Inf
+			else if (exp != 0) // normalized value
+			{
+				exp += 0x1c000; // exp - 15 + 127
+				if (mant == 0 && exp > 0x1c400) // smooth transition
+					return Float.intBitsToFloat((hbits & 0x8000) << 16 | exp << 13 | 0x3ff);
+			}
+			else if (mant != 0) // && exp==0 -> subnormal
+			{
+				exp = 0x1c400; // make it normal
+				do
+				{
+					mant <<= 1; // mantissa * 2
+					exp -= 0x400; // decrease exp by 1
+				}
+				while ((mant & 0x400) == 0); // while not normal
+				mant &= 0x3ff; // discard subnormal bit
+			} // else +/-0 -> +/-0
+			return Float.intBitsToFloat( // combine all parts
+					(hbits & 0x8000) << 16 // sign  << ( 31 - 15 )
+							| (exp | mant) << 13); // value << ( 23 - 10 )
+		}
+
+ 
+		
+		
 }

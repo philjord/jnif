@@ -35,6 +35,13 @@ public class NifQuaternion
 		z = ByteConvert.readFloat(stream);
 	}
 
+	public NifQuaternion(ByteBuffer stream, int offset) {
+		w = stream.getFloat(offset + 0);
+		x = stream.getFloat(offset + 4);
+		y = stream.getFloat(offset + 8);
+		z = stream.getFloat(offset + 12);
+	}
+
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifQuaternion)

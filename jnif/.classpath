@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/pjnz/.m2/repository/com/google/guava/guava/19.0/guava-19.0.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

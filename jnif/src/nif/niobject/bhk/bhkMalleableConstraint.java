@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.basic.NifPtr;
-import nif.basic.NifRef;
 import nif.compound.NifHingeDescriptor;
 import nif.compound.NifLimitedHingeDescriptor;
 import nif.compound.NifRagdollDescriptor;

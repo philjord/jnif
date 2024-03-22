@@ -2,38 +2,38 @@ package nif.niobject.bs;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.niobject.NiExtraData;
+import nif.niobject.hkx.reader.HKXContents;
+import nif.niobject.hkx.reader.HKXReader;
+import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class BSbhkNPObject extends NiExtraData
 {
 	public int NumBytes;
-	public String verNum;
 
-	public byte[] Data;
+	public HKXContents hkxContents;
 
-//	private HKXFile hkxFile;
-
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		NumBytes = ByteConvert.readInt(stream);// don't include in read off total mind you
-		Data = ByteConvert.readBytes(NumBytes, stream);
-
-/*		ByteBuffer bb = ByteBuffer.wrap(Data);
-		HKXEnumResolver enumResolver = new HKXEnumResolver();
-		HKXDescriptorFactory descriptorFactory = new HKXDescriptorFactory(enumResolver);
-		HKXReader reader = new HKXReader(bb, descriptorFactory, enumResolver);
+		ByteBuffer bb = ByteBuffer.wrap(ByteConvert.readBytes(NumBytes, stream));
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		
+		HKXReader reader = new HKXReader(bb);
 		try
 		{
-			hkxFile = reader.read();
+			hkxContents = reader.read();
 		}
 		catch (InvalidPositionException e)
 		{
 			e.printStackTrace();
-		}*/
+		}
 
 		return success;
 	}
