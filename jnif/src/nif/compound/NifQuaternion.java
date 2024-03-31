@@ -42,6 +42,7 @@ public class NifQuaternion
 		z = stream.getFloat(offset + 12);
 	}
 
+	@Override
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifQuaternion)
@@ -50,5 +51,11 @@ public class NifQuaternion
 			return q2.w == w && q2.x == x && q2.y == y && q2.z == z;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "NPQuaternion " + x + " " + y + " " + z + " " + w;
 	}
 }

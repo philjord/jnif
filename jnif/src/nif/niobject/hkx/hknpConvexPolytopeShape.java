@@ -19,9 +19,9 @@ import nif.niobject.hkx.reader.byteutils.ByteUtils;
 */
  
 public class hknpConvexPolytopeShape extends hknpConvexShape  {
-	NifVector4[] planes;
-	hknpConvexPolytopeShapeFace[] faces;
-	int[] indices;
+	public NifVector4[] planes;
+	public hknpConvexPolytopeShapeFace[] faces;
+	public int[] indices;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {

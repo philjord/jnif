@@ -17,7 +17,7 @@ import nif.niobject.hkx.reader.byteutils.ByteUtils;
 */
 public class hknpConvexShape extends hknpShape {
 	
-	NifVector4[] vertices;
+	public NifVector4[] vertices;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {

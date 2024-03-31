@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import nif.compound.NifQuaternion;
+import nif.compound.NifQuaternionXYZW;
 import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.DataInternal;
@@ -33,7 +33,7 @@ import nif.niobject.hkx.reader.byteutils.ByteUtils;
 </struct>
 */
 public class hknpBodyCinfo  {
-	public static final int size = 88 + 20;// is a vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' 20 long?
+	public static final int size = 88 + 8;//vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' is 8 long as given by the first shape
 	public long shape;
 	public int reservedBodyId;
 	public int motionId;
@@ -45,7 +45,7 @@ public class hknpBodyCinfo  {
 	public String name;
 	public long userData;
 	public NifVector4 position;
-	public NifQuaternion orientation;
+	public NifQuaternionXYZW orientation;
 	public byte spuFlags;
 	public long localFrame;
 	
@@ -93,7 +93,8 @@ public class hknpBodyCinfo  {
 		//<member name='position' type='hkVector4' offset='48' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		position = new NifVector4(stream, 48);
 		//<member name='orientation' type='hkQuaternion' offset='64' vtype='TYPE_QUATERNION' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		orientation = new NifQuaternion(stream, 64);
+		orientation = new NifQuaternionXYZW(stream, 64);
+		
 		//<member name='spuFlags' type='flags SpuFlagsEnum' etype='SpuFlagsEnum' offset='80' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		spuFlags = stream.get(80);
 

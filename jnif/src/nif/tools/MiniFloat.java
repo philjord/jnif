@@ -94,7 +94,48 @@ public class MiniFloat
 							| (exp | mant) << 13); // value << ( 23 - 10 )
 		}
 
- 
 		
+		//Therefore final typical number is sign(+/- 1) * 2decoded exponent * 1.mantissa.
+		//1 sign 8 exponent, 15 mantissa 21bit
+		/*public static float float21bits(long raw, int shift)
+		{
+			//8,12 produces NaN
+			//7,13 no Nan 1.9733078E-31, -1.0009764
+			//6,14 no Nan 3.0094273E-36, -3.2313176E-27
+			//5,15 no Nan 9.409052E-38, -3.0831292E-33
+			
+			
+			//bias of 4bit exp is 7, 5bit is 15, 8bit is 127 
+			//so 6bit = 31 and 7bit = 63  
+			
+			int base =  (int)(raw >> shift) & 0b111111111111111111111; // 21 bits masked
+			System.out.println("bits21:" + String.format("%21s", Integer.toBinaryString(base)).replace(" ", "0"));
+			int sign = (base >> 20);
+			int exp = (base >> 14) & 0b111111;// 5 bits exponent
+			if (exp != 0)
+				exp += 91; // exp - 15 + 127 bias components 
+			int mant = base & 0b11111111111111; // 15 bits mantissa
+			
+			int bits = (sign << 31) | exp << 23 | mant;
+			return Float.intBitsToFloat(bits);
+		}
+		//1 sign 6 exponent, 16 mantissa 22bit
+		public static float float22bits(long raw, int shift)
+		{
+			int base =  (int)(raw >> shift) & 0b1111111111111111111111; // 22 bits masked
+			System.out.println("bits22:" + String.format("%22s", Integer.toBinaryString(base)).replace(" ", "0"));
+			int sign = (base >> 21);
+			int exp = (base >> 13) & 0b1111111;// 7 bits exponent
+			if (exp != 0)
+				exp += -63+127; // exp - 15 + 127 bias components 
+			int mant = base & 0b1111111111111; // 13 bits mantissa
+			
+			int bits = (sign << 31) | exp << 23 | mant << (23-13);// mantissa shifted to the left of it's bitspace as it is a fraction
+			return Float.intBitsToFloat(bits);
+			
+			//so 6 exp and 15 mant and bias = 118 is nearly about right maybe
+			//5 and 16 and bias = 123 nearly as well
+			 
+		}*/
 		
 }

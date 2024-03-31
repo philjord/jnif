@@ -35,6 +35,25 @@ public class NifQuaternionXYZW
 		w = ByteConvert.readFloat(stream);
 	}
 
+	public NifQuaternionXYZW(ByteBuffer stream, int offset) {
+		x = stream.getFloat(offset + 0);
+		y = stream.getFloat(offset + 4);
+		z = stream.getFloat(offset + 8);
+		w = stream.getFloat(offset + 12);
+	}	
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o instanceof NifQuaternionXYZW)
+		{
+			NifQuaternionXYZW q2 = (NifQuaternionXYZW) o;
+			return q2.w == w && q2.x == x && q2.y == y && q2.z == z;
+		}
+		return false;
+	}
+	
+	@Override
 	public String toString()
 	{
 		return "NPQuaternionXYZW " + x + " " + y + " " + z + " " + w;

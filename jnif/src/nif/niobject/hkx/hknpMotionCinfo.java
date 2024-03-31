@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import nif.compound.NifQuaternion;
+import nif.compound.NifQuaternionXYZW;
 import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -35,7 +35,7 @@ public class hknpMotionCinfo  {
 	float maxRotationToPreventTunneling;
 	NifVector4 inverseInertiaLocal;
 	NifVector4 centerOfMassWorld;
-	NifQuaternion orientation;
+	NifQuaternionXYZW orientation;
 	NifVector4 linearVelocity;
 	NifVector4 angularVelocity;
 	
@@ -59,7 +59,7 @@ public class hknpMotionCinfo  {
 		//<member name='centerOfMassWorld' type='hkVector4' offset='48' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		centerOfMassWorld = new NifVector4(stream, 48);
 		//<member name='orientation' type='hkQuaternion' offset='64' vtype='TYPE_QUATERNION' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		orientation = new NifQuaternion(stream, 64);
+		orientation = new NifQuaternionXYZW(stream, 64);
 		//<member name='linearVelocity' type='hkVector4' offset='80' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		linearVelocity = new NifVector4(stream, 80);
 		//<member name='angularVelocity' type='hkVector4' offset='96' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>

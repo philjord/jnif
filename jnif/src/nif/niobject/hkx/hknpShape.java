@@ -54,13 +54,13 @@ enum ScaleMode {SCALE_SURFACE,SCALE_VERTICES};
 enum ConvexRadiusDisplayMode {CONVEX_RADIUS_DISPLAY_NONE,CONVEX_RADIUS_DISPLAY_PLANAR,CONVEX_RADIUS_DISPLAY_ROUNDED};
 
 public class hknpShape extends hkReferencedObject {
-	int flags;
-	int numShapeKeyBits;
-	int dispatchType;
-	float convexRadius;
-	long userData;
+	public int flags;
+	public int numShapeKeyBits;
+	public int dispatchType;
+	public float convexRadius;
+	public long userData;
 	
-	long properties;
+	public long properties;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
