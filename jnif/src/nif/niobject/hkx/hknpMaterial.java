@@ -63,28 +63,28 @@ enum MassChangerCategory {MASS_CHANGER_IGNORE, MASS_CHANGER_DEBRIS,MASS_CHANGER_
 
 public class hknpMaterial  {
 	public static final int size = 73; // or does align 16 want this to be 80?
-	String name;
-	int isExclusive;
-	int flags;
-	TriggerType triggerType;
-	byte triggerManifoldTolerance;
-	float dynamicFriction;
-	float staticFriction;
-	float restitution;
-	CombinePolicy frictionCombinePolicy;
-	CombinePolicy restitutionCombinePolicy;
-	float weldingTolerance;
-	float maxContactImpulse;
-	float fractionOfClippedImpulseToApply;
-	MassChangerCategory massChangerCategory;
-	float massChangerHeavyObjectFactor;
-	float softContactForceFactor;
-	float softContactDampFactor;
-	byte softContactSeperationVelocity;
-	long surfaceVelocity;
-	float disablingCollisionsBetweenCvxCvxDynamicObjectsDistance;
-	long userData;
-	boolean isShared;
+	public String name;
+	public int isExclusive;
+	public int flags;
+	public TriggerType triggerType;
+	public byte triggerManifoldTolerance;
+	public float dynamicFriction;
+	public float staticFriction;
+	public float restitution;
+	public CombinePolicy frictionCombinePolicy;
+	public CombinePolicy restitutionCombinePolicy;
+	public float weldingTolerance;
+	public float maxContactImpulse;
+	public float fractionOfClippedImpulseToApply;
+	public MassChangerCategory massChangerCategory;
+	public float massChangerHeavyObjectFactor;
+	public float softContactForceFactor;
+	public float softContactDampFactor;
+	public byte softContactSeperationVelocity;
+	public long surfaceVelocity;
+	public float disablingCollisionsBetweenCvxCvxDynamicObjectsDistance;
+	public long userData;
+	public boolean isShared;
 	
 	public hknpMaterial(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{
