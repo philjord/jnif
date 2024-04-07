@@ -67,9 +67,10 @@ public class HKXReader {
 					String className = classObj.name;
 
 					
-					//2 super complex chaps that might be a bit much for now
+					//some super complex chaps that might be a bit much for now
 					if(className.equals("hkpLimitedHingeConstraintData") || 
-							className.equals("hkpRagdollConstraintData")) continue;
+							className.equals("hkpRagdollConstraintData") ||							
+							className.equals("hkpBallAndSocketConstraintData")) continue;
 					
 					hkBaseObject obj = constructHKXObject(className);
 
