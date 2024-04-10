@@ -7,7 +7,7 @@ import nif.ByteConvert;
 import nif.NifVer;
 import nif.enums.KeyType;
 
-public class NifKey
+public abstract class NifKey
 {
 	/**
 	 
@@ -37,15 +37,7 @@ public class NifKey
 
 	public float time;
 
-	public Object value;
-
-	public Object forward;
-
-	public Object backward;
-
 	public NifTBC tBC;
-
-	public Class<?> T;
 
 	/**
 	 * 
@@ -55,7 +47,7 @@ public class NifKey
 	 * @throws IOException
 	 */
 
-	public NifKey(KeyType type, Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
+/*	public NifKey(KeyType type, Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		this.type = type;
 		this.T = T;
@@ -71,7 +63,7 @@ public class NifKey
 		{
 			tBC = new NifTBC(stream);
 		}
-	}
+	}*/
 
 	/**
 	 
@@ -81,7 +73,7 @@ public class NifKey
 	 NPColor4
 	 NPVector3
 	 NPString	*/
-	private static Object readObj(Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
+/*	private static Object readObj(Class<?> T, ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		if (T.equals(Byte.class))
 		{
@@ -105,6 +97,139 @@ public class NifKey
 		}
 		System.out.println("bad T man " + T);
 		return null;
-	}
+	}*/
 
+	public static class NifKeyByte extends NifKey {
+		
+		public byte value;
+
+		public byte forward;
+
+		public byte backward;
+		
+		public NifKeyByte(KeyType type, ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			this.type = type;
+			time = ByteConvert.readFloat(stream);
+			value = ByteConvert.readByte(stream);
+	
+			if (type.type == 2)
+			{
+				forward = ByteConvert.readByte(stream);
+				backward = ByteConvert.readByte(stream);
+			}
+			if (type.type == 3)
+			{
+				tBC = new NifTBC(stream);
+			}
+		}
+	}
+	
+	public static class NifKeyFloat extends NifKey {
+		
+		public float value;
+
+		public float forward;
+
+		public float backward;
+		
+		public NifKeyFloat(KeyType type, ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			this.type = type;
+			time = ByteConvert.readFloat(stream);
+			value = ByteConvert.readFloat(stream);
+	
+			if (type.type == 2)
+			{
+				forward = ByteConvert.readFloat(stream);
+				backward = ByteConvert.readFloat(stream);
+			}
+			if (type.type == 3)
+			{
+				tBC = new NifTBC(stream);
+			}
+		}
+	}
+	
+	public static class NifKeyNifColor4 extends NifKey {
+	
+		public NifColor4 value;
+
+		public NifColor4 forward;
+
+		public NifColor4 backward;
+		
+		public NifKeyNifColor4(KeyType type, ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			this.type = type;
+			time = ByteConvert.readFloat(stream);
+			value = new NifColor4(stream);
+	
+			if (type.type == 2)
+			{
+				forward = new NifColor4(stream);
+				backward = new NifColor4(stream);
+			}
+			if (type.type == 3)
+			{
+				tBC = new NifTBC(stream);
+			}
+		}
+	}
+	
+	
+	public static class NifKeyNifVector3 extends NifKey {
+		
+		public NifVector3 value;
+
+		public NifVector3 forward;
+
+		public NifVector3 backward;
+		
+		public NifKeyNifVector3(KeyType type, ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			this.type = type;
+			time = ByteConvert.readFloat(stream);
+			value = new NifVector3(stream);
+	
+			if (type.type == 2)
+			{
+				forward = new NifVector3(stream);
+				backward = new NifVector3(stream);
+			}
+			if (type.type == 3)
+			{
+				tBC = new NifTBC(stream);
+			}
+		}
+	}
+	
+
+	public static class NifKeyString extends NifKey {
+		
+		public String value;
+
+		public String forward;
+
+		public String backward;
+		
+		public NifKeyString(KeyType type, ByteBuffer stream, NifVer nifVer) throws IOException
+		{
+			this.type = type;
+			time = ByteConvert.readFloat(stream);
+			value = ByteConvert.readIndexString(stream, nifVer);
+	
+			if (type.type == 2)
+			{
+				forward = ByteConvert.readIndexString(stream, nifVer);
+				backward = ByteConvert.readIndexString(stream, nifVer);
+			}
+			if (type.type == 3)
+			{
+				tBC = new NifTBC(stream);
+			}
+		}
+	}
+	
+	
 }

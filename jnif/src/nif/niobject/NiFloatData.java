@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.NifVer;
-import nif.compound.NifKeyGroup;
+import nif.compound.NifKeyGroup.NifKeyGroupFloat;
 
 public class NiFloatData extends NiObject
 {
@@ -19,13 +19,14 @@ public class NiFloatData extends NiObject
 	 
 	 */
 
-	public NifKeyGroup data;
+	public NifKeyGroupFloat data;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		data = new NifKeyGroup(Float.class, stream, nifVer);
+		data = new NifKeyGroupFloat(stream, nifVer);
 
 		return success;
 	}

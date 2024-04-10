@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
+import nif.compound.NifKey.NifKeyFloat;
 import nif.enums.KeyType;
 
 public class NifMorph
@@ -36,7 +37,7 @@ public class NifMorph
 
 	public KeyType Interpolation;
 
-	public NifKey[] Keys;
+	public NifKeyFloat[] Keys;
 
 	public int UnknownInt1;
 
@@ -58,10 +59,10 @@ public class NifMorph
 		{
 			numKeys = ByteConvert.readInt(stream);
 			Interpolation = new KeyType(stream);
-			Keys = new NifKey[numKeys];
+			Keys = new NifKeyFloat[numKeys];
 			for (int i = 0; i < numKeys; i++)
 			{
-				Keys[i] = new NifKey(Interpolation, Float.class, stream, nifVer);
+				Keys[i] = new NifKeyFloat(Interpolation, stream, nifVer);
 			}
 		}
 

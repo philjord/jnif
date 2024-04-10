@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.NifVer;
-import nif.compound.NifKeyGroup;
-import nif.compound.NifVector3;
+import nif.compound.NifKeyGroup.NifKeyGroupNifVector3;
 
 public class NiPosData extends NiObject
 {
@@ -20,12 +19,13 @@ public class NiPosData extends NiObject
 	 
 	 */
 
-	public NifKeyGroup data;
+	public NifKeyGroupNifVector3 data;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		data = new NifKeyGroup(NifVector3.class, stream, nifVer);
+		data = new NifKeyGroupNifVector3(stream, nifVer);
 		return success;
 	}
 }

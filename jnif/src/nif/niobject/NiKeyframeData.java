@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifKeyGroup;
+import nif.compound.NifKeyGroup.NifKeyGroupFloat;
+import nif.compound.NifKeyGroup.NifKeyGroupNifVector3;
 import nif.compound.NifQuatKey;
-import nif.compound.NifVector3;
 import nif.enums.KeyType;
 
 public class NiKeyframeData extends NiObject
@@ -45,12 +45,13 @@ public class NiKeyframeData extends NiObject
 	
 	public float unknownFloat;
 
-	public NifKeyGroup[] xYZRotations;
+	public NifKeyGroupFloat[] xYZRotations;
 
-	public NifKeyGroup translations;
+	public NifKeyGroupNifVector3 translations;
 
-	public NifKeyGroup scales;
+	public NifKeyGroupFloat scales;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -74,15 +75,15 @@ public class NiKeyframeData extends NiObject
 					unknownFloat= ByteConvert.readFloat(stream);
 				}
 				
-				xYZRotations = new NifKeyGroup[3];
+				xYZRotations = new NifKeyGroupFloat[3];
 				for (int i = 0; i < 3; i++)
 				{
-					xYZRotations[i] = new NifKeyGroup(Float.class, stream, nifVer);
+					xYZRotations[i] = new NifKeyGroupFloat(stream, nifVer);
 				}
 			}
 		}
-		translations = new NifKeyGroup(NifVector3.class, stream, nifVer);
-		scales = new NifKeyGroup(Float.class, stream, nifVer);
+		translations = new NifKeyGroupNifVector3(stream, nifVer);
+		scales = new NifKeyGroupFloat(stream, nifVer);
 
 		return success;
 	}

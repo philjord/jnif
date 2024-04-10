@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifKey;
-import nif.compound.NifKeyGroup;
+import nif.compound.NifKey.NifKeyByte;
+import nif.compound.NifKeyGroup.NifKeyGroupFloat;
 import nif.enums.KeyType;
 import nif.niobject.NiObject;
 
@@ -25,24 +25,25 @@ public class NiPSysEmitterCtlrData extends NiObject
 	 
 	 */
 
-	public NifKeyGroup floatKeys;
+	public NifKeyGroupFloat floatKeys;
 
 	public int numVisibiltyKeys;
 
-	public NifKey[] visibilityKeys;
+	public NifKeyByte[] visibilityKeys;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		floatKeys = new NifKeyGroup(Float.class, stream, nifVer);
+		floatKeys = new NifKeyGroupFloat(stream, nifVer);
 		numVisibiltyKeys = ByteConvert.readInt(stream);
-		visibilityKeys = new NifKey[numVisibiltyKeys];
+		visibilityKeys = new NifKeyByte[numVisibiltyKeys];
 		for (int i = 0; i < numVisibiltyKeys; i++)
 		{
 			KeyType type = new KeyType();
 			type.type = 1;
-			visibilityKeys[i] = new NifKey(type, Byte.class, stream, nifVer);
+			visibilityKeys[i] = new NifKeyByte(type, stream, nifVer);
 		}
 
 		return success;

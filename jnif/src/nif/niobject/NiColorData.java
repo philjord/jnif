@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.NifVer;
-import nif.compound.NifColor4;
-import nif.compound.NifKeyGroup;
+import nif.compound.NifKeyGroup.NifKeyGroupNifColor4;
 
 public class NiColorData extends NiObject
 {
@@ -19,13 +18,14 @@ public class NiColorData extends NiObject
 	 </niobject>
 	 */
 
-	public NifKeyGroup data;
+	public NifKeyGroupNifColor4 data;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		data = new NifKeyGroup(NifColor4.class, stream, nifVer);
+		data = new NifKeyGroupNifColor4(stream, nifVer);
 
 		return success;
 	}

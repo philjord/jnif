@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.NifVer;
-import nif.compound.NifKeyGroup;
+import nif.compound.NifKeyGroup.NifKeyGroupByte;
 
 public class NiBoolData extends NiObject
 {
@@ -19,13 +19,14 @@ public class NiBoolData extends NiObject
 	 
 	 */
 
-	public NifKeyGroup data;
+	public NifKeyGroupByte data;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
-		data = new NifKeyGroup(Byte.class, stream, nifVer);
+		data = new NifKeyGroupByte(stream, nifVer);
 
 		return success;
 	}

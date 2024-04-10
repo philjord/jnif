@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifKey;
+import nif.compound.NifKey.NifKeyString;
 import nif.enums.KeyType;
 
 public class NiTextKeyExtraData extends NiExtraData
@@ -29,8 +29,9 @@ public class NiTextKeyExtraData extends NiExtraData
 
 	public int numTextKeys;
 
-	public NifKey[] textKeys;
+	public NifKeyString[] textKeys;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -39,12 +40,12 @@ public class NiTextKeyExtraData extends NiExtraData
 			unknownInt = ByteConvert.readInt(stream);
 		}
 		numTextKeys = ByteConvert.readInt(stream);
-		textKeys = new NifKey[numTextKeys];
+		textKeys = new NifKeyString[numTextKeys];
 		for (int i = 0; i < numTextKeys; i++)
 		{
 			KeyType type = new KeyType();
 			type.type = 1;
-			textKeys[i] = new NifKey(type, String.class, stream, nifVer);
+			textKeys[i] = new NifKeyString(type, stream, nifVer);
 		}
 		return success;
 	}

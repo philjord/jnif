@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.compound.NifKey;
+import nif.compound.NifKey.NifKeyByte;
 import nif.enums.KeyType;
 
 public class NiVisData extends NiObject
@@ -24,19 +24,20 @@ public class NiVisData extends NiObject
 
 	public int numVisKeys;
 
-	public NifKey[] visKeys;
+	public NifKeyByte[] visKeys;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 
 		numVisKeys = ByteConvert.readInt(stream);
-		visKeys = new NifKey[numVisKeys];
+		visKeys = new NifKeyByte[numVisKeys];
 		for (int i = 0; i < numVisKeys; i++)
 		{
 			KeyType type = new KeyType();
 			type.type = 1;
-			visKeys[i] = new NifKey(type, Byte.class, stream, nifVer);
+			visKeys[i] = new NifKeyByte(type, stream, nifVer);
 		}
 
 		return success;
