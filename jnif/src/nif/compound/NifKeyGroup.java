@@ -39,7 +39,7 @@ public abstract class NifKeyGroup
 	public KeyType interpolation;
 
 	public static class NifKeyGroupByte extends NifKeyGroup {
-		//public NifKeyByte[] keys;
+
 		public float[] time;
 		public NifTBC[] tBC;
 		public byte[] value;
@@ -50,25 +50,24 @@ public abstract class NifKeyGroup
 			numKeys = ByteConvert.readInt(stream);
 			if (numKeys != 0) {
 				interpolation = new KeyType(stream);
-				//keys = new NifKeyByte[numKeys];
-				time = new float[numKeys];
-				tBC = new NifTBC[numKeys];
+				time = new float[numKeys];				
 				value = new byte[numKeys];
-				forward = new byte[numKeys];
-				backward = new byte[numKeys];
+				if (interpolation.type == 2) {
+					forward = new byte[numKeys];
+					backward = new byte[numKeys];
+				} else if (interpolation.type == 3) {
+					tBC = new NifTBC[numKeys];
+				}				
 			
 				for (int i = 0; i < numKeys; i++) {
 					//keys[i] = new NifKeyByte(interpolation, stream, nifVer);
 					time[i] = ByteConvert.readFloat(stream);
 					value[i] = ByteConvert.readByte(stream);
 			
-					if (interpolation.type == 2)
-					{
+					if (interpolation.type == 2) {
 						forward[i] = ByteConvert.readByte(stream);
 						backward[i] = ByteConvert.readByte(stream);
-					}
-					if (interpolation.type == 3)
-					{
+					} else if (interpolation.type == 3) {
 						tBC[i] = new NifTBC(stream);
 					}
 				}
@@ -76,7 +75,7 @@ public abstract class NifKeyGroup
 		}
 	}
 	public static class NifKeyGroupFloat extends NifKeyGroup {
-		//public NifKeyFloat[] keys;
+
 		public float[] time;
 		public NifTBC[] tBC;
 		public float[] value;
@@ -87,24 +86,22 @@ public abstract class NifKeyGroup
 			numKeys = ByteConvert.readInt(stream);
 			if (numKeys != 0) {
 				interpolation = new KeyType(stream);
-				//keys = new NifKeyFloat[numKeys];
-				time = new float[numKeys];
-				tBC = new NifTBC[numKeys];
+				time = new float[numKeys];				
 				value = new float[numKeys];
-				forward = new float[numKeys];
-				backward = new float[numKeys];
+				if (interpolation.type == 2) {
+					forward = new float[numKeys];
+					backward = new float[numKeys];
+				} else if (interpolation.type == 3) {
+					tBC = new NifTBC[numKeys];
+				}
 				for (int i = 0; i < numKeys; i++) {
-					//keys[i] = new NifKeyFloat(interpolation, stream, nifVer);
 					time[i] = ByteConvert.readFloat(stream);
 					value[i] = ByteConvert.readFloat(stream);
 			
-					if (interpolation.type == 2)
-					{
+					if (interpolation.type == 2) {
 						forward[i] = ByteConvert.readFloat(stream);
 						backward[i] = ByteConvert.readFloat(stream);
-					}
-					if (interpolation.type == 3)
-					{
+					} else if (interpolation.type == 3) {
 						tBC[i] = new NifTBC(stream);
 					}
 				}
@@ -112,35 +109,44 @@ public abstract class NifKeyGroup
 		}
 	}
 	public static class NifKeyGroupNifColor4 extends NifKeyGroup {
-		//public NifKeyNifColor4[] keys;
+
 		public float[] time;
 		public NifTBC[] tBC;
-		public NifColor4[] value;
-		public NifColor4[] forward;
-		public NifColor4[] backward;
+		public float[] value; //NifColor4
+		public float[] forward; //NifColor4
+		public float[] backward; //NifColor4
 	
 		public NifKeyGroupNifColor4(ByteBuffer stream, NifVer nifVer) throws IOException {
 			numKeys = ByteConvert.readInt(stream);
 			if (numKeys != 0) {
 				interpolation = new KeyType(stream);
-				//keys = new NifKeyNifColor4[numKeys];
-				time = new float[numKeys];
-				tBC = new NifTBC[numKeys];
-				value = new NifColor4[numKeys];
-				forward = new NifColor4[numKeys];
-				backward = new NifColor4[numKeys];
+				time = new float[numKeys];				
+				value = new float[numKeys*4];
+				if (interpolation.type == 2) {
+					forward = new float[numKeys*4];
+					backward = new float[numKeys*4];
+				} else if (interpolation.type == 3) {
+					tBC = new NifTBC[numKeys];
+				}
 				for (int i = 0; i < numKeys; i++) {
-					//keys[i] = new NifKeyNifColor4(interpolation, stream, nifVer);
 					time[i] = ByteConvert.readFloat(stream);
-					value[i] = new NifColor4(stream);
+					value[i*4+0] = ByteConvert.readFloat(stream);//r
+					value[i*4+1] = ByteConvert.readFloat(stream);//g
+					value[i*4+2] = ByteConvert.readFloat(stream);//b
+					value[i*4+3] = ByteConvert.readFloat(stream);//a
+					  
 			
-					if (interpolation.type == 2)
-					{
-						forward[i] = new NifColor4(stream);
-						backward[i] = new NifColor4(stream);
-					}
-					if (interpolation.type == 3)
-					{
+					if (interpolation.type == 2) {
+						forward[i*4+0] = ByteConvert.readFloat(stream);//r
+						forward[i*4+1] = ByteConvert.readFloat(stream);//g
+						forward[i*4+2] = ByteConvert.readFloat(stream);//b
+						forward[i*4+3] = ByteConvert.readFloat(stream);//a
+						
+						backward[i*4+0] = ByteConvert.readFloat(stream);//r
+						backward[i*4+1] = ByteConvert.readFloat(stream);//g
+						backward[i*4+2] = ByteConvert.readFloat(stream);//b
+						backward[i*4+3] = ByteConvert.readFloat(stream);//a
+					} else if (interpolation.type == 3) {
 						tBC[i] = new NifTBC(stream);
 					}
 				}
@@ -151,32 +157,55 @@ public abstract class NifKeyGroup
 		//public NifKeyNifVector3[] keys;
 		public float[] time;
 		public NifTBC[] tBC;
-		public NifVector3[] value;
-		public NifVector3[] forward;
-		public NifVector3[] backward;
+		public float[] value; //NifVector3
+		public float[] forward;//NifVector3
+		public float[] backward;//NifVector3
 	
 		public NifKeyGroupNifVector3(ByteBuffer stream, NifVer nifVer) throws IOException {
 			numKeys = ByteConvert.readInt(stream);
 			if (numKeys != 0) {
 				interpolation = new KeyType(stream);
-				//keys = new NifKeyNifVector3[numKeys];
-				time = new float[numKeys];
-				tBC = new NifTBC[numKeys];
-				value = new NifVector3[numKeys];
-				forward = new NifVector3[numKeys];
-				backward = new NifVector3[numKeys];
+				time = new float[numKeys];				
+				value = new float[numKeys*3];
+				if (interpolation.type == 2) {
+					forward = new float[numKeys*3];
+					backward = new float[numKeys*3];
+				} else if (interpolation.type == 3) {
+					tBC = new NifTBC[numKeys];
+				}
 				for (int i = 0; i < numKeys; i++) {
 					//keys[i] = new NifKeyNifVector3(interpolation, stream, nifVer);
 					time[i] = ByteConvert.readFloat(stream);
-					value[i] = new NifVector3(stream);
-			
-					if (interpolation.type == 2)
-					{
-						forward[i] = new NifVector3(stream);
-						backward[i] = new NifVector3(stream);
+
+					value[i*3+0] = ByteConvert.readFloat(stream);//x
+					value[i*3+1] = ByteConvert.readFloat(stream);//y
+					value[i*3+2] = ByteConvert.readFloat(stream);//z
+
+					if (Float.isNaN(value[i*3+0]) || Float.isNaN(value[i*3+1]) || Float.isNaN(value[i*3+2])) {
+						value[i*3+0] = 0;
+						value[i*3+1] = 0;
+						value[i*3+2] = 0;
 					}
-					if (interpolation.type == 3)
-					{
+					if (interpolation.type == 2) {
+						forward[i*3+0] = ByteConvert.readFloat(stream);//x
+						forward[i*3+1] = ByteConvert.readFloat(stream);//y
+						forward[i*3+2] = ByteConvert.readFloat(stream);//z
+
+						if (Float.isNaN(forward[i*3+0]) || Float.isNaN(forward[i*3+1]) || Float.isNaN(forward[i*3+2])) {
+							forward[i*3+0] = 0;
+							forward[i*3+1] = 0;
+							forward[i*3+2] = 0;
+						}
+						backward[i*3+0] = ByteConvert.readFloat(stream);//x
+						backward[i*3+1] = ByteConvert.readFloat(stream);//y
+						backward[i*3+2] = ByteConvert.readFloat(stream);//z
+
+						if (Float.isNaN(backward[i*3+0]) || Float.isNaN(backward[i*3+1]) || Float.isNaN(backward[i*3+2])) {
+							backward[i*3+0] = 0;
+							backward[i*3+1] = 0;
+							backward[i*3+2] = 0;
+						}
+					} else if (interpolation.type == 3) {
 						tBC[i] = new NifTBC(stream);
 					}
 				}
@@ -196,23 +225,21 @@ public abstract class NifKeyGroup
 			if (numKeys != 0) {
 				interpolation = new KeyType(stream);
 				//keys = new NifKeyString[numKeys];
-				time = new float[numKeys];
-				tBC = new NifTBC[numKeys];
+				time = new float[numKeys];				
 				value = new String[numKeys];
-				forward = new String[numKeys];
-				backward = new String[numKeys];
+				if (interpolation.type == 2) {
+					forward = new String[numKeys];
+					backward = new String[numKeys];
+				} else if (interpolation.type == 3) {
+					tBC = new NifTBC[numKeys];
+				}
 				for (int i = 0; i < numKeys; i++) {
-					//keys[i] = new NifKeyString(interpolation, stream, nifVer);
 					time[i] = ByteConvert.readFloat(stream);
-					value[i] = ByteConvert.readIndexString(stream, nifVer);
-			
-					if (interpolation.type == 2)
-					{
+					value[i] = ByteConvert.readIndexString(stream, nifVer);			
+					if (interpolation.type == 2) {
 						forward[i] = ByteConvert.readIndexString(stream, nifVer);
 						backward[i] = ByteConvert.readIndexString(stream, nifVer);
-					}
-					if (interpolation.type == 3)
-					{
+					} else if (interpolation.type == 3) {
 						tBC[i] = new NifTBC(stream);
 					}
 				}
