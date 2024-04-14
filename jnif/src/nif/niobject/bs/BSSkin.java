@@ -37,9 +37,10 @@ public class BSSkin
 		public NifRef BoneData;
 		public int NumBones;
 		public NifPtr[] Bones;
-		public int NumUnknown;
-		public NifVector3[] Unkown;
+		public int NumScales;
+		public NifVector3[] Scales;
 
+		@Override
 		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);
@@ -51,11 +52,11 @@ public class BSSkin
 			{
 				Bones[i] = new NifPtr(NiObject.class, stream);
 			}
-			NumUnknown = ByteConvert.readInt(stream);
-			Unkown = new NifVector3[NumUnknown];
-			for (int i = 0; i < NumUnknown; i++)
+			NumScales = ByteConvert.readInt(stream);
+			Scales = new NifVector3[NumScales];
+			for (int i = 0; i < NumScales; i++)
 			{
-				Unkown[i] = new NifVector3(stream);
+				Scales[i] = new NifVector3(stream);
 			}
 
 			return success;
@@ -67,6 +68,7 @@ public class BSSkin
 		public int NumBones;
 		public BSSkinBoneTrans[] Bones;
 
+		@Override
 		public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 		{
 			boolean success = super.readFromStream(stream, nifVer);

@@ -67,8 +67,11 @@ public class HKXReader {
 					String className = classObj.name;
 
 					
-					//some super complex chaps that might be a bit much for now
-					if(className.equals("hkpLimitedHingeConstraintData") || 
+					//some complex chaps that might be a bit much for now
+					if(className.equals("hkaSkeleton") || 
+							className.equals("hkpPositionConstraintMotor") ||
+							className.equals("hknpRagdollData") ||
+							className.equals("hkpLimitedHingeConstraintData") ||
 							className.equals("hkpRagdollConstraintData") ||							
 							className.equals("hkpBallAndSocketConstraintData")) continue;
 					

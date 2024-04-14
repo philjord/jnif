@@ -43,8 +43,8 @@ public class BSTriShape extends NiTriBasedGeom
 	public FloatBuffer colorsOptBuf;
 	public FloatBuffer uVSetOptBuf;
 
-	float[] BoneWeights;
-	int[] BoneIndices;
+	public float[] BoneWeights;
+	public int[] BoneIndices;
 
 	//OPTIMISATION
 	//public NifTriangle[] triangles;
