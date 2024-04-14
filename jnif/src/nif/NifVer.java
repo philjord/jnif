@@ -106,7 +106,7 @@ public class NifVer
 
 	public static final int VER_20_2_0_6 = 0x14020006;
 
-	public static final int VER_20_2_0_7 = 0x14020007; // skyrim wih userversion 1 = 12 and 2=83 fallout4 uv1=12 uv2 =130
+	public static final int VER_20_2_0_7 = 0x14020007; // skyrim wih userversion1=12 and 2=83, fallout4 uv1=12 uv2=130, FO76 uv1=12 and uv2=155
 
 	public static final int VER_20_2_0_8 = 0x14020008;
 
