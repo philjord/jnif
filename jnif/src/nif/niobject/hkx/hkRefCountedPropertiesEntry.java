@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
-/*
+/**
 <struct name='hkRefCountedPropertiesEntry' version='0' signature='0x28ef93ed'>
 	<members>
 		<member name='object' type='struct hkReferencedObject*' ctype='hkReferencedObject' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
@@ -19,9 +19,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hkRefCountedPropertiesEntry  {
 	
 	public static final int size = 12;
-	long object;
-	int key;
-	int flags;
+	public long object;
+	public int key;
+	public int flags;
 	
 	public hkRefCountedPropertiesEntry(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{

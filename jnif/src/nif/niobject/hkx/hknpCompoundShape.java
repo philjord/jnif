@@ -17,10 +17,10 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </class>*/
 public class hknpCompoundShape extends hknpCompositeShape {	
 	
-	hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance instances;
-	hkAabb aabb;
-	boolean isMutable;
-	hknpShapeSignals mutationSignals;
+	public hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance instances;
+	public hkAabb aabb;
+	public boolean isMutable;
+	public hknpShapeSignals mutationSignals;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {

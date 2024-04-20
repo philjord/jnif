@@ -12,7 +12,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </class>*/
 public class hknpDynamicCompoundShapeData extends hkReferencedObject {
 
-	hknpDynamicCompoundShapeTree aabbTree;
+	public hknpDynamicCompoundShapeTree aabbTree;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException

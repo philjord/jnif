@@ -20,8 +20,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	</members>
 </struct>*/
 public class hknpShapeSignals {
-	long shapeMutated;
-	long shapeDestroyed;
+	public long shapeMutated;
+	public long shapeDestroyed;
 	public hknpShapeSignals(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{
 

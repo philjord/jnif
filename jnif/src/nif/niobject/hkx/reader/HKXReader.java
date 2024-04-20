@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import nif.niobject.hkx.hkBaseObject;
 import nif.niobject.hkx.reader.byteutils.ByteUtils;
@@ -53,51 +52,46 @@ public class HKXReader {
 		HKXContents content = new HKXContents(header.versionName, header.version);
 		
 		// Retrieve the actual data
-		try {
-			while (true) {
-				// Get the next data3 object
-				DataExternal currentClass = data3.read(pos++);
+		while (data3.hasReadPos(pos)) {
+			// Get the next data3 object
+			DataExternal currentClass = data3.read(pos++);
 
-				// Resolve the object's class into a HKXDescriptor
-				Classname classObj = classConverter.get(currentClass.to);
-				if (classObj == null) {
-					throw new IOException("Illegal linked Classname position (" + currentClass.from + "//"
-							+ currentClass.to + "). Ignoring.");
-				} else {
-					String className = classObj.name;
+			// Resolve the object's class into a HKXDescriptor
+			Classname classObj = classConverter.get(currentClass.to);
+			if (classObj == null) {
+				throw new IOException("Illegal linked Classname position (" + currentClass.from + "//"
+						+ currentClass.to + "). Ignoring.");
+			} else {
+				String className = classObj.name;
 
-					
-					//some complex chaps that might be a bit much for now
-					if(className.equals("hkaSkeleton") || 
-							className.equals("hkpPositionConstraintMotor") ||
-							className.equals("hknpRagdollData") ||
-							className.equals("hkpLimitedHingeConstraintData") ||
-							className.equals("hkpRagdollConstraintData") ||							
-							className.equals("hkpBallAndSocketConstraintData")) continue;
-					
-					hkBaseObject obj = constructHKXObject(className);
+				
+				//some complex chaps that might be a bit much for now
+				if(className.equals("hkaSkeleton") || 
+						className.equals("hkpPositionConstraintMotor") ||
+						className.equals("hknpRagdollData") ||
+						className.equals("hkpLimitedHingeConstraintData") ||
+						className.equals("hkpRagdollConstraintData") ||							
+						className.equals("hkpBallAndSocketConstraintData")) continue;
+				
+				hkBaseObject obj = constructHKXObject(className);
 
-					// Check for an unknown block type
-					if (obj == null) {
-						System.out.println("Unknown object type encountered during file read:  "	+ className 	 ); 
-						continue;
-					}
-
-					//String objectName = generator.get(currentClass.from);
-					boolean success = obj.readFromStream(connector, (int)currentClass.from);	
-					
-					if(!success) {
-						new Throwable("bum read").printStackTrace();
-					}
-					
-					content.add(currentClass.from, obj);					
+				// Check for an unknown block type
+				if (obj == null) {
+					System.out.println("Unknown object type encountered during file read:  "	+ className 	 ); 
+					continue;
 				}
-			}
-		} catch (InvalidPositionException e) {
-			if (!e.getSection().equals("DATA_3")) {
-				throw e;
+
+				//String objectName = generator.get(currentClass.from);
+				boolean success = obj.readFromStream(connector, (int)currentClass.from);	
+				
+				if(!success) {
+					new Throwable("bum read").printStackTrace();
+				}
+				
+				content.add(currentClass.from, obj);					
 			}
 		}
+		
 
 		return content;
 

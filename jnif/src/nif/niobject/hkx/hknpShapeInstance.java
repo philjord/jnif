@@ -34,12 +34,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hknpShapeInstance  {
 	public static final int size = 122;
-	NifMatrix44 transform;		//FIXME! presumably 4x4 = 16 floats = 16 4 byte floats?
-	NifVector4 scale;
-	long shape;
-	int shapeTag;
-	int destructionTag;
-	int[] padding = new int[30];
+	public NifMatrix44 transform;		//FIXME! presumably 4x4 = 16 floats = 16 4 byte floats?
+	public NifVector4 scale;
+	public long shape;
+	public int shapeTag;
+	public int destructionTag;
+	public int[] padding = new int[30];
 	
 	public hknpShapeInstance(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{

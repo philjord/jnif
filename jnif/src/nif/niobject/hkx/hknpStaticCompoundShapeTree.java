@@ -5,14 +5,13 @@ import java.io.IOException;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
-/**<struct name='hknpDynamicCompoundShapeTree' version='0' signature='0x41084dbd' parent='hkcdDynamicTreeDefaultTree32Storage'>
+/**<struct name='hknpStaticCompoundShapeTree' version='0' signature='0x357ccb79' parent='hkcdStaticTreeDefaultTreeStorage6'>
 	<members>
 	</members>
 </struct>*/
-
-public class hknpDynamicCompoundShapeTree extends hkcdDynamicTreeDefaultTree32Storage {
+public class hknpStaticCompoundShapeTree extends hkcdStaticTreeDefaultTreeStorage6 {
 		
-	public hknpDynamicCompoundShapeTree(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpStaticCompoundShapeTree(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{
 		super(connector, classOffset);
 		//ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start

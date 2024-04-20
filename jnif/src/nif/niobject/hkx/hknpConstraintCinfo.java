@@ -20,10 +20,10 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hknpConstraintCinfo  {
 	
 	public static final int size = 17;
-	long constraintData;
-	int bodyA;
-	int bodyB;
-	int flags;	 
+	public long constraintData;
+	public int bodyA;
+	public int bodyB;
+	public int flags;	 
 
 	
 	public hknpConstraintCinfo(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException

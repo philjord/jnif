@@ -16,8 +16,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </class>*/
 
 public class hknpCapsuleShape extends hknpConvexPolytopeShape  {
-	NifVector4 a;
-	NifVector4 b;
+	public NifVector4 a;
+	public NifVector4 b;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {

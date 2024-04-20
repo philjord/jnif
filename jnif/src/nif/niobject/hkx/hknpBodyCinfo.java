@@ -56,7 +56,7 @@ public class hknpBodyCinfo  {
 		//<member name='shape' type='struct hknpShape*' ctype='hknpShape' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='NOT_OWNED'/>
 		DataExternal data = connector.data2.readNext();
 		if (data.from == classOffset + 0) {
-			shape = data.to;//I've got a pointer to 320 but I want it to be the number #91
+			shape = data.to;
 		} else {
 			connector.data2.backtrack();
 		}
