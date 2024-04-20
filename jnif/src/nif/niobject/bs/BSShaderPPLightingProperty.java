@@ -39,7 +39,7 @@ public class BSShaderPPLightingProperty extends BSShaderLightingProperty
 
 		textureSet = new NifRef(BSShaderTextureSet.class, stream);
 
-		if ((nifVer.LOAD_USER_VER == 11 ) && nifVer.LOAD_USER_VER2 > 24)
+		if ((nifVer.LOAD_USER_VER == 11 ) && nifVer.BS_Version > 24)
 		{
 			unknownFloat2 = ByteConvert.readFloat(stream);
 			refractionPeriod = ByteConvert.readFloat(stream);

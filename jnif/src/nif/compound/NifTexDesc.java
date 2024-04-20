@@ -51,7 +51,7 @@ public class NifTexDesc
 
 	public NifRef source;
 
-	public TexClampMode clampMode;
+	public TexClampMode clampMode = TexClampMode.WRAP_S_WRAP_T;
 
 	public FilterMode filterMode;
 
@@ -82,7 +82,7 @@ public class NifTexDesc
 		source = new NifRef(NiSourceTexture.class, stream);
 		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5)
 		{
-			clampMode = new TexClampMode(stream);
+			clampMode = TexClampMode.load(stream);
 			filterMode = new FilterMode(stream);
 		}
 		if (nifVer.LOAD_VER >= NifVer.VER_20_1_0_3)

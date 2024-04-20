@@ -61,7 +61,7 @@ public class NifLimitedHingeDescriptor
 	public NifLimitedHingeDescriptor(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 
-		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5 || (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 16))
+		if (nifVer.LOAD_VER <= NifVer.VER_20_0_0_5 || (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.BS_Version == 16))
 		{
 			pivotA = new NifVector4(stream);
 			axleA = new NifVector4(stream);
@@ -71,7 +71,7 @@ public class NifLimitedHingeDescriptor
 			axleB = new NifVector4(stream);
 			perp2AxleInB2 = new NifVector4(stream);
 		}
-		else if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 >= 16)
+		else if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.BS_Version >= 16)
 		{
 			axleA = new NifVector4(stream);
 			perp2AxleInA1 = new NifVector4(stream);
@@ -87,7 +87,7 @@ public class NifLimitedHingeDescriptor
 		maxAngle = ByteConvert.readFloat(stream);
 		maxFriction = ByteConvert.readFloat(stream);
 
-		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 > 16)
+		if (nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.BS_Version > 16)
 		{
 			enableMotor = ByteConvert.readBool(stream, nifVer);
 			if (enableMotor)

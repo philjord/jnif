@@ -8,10 +8,12 @@ import nif.niobject.NiGeometry;
 public class NiParticles extends NiGeometry
 {
 	/**
-	 <niobject name="NiParticles" abstract="0" inherit="NiGeometry">
-	 Generic particle system node.
 	 </niobject>
+     <niobject name="NiParticles" inherit="NiGeometry" module="NiMain">
+        Generic particle system node.
+    </niobject>
 	 */
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws java.io.IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);

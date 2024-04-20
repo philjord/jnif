@@ -5,48 +5,44 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.NifVer;
-import nif.basic.NifFlags;
 import nif.enums.BSShaderFlags;
 import nif.enums.BSShaderType;
-import nif.niobject.NiProperty;
+import nif.enums.BSShaderTypeI;
+import nif.niobject.NiShadeProperty;
 
-public class BSShaderProperty extends NiProperty
+public class BSShaderProperty extends NiShadeProperty
 {
 	/**
 	 
-	 <niobject name="BSShaderProperty" abstract="0" inherit="NiProperty" ver1="20.2.0.7">
-
-	 Bethesda-specific Property node
-	 
-	 <add name="Flags" type="Flags" default="1">Unknown</add>
-	 <add name="Shader Type" type="BSShaderType" default="1">
-	 Unknown (Set to 0x21 for NoLighting, 0x11 for Water)
-	 </add>
-	 <add name="shaderFlags" type="uint" default="0x82000000">Unknown</add>
-	 <add name="Unknown Int 2" type="int" default="1">Unknown</add>
-	 <add name="envmapScale" type="float" default="1.0">Unknown</add>
-	 </niobject>
+	<niobject name="BSShaderProperty" inherit="NiShadeProperty" module="BSMain" versions="#FO3_AND_LATER#">
+        Bethesda-specific property.
+        <field name="Shader Type" type="BSShaderType" default="" vercond="#NI_BS_LTE_FO3#" />
+        <field name="Shader Flags" type="BSShaderFlags" default="0x82000000" vercond="#NI_BS_LTE_FO3#" />
+        <field name="Shader Flags 2" type="BSShaderFlags2" default="1" vercond="#NI_BS_LTE_FO3#" />
+        <field name="Environment Map Scale" type="float" default="1.0" range="#F0_10#" vercond="#NI_BS_LTE_FO3#">Scales the intensity of the environment/cube map.</field>
+    </niobject>
 	 */
 
-	public NifFlags flags;
 
-	public BSShaderType shaderType;
+	public BSShaderTypeI ShaderType = null;
 
-	public BSShaderFlags shaderFlags;
+	public BSShaderFlags ShaderFlags;
 
-	public int unknownInt2;
+	public BSShaderFlags ShaderFlags2;
 
-	public float envmapScale;
+	public float EnvironmentMapScale;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-
-		flags = new NifFlags(stream);
-		shaderType = new BSShaderType(stream);
-		shaderFlags = new BSShaderFlags(stream);
-		unknownInt2 = ByteConvert.readInt(stream);
-		envmapScale = ByteConvert.readFloat(stream);
+		
+		if(nifVer.NI_BS_LTE_FO3()) {			
+			ShaderType = BSShaderType.load(stream);//<field name="Shader Type" type="BSShaderType" default="SHADER_DEFAULT" vercond="#NI_BS_LTE_FO3#" />
+			ShaderFlags = new BSShaderFlags(stream);//<field name="Shader Flags" type="BSShaderFlags" default="0x82000000" vercond="#NI_BS_LTE_FO3#" />
+			ShaderFlags2 = new BSShaderFlags(stream); //<field name="Shader Flags 2" type="BSShaderFlags2" default="1" vercond="#NI_BS_LTE_FO3#" />
+			EnvironmentMapScale = ByteConvert.readFloat(stream); //<field name="Environment Map Scale" type="float" default="1.0" range="#F0_10#" vercond="#NI_BS_LTE_FO3#">Scales the intensity of the environment/cube map.</field>
+		}
 
 		return success;
 	}

@@ -65,7 +65,7 @@ public abstract class NiAVObject extends NiObjectNET
 	{
 		boolean success = super.readFromStream(stream, nifVer);
 		flags = new NifFlags(stream);
-		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 26))
+		if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nifVer.LOAD_USER_VER >= 11 && nifVer.BS_Version > 26))
 				|| nifVer.isBP())
 		{
 			unknownShort1 = ByteConvert.readShort(stream);
@@ -114,7 +114,7 @@ public abstract class NiAVObject extends NiObjectNET
 		list.add(new Object[]
 		{ "NiAVObject", "controller", "" + controller });
 
-		if ((nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nVer.LOAD_USER_VER >= 11 && nVer.LOAD_USER_VER2 > 26))
+		if ((nVer.LOAD_VER >= NifVer.VER_20_2_0_7 && (nVer.LOAD_USER_VER >= 11 && nVer.BS_Version > 26))
 				|| nVer.isBP())
 		{
 			list.add(new Object[]

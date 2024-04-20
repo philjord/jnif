@@ -9,6 +9,7 @@ import nif.NifVer;
 public class NifHeader
 {
 	/**
+	 * https://github.com/niftools/nifxml/blob/7e3677e97b8c7a41516ad3f03286d8737da96261/nif.xml
 	 <compound name="Header">
 
 	 The NIF file header.
@@ -108,7 +109,7 @@ public class NifHeader
 		{
 			if ((nifVer.LOAD_USER_VER >= 10 || (nifVer.LOAD_USER_VER == 1 && nifVer.LOAD_VER != NifVer.VER_10_2_0_0)) && !nifVer.isBP())
 			{
-				nifVer.LOAD_USER_VER2 = ByteConvert.readInt(stream);
+				nifVer.BS_Version = ByteConvert.readInt(stream);
 			}
 		}
 
@@ -183,7 +184,7 @@ public class NifHeader
 			out += "    Creator:  " + exportInfo.creator + "\n";
 			out += "    Export Type:  " + exportInfo.exportInfo1 + "\n";
 			out += "    Export Script:  " + exportInfo.exportInfo2 + "\n";
-			out += "  	userVersion2:  " + nifVer.LOAD_USER_VER2 + "\n";
+			out += "  	userVersion2:  " + nifVer.BS_Version + "\n";
 		}
 		out += "  Num Block Types:  " + numBlockTypes + "\n";
 		if (verbose)

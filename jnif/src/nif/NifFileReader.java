@@ -198,12 +198,7 @@ public class NifFileReader {
 				// mark in case of over read
 				//in.mark(1000000);
 
-				if ((nifVer.LOAD_VER >= NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER == 12
-						&& nifVer.LOAD_USER_VER2 == 130)) {
-					obj.readFromStream(in, nifVer);
-				} else {
-					obj.readFromStream(in, nifVer);
-				}
+				obj.readFromStream(in, nifVer);
 
 				int bytesReadOff = in.position() - prevBytePos;
 
@@ -218,9 +213,9 @@ public class NifFileReader {
 										+ (header.blockSizes[i] - bytesReadOff));
 
 					// We've read too little or parts of the next block too, let's reset it and reread what it should have been
-					in.position(prevBytePos);
-					byte[] dumper = new byte[header.blockSizes[i]];
-					in.get(dumper);
+					in.position(prevBytePos+header.blockSizes[i]);
+					//byte[] dumper = new byte[header.blockSizes[i]];
+					//in.get(dumper);
 				}
 
 				if (IS_DEBUG && obj instanceof NiObjectNET) {

@@ -2,19 +2,19 @@ package nif.niobject.bgsm;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import nif.ByteConvert;
-
+/**
+ * some cs exmaple for deserialiaze here
+ * https://github.com/ousnius/Material-Editor/blob/master/BaseMaterialFile.cs
+ */
 public abstract class BSMaterial
 {
 	public String localPath;
 
-	public ArrayList<String> textureList = new ArrayList<String>();;
-
 	// BGSM & BGEM shared variables
 
-	public int version = 0;
+	public int Version = 0;
 	public int tileFlags = 0;
 	public boolean bTileU = false;
 	public boolean bTileV = false;
@@ -41,7 +41,10 @@ public abstract class BSMaterial
 	public float fRefractionPower;
 	public byte bEnvironmentMapping;
 	public float fEnvironmentMappingMaskScale;
+	public byte bDepthBias;
 	public byte bGrayscaleToPaletteColor;
+
+	public byte MaskWrites;
 
 	public BSMaterial(String file)
 	{
@@ -50,7 +53,7 @@ public abstract class BSMaterial
 
 	public void readFile(ByteBuffer stream) throws IOException
 	{
-		version = ByteConvert.readInt(stream);
+		Version = ByteConvert.readInt(stream);
 		tileFlags = ByteConvert.readInt(stream);
 
 		bTileU = (tileFlags & 0x2) != 0;
@@ -78,10 +81,19 @@ public abstract class BSMaterial
 		bRefraction = ByteConvert.readByte(stream);
 		bRefractionFalloff = ByteConvert.readByte(stream);
 		fRefractionPower = ByteConvert.readFloat(stream);
-		bEnvironmentMapping = ByteConvert.readByte(stream);
-		fEnvironmentMappingMaskScale = ByteConvert.readFloat(stream);
+		
+		if (Version < 10) {
+			bEnvironmentMapping = ByteConvert.readByte(stream);
+			fEnvironmentMappingMaskScale = ByteConvert.readFloat(stream);             
+        } else {
+            bDepthBias = ByteConvert.readByte(stream);
+        }
+		
 		bGrayscaleToPaletteColor = ByteConvert.readByte(stream);
-
+		
+		if (Version >= 6) {
+			MaskWrites = ByteConvert.readByte(stream);
+		}
 	}
 
 }

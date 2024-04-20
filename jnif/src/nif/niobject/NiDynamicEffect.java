@@ -10,14 +10,15 @@ import nif.basic.NifRef;
 public abstract class NiDynamicEffect extends NiAVObject
 {
 	/**
-	 <niobject name="NiDynamicEffect" abstract="1" inherit="NiAVObject">
-	    A dynamic effect such as a light or environment map.
-	    <add name="Switch State" type="bool" ver1="10.1.0.106" vercond="User Version 2 &lt; 130">Turns effect on and off?  Switches list to list of unaffected nodes?</add>
-	    <add name="Num Affected Node List Pointers" type="uint" ver2="4.0.0.2" >The number of affected nodes referenced.</add>
-	    <add name="Affected Node List Pointers" type="uint" arr1="Num Affected Node List Pointers" ver2="4.0.0.2">This is probably the list of affected nodes. For some reason i do not know the max exporter seems to write pointers instead of links. But it doesn&#039;t matter because at least in version 4.0.0.2 the list is automagically updated by the engine during the load stage.</add>
-	    <add name="Num Affected Nodes" type="uint" ver1="10.1.0.0" vercond="User Version 2 &lt; 130">The number of affected nodes referenced.</add>
-	    <add name="Affected Nodes" type="Ref" template="NiAVObject" arr1="Num Affected Nodes" ver1="10.1.0.0" vercond="User Version 2 &lt; 130">The list of affected nodes?</add>
-	</niobject>
+	 <niobject name="NiDynamicEffect" abstract="true" inherit="NiAVObject" module="NiMain">
+        Abstract base class for dynamic effects such as NiLights or projected texture effects.
+        <field name="Switch State" type="bool" default="true" since="10.1.0.106" vercond="#NI_BS_LT_FO4#">If true, then the dynamic effect is applied to affected nodes during rendering.</field>
+        <field name="Num Affected Nodes" type="uint" until="4.0.0.2" />
+        <field name="Affected Nodes" type="Ptr" template="NiNode" length="Num Affected Nodes" until="3.3.0.13">If a node appears in this list, then its entire subtree will be affected by the effect.</field>
+        <field name="Affected Node Pointers" type="uint" length="Num Affected Nodes" since="4.0.0.0" until="4.0.0.2">As of 4.0 the pointer hash is no longer stored alongside each NiObject on disk, yet this node list still refers to the pointer hashes. Cannot leave the type as Ptr because the link will be invalid.</field>
+        <field name="Num Affected Nodes" type="uint" since="10.1.0.0" vercond="#NI_BS_LT_FO4#" />
+        <field name="Affected Nodes" type="Ptr" template="NiNode" length="Num Affected Nodes" since="10.1.0.0" vercond="#NI_BS_LT_FO4#">If a node appears in this list, then its entire subtree will be affected by the effect.</field>
+    </niobject>
 	 */
 
 	public boolean switchState;
@@ -26,10 +27,11 @@ public abstract class NiDynamicEffect extends NiAVObject
 
 	public NifRef[] affectedNodes;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
-		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106 && !(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_106 && nifVer.NI_BS_LT_FO4())
 		{
 			switchState = ByteConvert.readBool(stream, nifVer);
 		}
@@ -44,7 +46,8 @@ public abstract class NiDynamicEffect extends NiAVObject
 				ByteConvert.readInt(stream);// chuck it away
 			}
 		}
-		else if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
+		
+		if (nifVer.LOAD_VER >= NifVer.VER_10_1_0_0 && nifVer.NI_BS_LT_FO4())
 		{
 			numAffectedNodes = ByteConvert.readInt(stream);
 			affectedNodes = new NifRef[numAffectedNodes];

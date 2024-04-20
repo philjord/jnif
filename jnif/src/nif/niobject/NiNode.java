@@ -12,17 +12,13 @@ public class NiNode extends NiAVObject
 {
 	/**
 	 
-	 <niobject name="NiNode" abstract="0" inherit="NiAVObject">
-
-	 Generic node object for grouping.
-	 
-	 <add name="Num Children" type="uint">The number of child objects.</add>
-	 <add name="Children" type="Ref" template="NiAVObject" arr1="Num Children">List of child node object indices.</add>
-	 <add name="Num Effects" type="uint">
-	 The number of references to effect objects that follow.
-	 </add>
-	 <add name="Effects" type="Ref" template="NiDynamicEffect" arr1="Num Effects">List of node effects. ADynamicEffect?</add>
-	 </niobject>
+	 <niobject name="NiNode" inherit="NiAVObject" module="NiMain">
+        Generic node object for grouping.
+        <field name="Num Children" type="uint">The number of child objects.</field>
+        <field name="Children" type="Ref" template="NiAVObject" length="Num Children">List of child node object indices.</field>
+        <field name="Num Effects" type="uint" vercond="#NI_BS_LT_FO4#">The number of references to effect objects that follow.</field>
+        <field name="Effects" type="Ref" template="NiDynamicEffect" length="Num Effects" vercond="#NI_BS_LT_FO4#">List of node effects. ADynamicEffect?</field>
+    </niobject>
 	 
 	 */
 
@@ -34,6 +30,7 @@ public class NiNode extends NiAVObject
 
 	public NifRef[] effects;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -44,7 +41,7 @@ public class NiNode extends NiAVObject
 			children[i] = new NifRef(NiAVObject.class, stream);
 		}
 		
-		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130))
+		if (nifVer.NI_BS_LT_FO4())
 		{			
 			numEffects = ByteConvert.readInt(stream);
 			effects = new NifRef[numEffects];
@@ -57,6 +54,7 @@ public class NiNode extends NiAVObject
 		return success;
 	}
 
+	@Override
 	public void addDisplayRows(ArrayList<Object[]> list)
 	{
 		super.addDisplayRows(list);

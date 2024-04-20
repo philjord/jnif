@@ -30,8 +30,14 @@ public abstract class NiObject
 		list.add(new Object[] { "NiObject", "nifVer", "" + nVer });
 	}
 
+	@Override
 	public String toString()
 	{
 		return "[" + this.getClass().getSimpleName() + "] ";
 	}
+	
+	
+	
+	
+	 
 }

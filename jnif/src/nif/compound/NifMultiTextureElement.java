@@ -32,7 +32,7 @@ public class NifMultiTextureElement
 
 	public NifRef image;
 
-	public TexClampMode clamp;
+	public TexClampMode clamp = TexClampMode.WRAP_S_WRAP_T;
 
 	public TexFilterMode filter;
 
@@ -46,7 +46,7 @@ public class NifMultiTextureElement
 		if (hasImage)
 		{
 			image = new NifRef(NiImage.class, stream);
-			clamp = new TexClampMode(stream);
+			clamp = TexClampMode.load(stream);
 			filter = new TexFilterMode(stream);
 			uvSet = ByteConvert.readInt(stream);
 			unknownShort3 = ByteConvert.readShort(stream);

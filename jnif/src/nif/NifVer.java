@@ -5,6 +5,21 @@ import java.util.ArrayList;
 public class NifVer
 {
 	/**
+	 * #BS_GT_130#
+	 * #BS_GTE_F76#
+	 * #BS_FO4#
+	 * #FO4# 
+	 * #F76#
+	 * #BS_GTE_132#
+	 * #NI_BS_LTE_FO4#
+	 * #BS_GTE_F76#
+	 * #BS_GTE_STF#
+	 * #BS_SSE_FO4_FO76#
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 <version num="2.3">Dark Age of Camelot</version>
 	 <version num="3.0">Star Trek:  IV</version>
 	 <version num="4.2.1.0">Dark Age of Camelot, Civilization IV</version>
@@ -133,7 +148,7 @@ public class NifVer
 
 	public int LOAD_USER_VER = 0;
 
-	public int LOAD_USER_VER2 = 0;
+	public int BS_Version = 0;
 
 	public String fileName;
 
@@ -142,12 +157,12 @@ public class NifVer
 		this.fileName = fileName;
 		this.LOAD_VER = LOAD_VER;
 		this.LOAD_USER_VER = LOAD_USER_VER;
-		this.LOAD_USER_VER2 = LOAD_USER_VER2;
+		this.BS_Version = LOAD_USER_VER2;
 	}
 
 	public String toString()
 	{
-		return "nifVer " + fileName + " " + LOAD_VER + " " + LOAD_USER_VER + " " + LOAD_USER_VER2;
+		return "nifVer " + fileName + " " + LOAD_VER + " " + LOAD_USER_VER + " " + BS_Version;
 	}
 
 	/** 
@@ -157,6 +172,101 @@ public class NifVer
 	public boolean isBP()
 	{
 		return (LOAD_VER == NifVer.VER_20_3_0_9 && (LOAD_USER_VER == 9 || LOAD_USER_VER == 11 || LOAD_USER_VER == 12));
+	}
+	
+	/**
+	 * An insane system to easily translate nifxml conditions into my code
+	 * 
+	 * 
+	 */
+	
+	//<verexpr token="#NI_BS_LTE_16#" string="(#BSVER# #LTE# 16)">All NI + BS until BSVER 16.</verexpr>
+	public boolean NI_BS_LTE_16() {
+		return BS_Version < 16;
+	}
+    //<verexpr token="#NI_BS_LT_FO3#" string="(#BSVER# #LT# 34)">All NI + BS before Fallout 3.</verexpr>
+	public boolean NI_BS_LT_FO3() {
+		return BS_Version < 34;
+	}
+    //<verexpr token="#NI_BS_LTE_FO3#" string="(#BSVER# #LTE# 34)">All NI + BS until Fallout 3.</verexpr>
+	public boolean NI_BS_LTE_FO3() {
+		return BS_Version <= 34;
+	}
+    //<verexpr token="#NI_BS_LT_SSE#" string="(#BSVER# #LT# 100)">All NI + BS before SSE.</verexpr>
+	public boolean NI_BS_LT_SSE() {
+		return BS_Version < 100;
+	}
+    //<verexpr token="#NI_BS_LT_FO4#" string="(#BSVER# #LT# 130)">All NI + BS before Fallout 4.</verexpr>
+	public boolean NI_BS_LT_FO4() {
+		return BS_Version < 130;
+	}
+    //<verexpr token="#NI_BS_LTE_FO4#" string="(#BSVER# #LTE# 139)">All NI + BS until Fallout 4.</verexpr>
+	public boolean NI_BS_LTE_FO4() {
+		return BS_Version <= 139;
+	}
+	//<verexpr token="#BS_GT_FO3#" string="(#BSVER# #GT# 34)">Skyrim, SSE, and Fallout 4</verexpr>
+	public boolean BS_GT_FO3() {
+		return BS_Version > 34;
+	}
+	//<verexpr token="#BS_GTE_FO3#" string="(#BSVER# #GTE# 34)">FO3 and later.</verexpr>
+	public boolean BS_GTE_FO3() {
+		return BS_Version >= 34;
+	}
+	//<verexpr token="#BS_GTE_SKY#" string="(#BSVER# #GTE# 83)">Skyrim and later.</verexpr>    
+	public boolean BS_GTE_SKY() {
+		return BS_Version >= 83;
+	}
+	//<verexpr token="#BS_GTE_SSE#" string="(#BSVER# #GTE# 100)">SSE and later.</verexpr>
+	public boolean BS_GTE_SSE() {
+		return BS_Version >= 100;
+	}
+	//<verexpr token="#BS_GTE_F76#" string="(#BSVER# #GTE# 155)">Fallout 76 and later.</verexpr>
+	public boolean BS_GTE_F76() {
+		return BS_Version >= 155;
+	}
+	//<verexpr token="#BS_GTE_STF#" string="(#BSVER# #GTE# 172)">Starfield and later.</verexpr>
+	public boolean BS_GTE_STF() {
+		return BS_Version >= 172;
+	}
+	//<verexpr token="#BS_SSE#" string="(#BSVER# #EQ# 100)">SSE only.</verexpr>
+	public boolean BS_SSE() {
+		return BS_Version == 100;
+	}
+	//<verexpr token="#BS_FO4#" string="(#BSVER# #EQ# 130)">Fallout 4 strictly, excluding stream 132 and 139 in dev files.</verexpr>
+	public boolean BS_FO4() {
+		return BS_Version == 130;
+	}
+	//<verexpr token="#BS_FO4_2#" string="((#BSVER# #GTE# 130) #AND# (#BSVER# #LTE# 139))">Fallout 4/76 including dev files.</verexpr>
+	public boolean BS_FO4_2() {
+		return BS_Version >= 130 && BS_Version <= 139;
+	}
+	//<verexpr token="#BS_GT_130#" string="(#BSVER# #GT# 130)">Later than Bethesda 130.</verexpr>
+	public boolean BS_GT_130() {
+		return BS_Version > 130;
+	}
+	//<verexpr token="#BS_GTE_130#" string="(#BSVER# #GTE# 130)">Bethesda 130 and later.</verexpr>
+	public boolean BS_GTE_130() {
+		return BS_Version >= 130;
+	}
+	//<verexpr token="#BS_GTE_132#" string="(#BSVER# #GTE# 132)">Bethesda 132 and later.</verexpr>
+	public boolean BS_GTE_132() {
+		return BS_Version >= 132;
+	}
+	//<verexpr token="#BS_GTE_152#" string="(#BSVER# #GTE# 152)">Bethesda 152 and later.</verexpr>
+	public boolean BS_GTE_152() {
+		return BS_Version >= 152;
+	}
+	//<verexpr token="#BS_F76#" string="(#BSVER# #EQ# 155)">Fallout 76 stream 155 only.</verexpr>
+	public boolean BS_F76() {
+		return BS_Version == 155;
+	}
+	//<verexpr token="#BS_SSE_FO4_FO76#" string="((#BSVER# #GTE# 100) #AND# (#BSVER# #LT# 172))">SSE, FO4, FO76</verexpr>
+	public boolean BS_SSE_FO4_FO76() {
+		return BS_Version >= 100 && BS_Version < 172;
+	}
+	//<verexpr token="#BS202#" string="((#VER# #EQ# 20.2.0.7) #AND# (#BSVER# #GT# 0))">Bethesda 20.2 only.</verexpr>
+	public boolean BS202(NifVer nifVer) {
+		return LOAD_VER == VER_20_2_0_7 && BS_Version > 0;
 	}
 
 	//TODO: nifVer is handed to all node to loading, so it is really more like teh niffile root, 

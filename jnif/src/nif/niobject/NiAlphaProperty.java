@@ -142,7 +142,7 @@ public class NiAlphaProperty extends NiProperty
 		boolean alphaTest = ((flags.flags >> 9) & 0x0001) != 0;
 
 		// Temporary Weapon Blood fix for FO4
-		if (this.nVer.LOAD_USER_VER2 == 130)
+		if (this.nVer.BS_Version == 130)
 			alphaTest |= (flags.flags == 20547);
 
 		return alphaTest;

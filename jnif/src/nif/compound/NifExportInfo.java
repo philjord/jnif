@@ -9,14 +9,15 @@ import nif.NifVer;
 public class NifExportInfo
 {
 	/**
-	 <compound name="ExportInfo" ver1="10.0.1.2">
-	 <add name="Unknown" type="uint" ver2="10.0.1.2" default="3">Probably the number of strings that follow.</add>
-	 <add name="Creator" type="ShortString">Could be the name of the creator of the NIF file?</add>
-	 <add name="Export Info 1" type="ShortString">
-	 Unknown. Can be something like 'TriStrip Process Script'.
-	 </add>
-	 <add name="Export Info 2" type="ShortString">
-	 Unknown. Possibly the selected option of the export script. Can be something like 'Default Export Script'.
+	  <struct name="BSStreamHeader" versions="#BETHESDA#" module="BSMain">
+    	Information about how the file was exported
+        <field name="BS Version" type="ulittle32" />
+        <field name="Author" type="ExportString" />
+        <field name="Unknown Int" type="uint" cond="BS Version #GT# 130" />
+        <field name="Process Script" type="ExportString"  cond="BS Version #LT# 131" />
+        <field name="Export Script" type="ExportString" />
+        <field name="Max Filepath" type="ExportString" cond="BS Version >= 103" />
+    </struct>
 	 </add>
 	 </compound>
 	 */
@@ -36,13 +37,17 @@ public class NifExportInfo
 			ByteConvert.readInt(stream);
 		}
 		creator = ByteConvert.readShortString(stream);
-		exportInfo1 = ByteConvert.readShortString(stream);
+		
+		if(nifVer.BS_Version > 130)
+			ByteConvert.readInt(stream);
+		if(nifVer.BS_Version <= 130)
+			exportInfo1 = ByteConvert.readShortString(stream);
+
 		exportInfo2 = ByteConvert.readShortString(stream);
-		//fallout4
-		if(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER2 == 130)
-		{
+
+		if(nifVer.BS_Version >= 103)
 			exportInfo3 = ByteConvert.readShortString(stream);
-		}
+
 
 	}
 }

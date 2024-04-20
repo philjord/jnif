@@ -50,7 +50,7 @@ public class NiMaterialProperty extends NiProperty
 			flags = new NifFlags(stream);
 		}
 		
-		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 21))
+		if (!(nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.BS_Version > 21))
 		{
 			ambientColor = new NifColor3(stream);
 			diffuseColor = new NifColor3(stream);
@@ -66,7 +66,7 @@ public class NiMaterialProperty extends NiProperty
 	//		glossiness = 128f - glossiness;
 		}
 		alpha = ByteConvert.readFloat(stream);
-		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.LOAD_USER_VER2 > 21)
+		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && nifVer.LOAD_USER_VER >= 11 && nifVer.BS_Version > 21)
 		{
 			emitMulti = ByteConvert.readFloat(stream);
 		}

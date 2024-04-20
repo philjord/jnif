@@ -23,6 +23,28 @@ public class Data3Interface {
 		this.header = data1;
 	}
 
+	/** the read while loop relied on an exception throw which is poor form indeed
+	 * 
+	 * @param pos
+	 * @return
+	 * @throws InvalidPositionException
+	 */
+	public boolean hasReadPos(final int pos) {
+		long dataPos = header.data3 + pos * 0x0C;
+		if(dataPos >= header.end)
+			return false;
+		
+		
+		DataExternal data = new DataExternal();
+		((Buffer) file).position((int) (header.offset + dataPos));
+		byte[] dataLine = new byte[4];
+		file.get(dataLine);
+		data.from = ByteUtils.getULong(dataLine);
+		if (data.from > header.offset + header.data1) {
+			return false;
+		}
+		return true;
+	}
 	/**
 	 * Read a specific item from the data3 section
 	 * 

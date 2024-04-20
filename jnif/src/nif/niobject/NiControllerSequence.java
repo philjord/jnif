@@ -96,10 +96,10 @@ public class NiControllerSequence extends NiSequence
 			stringPalette = new NifRef(NiStringPalette.class, stream);
 		}
 
-		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && (nifVer.LOAD_USER_VER >= 11) && nifVer.LOAD_USER_VER2 >= 24)
+		if (nifVer.LOAD_VER == NifVer.VER_20_2_0_7 && (nifVer.LOAD_USER_VER >= 11) && nifVer.BS_Version >= 24)
 		{
 			unknownShort1 = ByteConvert.readShort(stream);
-			if (nifVer.LOAD_USER_VER2 <= 28)
+			if (nifVer.BS_Version <= 28)
 			{
 				unknownShort2 = ByteConvert.readShort(stream);
 			}

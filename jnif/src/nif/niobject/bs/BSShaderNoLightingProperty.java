@@ -42,7 +42,7 @@ public class BSShaderNoLightingProperty extends BSShaderLightingProperty
 
 		fileName = ByteConvert.readSizedString(stream);
 
-		if ((nifVer.LOAD_USER_VER == 11||nifVer.LOAD_USER_VER == 12) && nifVer.LOAD_USER_VER2 > 26)
+		if ((nifVer.LOAD_USER_VER == 11||nifVer.LOAD_USER_VER == 12) && nifVer.BS_Version > 26)
 		{
 			unknownFloat2 = ByteConvert.readFloat(stream);
 			unknownFloat3 = ByteConvert.readFloat(stream);

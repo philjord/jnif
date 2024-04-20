@@ -81,8 +81,8 @@ public class SkyrimShaderPropertyFlags2
 		flags = ByteConvert.readInt(stream);
 	}
 
-	public boolean isBitSet(int bitToMask)
+	public static boolean isBitSet(SkyrimShaderPropertyFlags2 flags, int bitToMask)
 	{
-		return (flags & (0x1 << bitToMask)) != 0;
+		return flags != null && (flags.flags & (0x1 << bitToMask)) != 0;
 	}
 }
