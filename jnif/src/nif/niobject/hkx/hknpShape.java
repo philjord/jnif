@@ -69,7 +69,7 @@ public class hknpShape extends hkReferencedObject {
 		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
 		
 		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='16' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT16' arrsize='0' flags='ALIGN_16'/>
-		flags =  stream.getShort(16);
+		flags = stream.getShort(16);
 		//<member name='numShapeKeyBits' type='hkUint8' offset='18' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		numShapeKeyBits = stream.get(18);
 		//<member name='dispatchType' type='enum Enum' etype='Enum' offset='19' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>

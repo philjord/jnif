@@ -63,6 +63,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			DataInternal arrValue = data1.readNext();
 			assert arrValue.from == classOffset + 32;
 			motionProperties = new hknpMotionProperties[arrSize];
+			//FIXME: notice motion properties says it is align_16
 			for (int i = 0; i < arrSize; i++) {
 				motionProperties[i] = new hknpMotionProperties(connector, (int)arrValue.to + (i*hknpMotionProperties.size));				
 			}

@@ -39,7 +39,8 @@ public class hknpShapeInstance  {
 	public long shape;
 	public int shapeTag;
 	public int destructionTag;
-	public int[] padding = new int[30];
+	// not used so possibly don't bother
+	//public int[] padding = new int[30];// this might be to force the 16 align into a 64 align in the elemenets array
 	
 	public hknpShapeInstance(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
 	{
@@ -61,9 +62,10 @@ public class hknpShapeInstance  {
 		//<member name='destructionTag' type='hkUint16' offset='90' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		destructionTag = Short.toUnsignedInt(stream.getShort(90));
 		//<member name='padding' type='hkUint8[30]' offset='92' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='30' flags='FLAGS_NONE'/>
-		for(int i = 0; i < 30; i++) {
-			padding[i] = Byte.toUnsignedInt(stream.get(92+i));
-		}
+		// not used so possibly don't bother
+		//for(int i = 0; i < 30; i++) {
+		//	padding[i] = Byte.toUnsignedInt(stream.get(92+i));
+		//}
 		
 		
 	}
