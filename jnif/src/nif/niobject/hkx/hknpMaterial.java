@@ -109,8 +109,8 @@ public class hknpMaterial  {
 		// <member name='flags' type='hkInt32' offset='12' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		flags = stream.getInt(12);
 		// <member name='triggerType' type='enum TriggerType' etype='TriggerType' offset='16' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		int triggerTypev = stream.get(16); //Index 76 out of bounds for length 4
-		//triggerType = TriggerType.values()[stream.get(16)];
+		int tt = stream.get(16); //Index 76 out of bounds for length 4
+		triggerType = tt < TriggerType.values().length ? TriggerType.values()[tt] : TriggerType.values()[0];
 		// <member name='triggerManifoldTolerance' type='struct hkUFloat8' ctype='hkUFloat8' offset='17' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		triggerManifoldTolerance = stream.get(17);//FIXME!!!! 8 bit float/ like a half half float? 255 rather than -1 type thign
 		// <member name='dynamicFriction' type='hkHalf' offset='18' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
