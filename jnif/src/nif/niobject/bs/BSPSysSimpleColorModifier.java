@@ -11,19 +11,17 @@ import nif.niobject.particle.NiPSysModifier;
 public class BSPSysSimpleColorModifier extends NiPSysModifier
 {
 	/**
-	 
-	 <niobject name="BSPSysSimpleColorModifier" inherit="NiPSysModifier" ver1="20.2.0.7" userver="11">
-
-	 Bethesda-Specific Particle node.
-	 
-	 <add name="Fade In Percent" type="float">Unknown</add>
-	 <add name="Fade out Percent" type="float">Unknown</add>
-	 <add name="Color 1 End Percent" type="int">Unknown</add>
-	 <add name="Color 1 Start Percent" type="int">Unknown</add>
-	 <add name="Color 2 End Percent" type="int">Unknown</add>
-	 <add name="Color 2 Start Percent" type="int">Unknown</add>
-	 <add name="Colors" type="Color4" arr1="3">Colors</add>
-	 </niobject>
+	<niobject name="BSPSysSimpleColorModifier" inherit="NiPSysModifier" module="BSParticle" versions="#FO3_AND_LATER#">
+        Bethesda-specific particle modifier.
+        <field name="Fade In Percent" type="float" default="0.1" range="#F0_1#" />
+        <field name="Fade Out Percent" type="float" default="0.9" range="#F0_1#" />
+        <field name="Color 1 End Percent" type="float" range="#F0_1#" />
+        <field name="Color 1 Start Percent" type="float" range="#F0_1#" />
+        <field name="Color 2 End Percent" type="float" range="#F0_1#" />
+        <field name="Color 2 Start Percent" type="float" default="1.0" range="#F0_1#" />
+        <field name="Colors" type="Color4" length="3" />
+        <field name="Unknown Shorts" type="ushort" length="26" vercond="#BS_GTE_F76#" />
+    </niobject>
 	 */
 
 	public float fadeInPercent;
@@ -40,6 +38,9 @@ public class BSPSysSimpleColorModifier extends NiPSysModifier
 
 	public NifColor4[] colors;
 
+	public short[] UnknownShorts;
+
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -55,6 +56,12 @@ public class BSPSysSimpleColorModifier extends NiPSysModifier
 			colors[i] = new NifColor4(stream);
 		}
 
+		
+		//<field name="Unknown Shorts" type="ushort" length="26" vercond="#BS_GTE_F76#" />
+		if(nifVer.BS_GTE_F76())
+			UnknownShorts = ByteConvert.readShorts(26, stream);
+		
+		
 		return success;
 	}
 }

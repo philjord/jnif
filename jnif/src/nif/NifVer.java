@@ -108,11 +108,15 @@ public class NifVer
 	public static final int VER_10_1_0_101 = 0x0A010065;
 
 	public static final int VER_10_1_0_106 = 0x0A01006A;
+	
+	public static final int VER_10_1_0_114 = 0x0A010072;
 
 	public static final int VER_10_2_0_0 = 0x0A020000;
 
 	public static final int VER_10_4_0_1 = 0x0A040001;
-
+	
+	public static final int VER_20_0_0_2 = 0x14000002;
+	
 	public static final int VER_20_0_0_4 = 0x14000004;
 
 	public static final int VER_20_0_0_5 = 0x14000005;
@@ -124,6 +128,8 @@ public class NifVer
 	public static final int VER_20_2_0_7 = 0x14020007; // skyrim wih userversion1=12 and 2=83, fallout4 uv1=12 uv2=130, FO76 uv1=12 and uv2=155
 
 	public static final int VER_20_2_0_8 = 0x14020008;
+	
+	public static final int VER_20_2_4_7 = 0x14020407;
 
 	public static final int VER_20_3_0_1 = 0x14030001;
 
@@ -134,7 +140,7 @@ public class NifVer
 	public static final int VER_20_3_0_6 = 0x14030006;
 
 	public static final int VER_20_3_0_9 = 0x14030009;// special, black prohecy disagrees with nif.xml (userversion == 12||userversion == 9)
-
+	
 	public static final int VER_20_6_0_0 = 0x14060000;
 
 	public static final int VER_UNSUPPORTED = 0xFFFFFFFF; /*!< Unsupported Nif Version */
@@ -160,6 +166,7 @@ public class NifVer
 		this.BS_Version = LOAD_USER_VER2;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "nifVer " + fileName + " " + LOAD_VER + " " + LOAD_USER_VER + " " + BS_Version;
@@ -265,8 +272,12 @@ public class NifVer
 		return BS_Version >= 100 && BS_Version < 172;
 	}
 	//<verexpr token="#BS202#" string="((#VER# #EQ# 20.2.0.7) #AND# (#BSVER# #GT# 0))">Bethesda 20.2 only.</verexpr>
-	public boolean BS202(NifVer nifVer) {
+	public boolean BS202() {
 		return LOAD_VER == VER_20_2_0_7 && BS_Version > 0;
+	}
+	//<verexpr token="#BSSTREAM#" string="(#BSVER# #GT# 0)">NiStream that are Bethesda.</verexpr>
+	public boolean BSSTREAM() {
+		return BS_Version > 0;
 	}
 
 	//TODO: nifVer is handed to all node to loading, so it is really more like teh niffile root, 

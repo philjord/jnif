@@ -9,6 +9,7 @@ import nif.compound.NifQuaternion;
 
 public class NiRotatingParticlesData extends NiParticlesData
 {
+	//TODO: this calss doesnot exist in nif.xml anymore, it's really old stuff
 	/**
 	 <niobject name="NiRotatingParticlesData" abstract="0" inherit="NiParticlesData">
 
@@ -23,6 +24,7 @@ public class NiRotatingParticlesData extends NiParticlesData
 
 	public NifQuaternion[] Rotations2;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);

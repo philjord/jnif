@@ -248,6 +248,14 @@ public class BSLightingShaderProperty extends BSShaderProperty
 			ByteConvert.readShort(stream);//unknownshort 
 	    }
 	    
+	    //NOT IN NIF.XML!!, but nif.xml seems unable to load 
+	    //D:\game_media\Fallout76\SeventySix - Meshes\meshes\setdressing\watercooler\water_cooler_dirty02.nif
+	    if (ShaderType.getType() == 0) {
+	    	if (nifVer.BS_GTE_F76())
+	    		ByteConvert.readFloats(4, stream);// does this break things the other way?? noseems like there should be something here
+	    }
+	    
+	    
 		if (ShaderType.getType() == 1) {
 			if (nifVer.NI_BS_LTE_FO4())
 				EnvironmentMapScale = ByteConvert.readFloat(stream);
