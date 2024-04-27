@@ -36,8 +36,8 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 	public String name;
 
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
 		
 		//<member name='materials' type='hkArray&lt;struct hknpMaterial&gt;' ctype='hknpMaterial' offset='16' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>	
 		ByteBuffer file = connector.data.setup(classOffset + 16);
@@ -50,7 +50,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			assert arrValue.from == classOffset + 16;
 			materials = new hknpMaterial[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				materials[i] = new hknpMaterial(connector, (int)arrValue.to + (i*hknpMaterial.size));
+				materials[i] = new hknpMaterial(connector, stream, (int)arrValue.to + (i*hknpMaterial.size));
 			}
 		}
 		 
@@ -65,7 +65,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			motionProperties = new hknpMotionProperties[arrSize];
 			//FIXME: notice motion properties says it is align_16
 			for (int i = 0; i < arrSize; i++) {
-				motionProperties[i] = new hknpMotionProperties(connector, (int)arrValue.to + (i*hknpMotionProperties.size));				
+				motionProperties[i] = new hknpMotionProperties(connector, stream, (int)arrValue.to + (i*hknpMotionProperties.size));				
 			}
 		}
 		
@@ -79,7 +79,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			assert arrValue.from == classOffset + 48;
 			motionCinfos = new hknpMotionCinfo[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				motionCinfos[i] = new hknpMotionCinfo(connector, (int)arrValue.to + (i*hknpMotionCinfo.size));				
+				motionCinfos[i] = new hknpMotionCinfo(connector, stream, (int)arrValue.to + (i*hknpMotionCinfo.size));				
 			}
 		}
 		
@@ -94,7 +94,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			assert arrValue.from == classOffset + 64;				 
 			bodyCinfos = new hknpBodyCinfo[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				bodyCinfos[i] = new hknpBodyCinfo(connector, (int)arrValue.to + (i*hknpBodyCinfo.size));				
+				bodyCinfos[i] = new hknpBodyCinfo(connector, stream, (int)arrValue.to + (i*hknpBodyCinfo.size));				
 			} 
 		}
 		
@@ -110,7 +110,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			
 			constraintCinfos = new hknpConstraintCinfo[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				constraintCinfos[i] = new hknpConstraintCinfo(connector, (int)arrValue.to + (i*hknpConstraintCinfo.size));				
+				constraintCinfos[i] = new hknpConstraintCinfo(connector, stream, (int)arrValue.to + (i*hknpConstraintCinfo.size));				
 			}
 		}
 		

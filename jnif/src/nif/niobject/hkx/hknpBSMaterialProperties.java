@@ -19,8 +19,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hknpBSMaterialProperties extends hkReferencedObject {
 	hknpBSMaterial[] MaterialA;
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
 		
 		//<member name='MaterialA' type='hkArray&lt;struct hknpBSMaterial&gt;' ctype='hknpBSMaterial' offset='16' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 16);
@@ -34,7 +34,7 @@ public class hknpBSMaterialProperties extends hkReferencedObject {
 			MaterialA = new hknpBSMaterial[arrSize];
 			for (int i = 0; i < arrSize; i++) {
 				MaterialA[i] = new hknpBSMaterial();
-				MaterialA[i].readFromStream(connector, (int)arrValue.to);
+				MaterialA[i].readFromStream(connector, stream, (int)arrValue.to);
 			}
 		}		
 		

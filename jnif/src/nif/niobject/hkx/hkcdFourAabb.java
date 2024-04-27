@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -37,20 +36,19 @@ public class hkcdFourAabb {
 	NifVector4 lz;
 	NifVector4 hz;
 	
-	public hkcdFourAabb(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdFourAabb(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
 		//<member name='lx' type='hkVector4' offset='0' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		lx = new NifVector4(stream, 0);
+		lx = new NifVector4(stream, classOffset + 0);
 		//<member name='hx' type='hkVector4' offset='16' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		hx = new NifVector4(stream, 16);
+		hx = new NifVector4(stream, classOffset + 16);
 		//<member name='ly' type='hkVector4' offset='32' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		ly = new NifVector4(stream, 32);
+		ly = new NifVector4(stream, classOffset + 32);
 		//<member name='hy' type='hkVector4' offset='48' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		hy = new NifVector4(stream, 48);
+		hy = new NifVector4(stream, classOffset + 48);
 		//<member name='lz' type='hkVector4' offset='64' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		lz = new NifVector4(stream, 64);
+		lz = new NifVector4(stream, classOffset + 64);
 		//<member name='hz' type='hkVector4' offset='80' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		hz = new NifVector4(stream, 80);
+		hz = new NifVector4(stream, classOffset + 80);
 	}
 }

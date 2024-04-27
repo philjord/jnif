@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -25,9 +24,9 @@ public class hknpCompressedMeshShape extends hknpCompositeShape {
 	int numTriangles;
 	int numConvexShapes;
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
+		
 		//<member name='data' type='struct hknpCompressedMeshShapeData*' ctype='hknpCompressedMeshShapeData' offset='96' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal de = connector.data2.readNext();
 		if (de.from == classOffset + 96) {
@@ -37,13 +36,13 @@ public class hknpCompressedMeshShape extends hknpCompositeShape {
 		}
 				
 		//<member name='quadIsFlat' type='struct hkBitField' ctype='hkBitField' offset='104' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		quadIsFlat = new hkBitField(connector, classOffset + 104);
+		quadIsFlat = new hkBitField(connector, stream, classOffset + 104);
 		//<member name='triangleIsInterior' type='struct hkBitField' ctype='hkBitField' offset='128' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		triangleIsInterior = new hkBitField(connector, classOffset + 128);
+		triangleIsInterior = new hkBitField(connector, stream, classOffset + 128);
 		//<member name='numTriangles' type='hkInt32' offset='152' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
-		numTriangles = stream.getInt(152);
+		numTriangles = stream.getInt(classOffset + 152);
 		//<member name='numConvexShapes' type='hkInt32' offset='156' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
-		numConvexShapes = stream.getInt(156);
+		numConvexShapes = stream.getInt(classOffset + 156);
 		
 		return success;
 	}

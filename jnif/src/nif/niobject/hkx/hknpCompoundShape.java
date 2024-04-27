@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -23,19 +22,17 @@ public class hknpCompoundShape extends hknpCompositeShape {
 	public hknpShapeSignals mutationSignals;
 	
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
-		
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
+				
 		//<member name='instances' type='struct hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance' ctype='hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance' offset='96' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
-		instances = new hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance(connector, classOffset + 96);	
+		instances = new hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance(connector, stream, classOffset + 96);	
 		//<member name='aabb' type='struct hkAabb' ctype='hkAabb' offset='128' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		aabb = new hkAabb(connector, classOffset + 128);
+		aabb = new hkAabb(connector, stream, classOffset + 128);
 		//<member name='isMutable' type='hkBool' offset='160' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		isMutable = stream.get(160) != 0;	
+		isMutable = stream.get(classOffset + 160) != 0;	
 		//<member name='mutationSignals' type='struct hknpShapeSignals' ctype='hknpShapeSignals' offset='168' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
-		mutationSignals = new hknpShapeSignals(connector, classOffset + 168);		
+		mutationSignals = new hknpShapeSignals(connector, stream, classOffset + 168);		
 		
 		return success;
 		

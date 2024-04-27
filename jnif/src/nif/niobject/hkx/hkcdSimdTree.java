@@ -17,7 +17,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdSimdTree extends hkBaseObject {
 	hkcdSimdTreeNode[] nodes;
-	public hkcdSimdTree(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdSimdTree(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{		
 		//<member name='nodes' type='hkArray&lt;struct hkcdSimdTreeNode&gt;' ctype='hkcdSimdTreeNode' offset='8' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 8);
@@ -30,7 +30,7 @@ public class hkcdSimdTree extends hkBaseObject {
 			assert arrValue.from == classOffset + 8;
 			nodes = new hkcdSimdTreeNode[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				nodes[i] = new hkcdSimdTreeNode(connector, (int)arrValue.to + (i * hkcdSimdTreeNode.size));
+				nodes[i] = new hkcdSimdTreeNode(connector, stream, (int)arrValue.to + (i * hkcdSimdTreeNode.size));
 			}
 		}
 	}

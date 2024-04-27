@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -45,41 +44,40 @@ public class hkcdStaticMeshTreeBaseSection extends hkcdStaticTreeTreehkcdStaticT
 	public int layerData;
 	public int unusedData;
 	
-	public hkcdStaticMeshTreeBaseSection(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticMeshTreeBaseSection(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+		super(connector, stream, classOffset);		
 		
 		//<member name='codecParms' type='hkReal[6]' offset='48' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='6' flags='FLAGS_NONE'/>		
-		codecParms[0] =  stream.getFloat(48);
-		codecParms[1] =  stream.getFloat(52);
-		codecParms[2] =  stream.getFloat(56);
-		codecParms[3] =  stream.getFloat(60);
-		codecParms[4] =  stream.getFloat(64);
-		codecParms[5] =  stream.getFloat(68);
+		codecParms[0] =  stream.getFloat(classOffset + 48);
+		codecParms[1] =  stream.getFloat(classOffset + 52);
+		codecParms[2] =  stream.getFloat(classOffset + 56);
+		codecParms[3] =  stream.getFloat(classOffset + 60);
+		codecParms[4] =  stream.getFloat(classOffset + 64);
+		codecParms[5] =  stream.getFloat(classOffset + 68);
 		
 		//<member name='firstPackedVertex' type='hkUint32' offset='72' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		firstPackedVertex = stream.getInt(72);
+		firstPackedVertex = stream.getInt(classOffset + 72);
 		
 		//<member name='sharedVertices' type='struct hkcdStaticMeshTreeBaseSectionSharedVertices' ctype='hkcdStaticMeshTreeBaseSectionSharedVertices' offset='76' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		sharedVertices = new hkcdStaticMeshTreeBaseSectionSharedVertices(connector, classOffset + 76);
+		sharedVertices = new hkcdStaticMeshTreeBaseSectionSharedVertices(connector, stream, classOffset + 76);
 		//<member name='primitives' type='struct hkcdStaticMeshTreeBaseSectionPrimitives' ctype='hkcdStaticMeshTreeBaseSectionPrimitives' offset='80' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		primitives = new hkcdStaticMeshTreeBaseSectionPrimitives(connector, classOffset + 80);
+		primitives = new hkcdStaticMeshTreeBaseSectionPrimitives(connector, stream, classOffset + 80);
 		//<member name='dataRuns' type='struct hkcdStaticMeshTreeBaseSectionDataRuns' ctype='hkcdStaticMeshTreeBaseSectionDataRuns' offset='84' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		dataRuns = new hkcdStaticMeshTreeBaseSectionDataRuns(connector, classOffset + 84);
+		dataRuns = new hkcdStaticMeshTreeBaseSectionDataRuns(connector, stream, classOffset + 84);
 		//<member name='numPackedVertices' type='hkUint8' offset='88' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		numPackedVertices = Byte.toUnsignedInt(stream.get(88));
+		numPackedVertices = Byte.toUnsignedInt(stream.get(classOffset + 88));
 		//<member name='numSharedIndices' type='hkUint8' offset='89' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		numSharedIndices = Byte.toUnsignedInt(stream.get(89));
+		numSharedIndices = Byte.toUnsignedInt(stream.get(classOffset + 89));
 		//<member name='leafIndex' type='hkUint16' offset='90' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		leafIndex = Short.toUnsignedInt(stream.getShort(90));
+		leafIndex = Short.toUnsignedInt(stream.getShort(classOffset + 90));
 		//<member name='page' type='hkUint8' offset='92' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		page = Byte.toUnsignedInt(stream.get(92));
+		page = Byte.toUnsignedInt(stream.get(classOffset + 92));
 		//<member name='flags' type='hkUint8' offset='93' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		flags = Byte.toUnsignedInt(stream.get(93));
+		flags = Byte.toUnsignedInt(stream.get(classOffset + 93));
 		//<member name='layerData' type='hkUint8' offset='94' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		layerData = Byte.toUnsignedInt(stream.get(94));
+		layerData = Byte.toUnsignedInt(stream.get(classOffset + 94));
 		//<member name='unusedData' type='hkUint8' offset='95' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		unusedData = Byte.toUnsignedInt(stream.get(95));
+		unusedData = Byte.toUnsignedInt(stream.get(classOffset + 95));
 	}
 }

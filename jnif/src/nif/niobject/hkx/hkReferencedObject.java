@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -13,9 +14,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 */
 public class hkReferencedObject extends hkBaseObject {
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		boolean success = super.readFromStream(connector, classOffset);
+		boolean success = super.readFromStream(connector, stream, classOffset);
 
 		return success;
 	}

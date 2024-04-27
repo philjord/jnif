@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -22,7 +23,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hknpShapeSignals {
 	public long shapeMutated;
 	public long shapeDestroyed;
-	public hknpShapeSignals(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpShapeSignals(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
 
 		//ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start

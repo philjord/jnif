@@ -49,10 +49,8 @@ public class hknpBodyCinfo  {
 	public byte spuFlags;
 	public long localFrame;
 	
-	public hknpBodyCinfo(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpBodyCinfo(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
-
 		//<member name='shape' type='struct hknpShape*' ctype='hknpShape' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='NOT_OWNED'/>
 		DataExternal data = connector.data2.readNext();
 		if (data.from == classOffset + 0) {
@@ -61,19 +59,19 @@ public class hknpBodyCinfo  {
 			connector.data2.backtrack();
 		}
 		//<member name='reservedBodyId' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		reservedBodyId = stream.getInt(8);
+		reservedBodyId = stream.getInt(classOffset + 8);
 		//<member name='motionId' type='hkUint32' offset='12' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		motionId = stream.getInt(12);
+		motionId = stream.getInt(classOffset + 12);
 		//<member name='qualityId' type='hkUint8' offset='16' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		qualityId = stream.get(16);
+		qualityId = stream.get(classOffset + 16);
 		//<member name='materialId' type='hkUint16' offset='18' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		materialId = Short.toUnsignedInt(stream.getShort(18));
+		materialId = Short.toUnsignedInt(stream.getShort(classOffset + 18));
 		//<member name='collisionFilterInfo' type='hkUint32' offset='20' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0'/>
-		collisionFilterInfo = stream.getInt(20);
+		collisionFilterInfo = stream.getInt(classOffset + 20);
 		//<member name='flags' type='hkInt32' offset='24' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0'/>
-		flags = stream.getInt(24);
+		flags = stream.getInt(classOffset + 24);
 		//<member name='collisionLookAheadDistance' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0.000000'/>
-		collisionLookAheadDistance = stream.getFloat(28);
+		collisionLookAheadDistance = stream.getFloat(classOffset + 28);
 		//<member name='name' type='hkStringPtr' offset='32' vtype='TYPE_STRINGPTR' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		name = "";
 		try {
@@ -89,14 +87,14 @@ public class hknpBodyCinfo  {
 			name = "";
 		}
 		//<member name='userData' type='hkUint64' offset='40' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		userData = stream.getLong(40);
+		userData = stream.getLong(classOffset + 40);
 		//<member name='position' type='hkVector4' offset='48' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		position = new NifVector4(stream, 48);
+		position = new NifVector4(stream, classOffset + 48);
 		//<member name='orientation' type='hkQuaternion' offset='64' vtype='TYPE_QUATERNION' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		orientation = new NifQuaternionXYZW(stream, 64);
+		orientation = new NifQuaternionXYZW(stream, classOffset + 64);
 		
 		//<member name='spuFlags' type='flags SpuFlagsEnum' etype='SpuFlagsEnum' offset='80' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		spuFlags = stream.get(80);
+		spuFlags = stream.get(classOffset + 80);
 
 		//<member name='localFrame' type='struct hkLocalFrame*' ctype='hkLocalFrame' offset='88' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		data = connector.data2.readNext();

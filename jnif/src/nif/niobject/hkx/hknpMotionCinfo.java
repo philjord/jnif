@@ -39,31 +39,30 @@ public class hknpMotionCinfo  {
 	NifVector4 linearVelocity;
 	NifVector4 angularVelocity;
 	
-	public hknpMotionCinfo(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpMotionCinfo(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
 		//<member name='motionPropertiesId' type='hkUint16' offset='0' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		motionPropertiesId = Short.toUnsignedInt(stream.getShort(0));
+		motionPropertiesId = Short.toUnsignedInt(stream.getShort(classOffset + 0));
 		//<member name='enableDeactivation' type='hkBool' offset='2' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='true'/>
-		enableDeactivation = stream.get(2) != 0;
+		enableDeactivation = stream.get(classOffset + 2) != 0;
 		//<member name='inverseMass' type='hkReal' offset='4' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='1.000000'/>
-		inverseMass = stream.getFloat(4);
+		inverseMass = stream.getFloat(classOffset + 4);
 		//<member name='massFactor' type='hkReal' offset='8' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='1.000000'/>
-		massFactor = stream.getFloat(8);
+		massFactor = stream.getFloat(classOffset + 8);
 		//<member name='maxLinearAccelerationDistancePerStep' type='hkReal' offset='12' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='18446726481523507200.000000'/>
-		maxLinearAccelerationDistancePerStep = stream.getFloat(12);
+		maxLinearAccelerationDistancePerStep = stream.getFloat(classOffset + 12);
 		//<member name='maxRotationToPreventTunneling' type='hkReal' offset='16' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='18446726481523507200.000000'/>
-		maxRotationToPreventTunneling = stream.getFloat(16);
+		maxRotationToPreventTunneling = stream.getFloat(classOffset + 16);
 		//<member name='inverseInertiaLocal' type='hkVector4' offset='32' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		inverseInertiaLocal = new NifVector4(stream, 32);
+		inverseInertiaLocal = new NifVector4(stream, classOffset + 32);
 		//<member name='centerOfMassWorld' type='hkVector4' offset='48' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		centerOfMassWorld = new NifVector4(stream, 48);
+		centerOfMassWorld = new NifVector4(stream, classOffset + 48);
 		//<member name='orientation' type='hkQuaternion' offset='64' vtype='TYPE_QUATERNION' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		orientation = new NifQuaternionXYZW(stream, 64);
+		orientation = new NifQuaternionXYZW(stream, classOffset + 64);
 		//<member name='linearVelocity' type='hkVector4' offset='80' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		linearVelocity = new NifVector4(stream, 80);
+		linearVelocity = new NifVector4(stream, classOffset + 80);
 		//<member name='angularVelocity' type='hkVector4' offset='96' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		angularVelocity = new NifVector4(stream, 96);
+		angularVelocity = new NifVector4(stream, classOffset + 96);
 		
 		
 	}

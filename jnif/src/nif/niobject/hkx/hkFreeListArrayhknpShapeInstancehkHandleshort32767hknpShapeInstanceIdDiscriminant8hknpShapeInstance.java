@@ -21,10 +21,8 @@ public class hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstance
 	public hknpShapeInstance[] elements;
 	public int firstFree;
 	
-	public hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstanceIdDiscriminant8hknpShapeInstance(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
 		//<member name='elements' type='hkArray&lt;struct hknpShapeInstance&gt;' ctype='hknpShapeInstance' offset='0' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 0);
 		byte[] baseArrayBytes = new byte[0X10];
@@ -45,11 +43,11 @@ public class hkFreeListArrayhknpShapeInstancehkHandleshort32767hknpShapeInstance
 			
 			elements = new hknpShapeInstance[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				elements[i] = new hknpShapeInstance(connector, (int)arrValue.to + (i*elementOffset));
+				elements[i] = new hknpShapeInstance(connector, stream, (int)arrValue.to + (i*elementOffset));
 			}
 		}
 		//<member name='firstFree' type='hkInt32' offset='16' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		firstFree = stream.getInt(16);
+		firstFree = stream.getInt(classOffset + 16);
 		
 	}
 }

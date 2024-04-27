@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -16,11 +17,11 @@ public class hknpStaticCompoundShapeData extends hkReferencedObject {
 	public hknpStaticCompoundShapeTree aabbTree;
 	
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		boolean success = super.readFromStream(connector, classOffset);
+		boolean success = super.readFromStream(connector, stream, classOffset);
 		//<member name='aabbTree' type='struct hknpStaticCompoundShapeTree' ctype='hknpStaticCompoundShapeTree' offset='16' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		aabbTree = new hknpStaticCompoundShapeTree(connector, classOffset + 16);
+		aabbTree = new hknpStaticCompoundShapeTree(connector, stream, classOffset + 16);
 		return success;
 	}
 }

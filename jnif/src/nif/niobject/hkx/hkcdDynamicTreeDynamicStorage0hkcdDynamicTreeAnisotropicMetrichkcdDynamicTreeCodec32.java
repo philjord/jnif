@@ -20,10 +20,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hkcdDynamicTreeDynamicStorage0hkcdDynamicTreeAnisotropicMetrichkcdDynamicTreeCodec32 extends hkcdDynamicTreeAnisotropicMetric {
 	hkcdDynamicTreeCodec32[] nodes;
 	int firstFree;
-	public hkcdDynamicTreeDynamicStorage0hkcdDynamicTreeAnisotropicMetrichkcdDynamicTreeCodec32(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdDynamicTreeDynamicStorage0hkcdDynamicTreeAnisotropicMetrichkcdDynamicTreeCodec32(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
+		super(connector, stream, classOffset);
 		
 		//<member name='nodes' type='hkArray&lt;struct hkcdDynamicTreeCodec32&gt;' ctype='hkcdDynamicTreeCodec32' offset='0' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 0);
@@ -36,11 +35,11 @@ public class hkcdDynamicTreeDynamicStorage0hkcdDynamicTreeAnisotropicMetrichkcdD
 			assert arrValue.from == classOffset + 0;
 			nodes = new hkcdDynamicTreeCodec32[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				nodes[i] = new hkcdDynamicTreeCodec32(connector, (int)arrValue.to + (i*hkcdDynamicTreeCodec32.size));
+				nodes[i] = new hkcdDynamicTreeCodec32(connector, stream, (int)arrValue.to + (i*hkcdDynamicTreeCodec32.size));
 			}
 		}
 		
 		//<member name='firstFree' type='hkUint16' offset='16' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>		 
-		firstFree = Short.toUnsignedInt(stream.getShort(16));
+		firstFree = Short.toUnsignedInt(stream.getShort(classOffset + 16));
 	}
 }

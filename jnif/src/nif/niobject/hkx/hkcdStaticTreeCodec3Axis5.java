@@ -21,14 +21,13 @@ public class hkcdStaticTreeCodec3Axis5 extends hkcdStaticTreeCodec3Axis {
 	
 	int hiData;
 	int loData;
-	public hkcdStaticTreeCodec3Axis5(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticTreeCodec3Axis5(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+		super(connector, stream, classOffset);
 		
 		//<member name='hiData' type='hkUint8' offset='3' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		hiData = Byte.toUnsignedInt(stream.get(3));
+		hiData = Byte.toUnsignedInt(stream.get(classOffset + 3));
 		//<member name='loData' type='hkUint8' offset='4' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		loData = Byte.toUnsignedInt(stream.get(4));		
+		loData = Byte.toUnsignedInt(stream.get(classOffset + 4));		
 	}
 }

@@ -16,12 +16,11 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hkcdStaticTreeCodec3Axis4 extends hkcdStaticTreeCodec3Axis {
 	public static final int size = 4;
 	public int data;
-	public hkcdStaticTreeCodec3Axis4(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticTreeCodec3Axis4(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+		super(connector, stream, classOffset);
 		
 		//<member name='data' type='hkUint8' offset='3' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		data = Byte.toUnsignedInt(stream.get(3));
+		data = Byte.toUnsignedInt(stream.get(classOffset + 3));
 	}
 }

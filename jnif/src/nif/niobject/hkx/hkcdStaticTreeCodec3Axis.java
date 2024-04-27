@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -15,14 +14,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdStaticTreeCodec3Axis {
 	public int[] xyz = new int[3];
-	public hkcdStaticTreeCodec3Axis(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
-		
+	public hkcdStaticTreeCodec3Axis(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{		
 		//<member name='xyz' type='hkUint8[3]' offset='0' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='3' flags='FLAGS_NONE'/>		
-		xyz[0] = Byte.toUnsignedInt(stream.get(0));
-		xyz[1] = Byte.toUnsignedInt(stream.get(1));
-		xyz[2] = Byte.toUnsignedInt(stream.get(2));
+		xyz[0] = Byte.toUnsignedInt(stream.get(classOffset + 0));
+		xyz[1] = Byte.toUnsignedInt(stream.get(classOffset + 1));
+		xyz[2] = Byte.toUnsignedInt(stream.get(classOffset + 2));
 		
 	}
 }

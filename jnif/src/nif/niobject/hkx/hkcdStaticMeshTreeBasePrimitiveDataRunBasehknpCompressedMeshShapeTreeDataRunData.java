@@ -19,15 +19,13 @@ public class hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTr
 	public int index;
 	public int count;
 	
-	public hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTreeDataRunData(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{		 
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
-		
+	public hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTreeDataRunData(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{					
 		//<member name='value' type='struct hknpCompressedMeshShapeTreeDataRunData' ctype='hknpCompressedMeshShapeTreeDataRunData' offset='0' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		value = new hknpCompressedMeshShapeTreeDataRunData(connector, classOffset + 0);
+		value = new hknpCompressedMeshShapeTreeDataRunData(connector, stream, classOffset + 0);
 		//<member name='index' type='hkUint8' offset='2' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		index = Byte.toUnsignedInt(stream.get(2));
+		index = Byte.toUnsignedInt(stream.get(classOffset + 2));
 		//<member name='count' type='hkUint8' offset='3' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		count = Byte.toUnsignedInt(stream.get(3));
+		count = Byte.toUnsignedInt(stream.get(classOffset + 3));
 	}
 }

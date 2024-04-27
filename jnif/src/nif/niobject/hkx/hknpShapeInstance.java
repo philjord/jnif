@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.compound.NifMatrix44;
 import nif.compound.NifVector4;
@@ -42,14 +41,12 @@ public class hknpShapeInstance  {
 	// not used so possibly don't bother
 	//public int[] padding = new int[30];// this might be to force the 16 align into a 64 align in the elemenets array
 	
-	public hknpShapeInstance(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public hknpShapeInstance(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{		
 		//<member name='transform' type='hkTransform' offset='0' vtype='TYPE_TRANSFORM' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		transform = new NifMatrix44(stream, 0);
+		transform = new NifMatrix44(stream, classOffset + 0);
 		//<member name='scale' type='hkVector4' offset='64' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		scale = new NifVector4(stream, 64);
+		scale = new NifVector4(stream, classOffset + 64);
 		//<member name='shape' type='struct hknpShape*' ctype='hknpShape' offset='80' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal de = connector.data2.readNext();
 		if (de.from == classOffset + 80) {
@@ -58,9 +55,9 @@ public class hknpShapeInstance  {
 			connector.data2.backtrack();
 		}
 		//<member name='shapeTag' type='hkUint16' offset='88' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		shapeTag = Short.toUnsignedInt(stream.getShort(88));
+		shapeTag = Short.toUnsignedInt(stream.getShort(classOffset + 88));
 		//<member name='destructionTag' type='hkUint16' offset='90' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		destructionTag = Short.toUnsignedInt(stream.getShort(90));
+		destructionTag = Short.toUnsignedInt(stream.getShort(classOffset + 90));
 		//<member name='padding' type='hkUint8[30]' offset='92' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='30' flags='FLAGS_NONE'/>
 		// not used so possibly don't bother
 		//for(int i = 0; i < 30; i++) {

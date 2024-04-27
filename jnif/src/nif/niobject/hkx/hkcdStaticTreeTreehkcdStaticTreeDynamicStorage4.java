@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -13,12 +14,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdStaticTreeTreehkcdStaticTreeDynamicStorage4 extends hkcdStaticTreeDynamicStorage4 {
 	public hkAabb domain;
-	public hkcdStaticTreeTreehkcdStaticTreeDynamicStorage4(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticTreeTreehkcdStaticTreeDynamicStorage4(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
+		super(connector, stream, classOffset);
 		
 		//<member name='domain' type='struct hkAabb' ctype='hkAabb' offset='16' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		domain = new hkAabb(connector, classOffset + 16);
+		domain = new hkAabb(connector, stream, classOffset + 16);
 	}
 }
 		

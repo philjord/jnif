@@ -86,10 +86,8 @@ public class hknpMaterial  {
 	public long userData;
 	public boolean isShared;
 	
-	public hknpMaterial(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public hknpMaterial(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{			
 		// <member name='name' type='hkStringPtr' offset='0' vtype='TYPE_STRINGPTR' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
 		name = "";
 		try {
@@ -105,48 +103,48 @@ public class hknpMaterial  {
 			name = "";
 		}
 		// <member name='isExclusive' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		isExclusive = stream.getInt(8);
+		isExclusive = stream.getInt(classOffset + 8);
 		// <member name='flags' type='hkInt32' offset='12' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		flags = stream.getInt(12);
+		flags = stream.getInt(classOffset + 12);
 		// <member name='triggerType' type='enum TriggerType' etype='TriggerType' offset='16' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		int tt = stream.get(16); //Index 76 out of bounds for length 4
+		int tt = stream.get(classOffset + 16); //Index 76 out of bounds for length 4
 		triggerType = tt < TriggerType.values().length ? TriggerType.values()[tt] : TriggerType.values()[0];
 		// <member name='triggerManifoldTolerance' type='struct hkUFloat8' ctype='hkUFloat8' offset='17' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		triggerManifoldTolerance = stream.get(17);//FIXME!!!! 8 bit float/ like a half half float? 255 rather than -1 type thign
+		triggerManifoldTolerance = stream.get(classOffset + 17);//FIXME!!!! 8 bit float/ like a half half float? 255 rather than -1 type thign
 		// <member name='dynamicFriction' type='hkHalf' offset='18' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		dynamicFriction = MiniFloat.toFloat(stream.getShort(18));
+		dynamicFriction = MiniFloat.toFloat(stream.getShort(classOffset + 18));
 		// <member name='staticFriction' type='hkHalf' offset='20' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		staticFriction = MiniFloat.toFloat(stream.getShort(20));
+		staticFriction = MiniFloat.toFloat(stream.getShort(classOffset + 20));
 		// <member name='restitution' type='hkHalf' offset='22' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		restitution = MiniFloat.toFloat(stream.getShort(22));
+		restitution = MiniFloat.toFloat(stream.getShort(classOffset + 22));
 		// <member name='frictionCombinePolicy' type='enum CombinePolicy' etype='CombinePolicy' offset='24' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		int frictionCombinePolicyv = Byte.toUnsignedInt(stream.get(24));// seems to allow 255 as a value? odd
+		int frictionCombinePolicyv = Byte.toUnsignedInt(stream.get(classOffset + 24));// seems to allow 255 as a value? odd
 		//frictionCombinePolicy = CombinePolicy.values()[];
 		
 		// <member name='restitutionCombinePolicy' type='enum CombinePolicy' etype='CombinePolicy' offset='25' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		// I've seen 205, 160?  what are these nomralized ordinals? so 0, 160,205,255which are 00000000,10100000,11100001,11111111,
 		// I could use the xml exporter and see what it says about the enum value
-		int restitutionCombinePolicyv = Byte.toUnsignedInt(stream.get(25));// seems to allow 255 as a value? odd
+		int restitutionCombinePolicyv = Byte.toUnsignedInt(stream.get(classOffset + 25));// seems to allow 255 as a value? odd
 		//restitutionCombinePolicy = CombinePolicy.values()[Byte.toUnsignedInt(stream.get(25))];
 		
 		// <member name='weldingTolerance' type='hkHalf' offset='26' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		weldingTolerance = MiniFloat.toFloat(stream.getShort(26));
+		weldingTolerance = MiniFloat.toFloat(stream.getShort(classOffset + 26));
 		// <member name='maxContactImpulse' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		maxContactImpulse = stream.getFloat(28);
+		maxContactImpulse = stream.getFloat(classOffset + 28);
 		// <member name='fractionOfClippedImpulseToApply' type='hkReal' offset='32' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		fractionOfClippedImpulseToApply = stream.getFloat(32);
+		fractionOfClippedImpulseToApply = stream.getFloat(classOffset + 32);
 		// <member name='massChangerCategory' type='enum MassChangerCategory' etype='MassChangerCategory' offset='36' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		int massChangerCategoryv = Byte.toUnsignedInt(stream.get(36));// seems to allow 255 as a value? odd
+		int massChangerCategoryv = Byte.toUnsignedInt(stream.get(classOffset + 36));// seems to allow 255 as a value? odd
 		//massChangerCategory = MassChangerCategory.values()[Byte.toUnsignedInt(stream.get(36))];
 		
 		// <member name='massChangerHeavyObjectFactor' type='hkHalf' offset='38' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		massChangerHeavyObjectFactor = MiniFloat.toFloat(stream.getShort(38));
+		massChangerHeavyObjectFactor = MiniFloat.toFloat(stream.getShort(classOffset + 38));
 		// <member name='softContactForceFactor' type='hkHalf' offset='40' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		softContactForceFactor = MiniFloat.toFloat(stream.getShort(40));
+		softContactForceFactor = MiniFloat.toFloat(stream.getShort(classOffset + 40));
 		// <member name='softContactDampFactor' type='hkHalf' offset='42' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		softContactDampFactor = MiniFloat.toFloat(stream.getShort(42));
+		softContactDampFactor = MiniFloat.toFloat(stream.getShort(classOffset + 42));
 		// <member name='softContactSeperationVelocity' type='struct hkUFloat8' ctype='hkUFloat8' offset='44' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		softContactSeperationVelocity = stream.get(44);//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
+		softContactSeperationVelocity = stream.get(classOffset + 44);//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
 		 
 		// <member name='surfaceVelocity' type='struct hknpSurfaceVelocity*' ctype='hknpSurfaceVelocity' offset='48' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal data = connector.data2.readNext();
@@ -156,11 +154,11 @@ public class hknpMaterial  {
 			connector.data2.backtrack();
 		}
 		// <member name='disablingCollisionsBetweenCvxCvxDynamicObjectsDistance' type='hkHalf' offset='56' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = MiniFloat.toFloat(stream.getShort(56));
+		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = MiniFloat.toFloat(stream.getShort(classOffset + 56));
 		// <member name='userData' type='hkUint64' offset='64' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_8'/>
-		userData = stream.getLong(64);
+		userData = stream.getLong(classOffset + 64);
 		// <member name='isShared' type='hkBool' offset='72' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		isShared = stream.get(72) != 0;
+		isShared = stream.get(classOffset + 72) != 0;
 		
 	}
 	

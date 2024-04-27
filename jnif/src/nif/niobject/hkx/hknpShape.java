@@ -63,21 +63,18 @@ public class hknpShape extends hkReferencedObject {
 	public long properties;
 	
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
-		
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
 		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='16' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT16' arrsize='0' flags='ALIGN_16'/>
-		flags = stream.getShort(16);
+		flags = stream.getShort(classOffset + 16);
 		//<member name='numShapeKeyBits' type='hkUint8' offset='18' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		numShapeKeyBits = stream.get(18);
+		numShapeKeyBits = stream.get(classOffset + 18);
 		//<member name='dispatchType' type='enum Enum' etype='Enum' offset='19' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		dispatchType = stream.get(19);//enum of what?
+		dispatchType = stream.get(classOffset + 19);//enum of what?
 		//<member name='convexRadius' type='hkReal' offset='20' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		convexRadius = stream.getFloat(20);//enum of what?
+		convexRadius = stream.getFloat(classOffset + 20);//enum of what?
 		//<member name='userData' type='hkUint64' offset='24' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		userData = stream.getLong(24);
+		userData = stream.getLong(classOffset + 24);
 		//<member name='properties' type='struct hkRefCountedProperties*' ctype='hkRefCountedProperties' offset='32' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal data = connector.data2.readNext();
 		if (data.from == classOffset + 32) {

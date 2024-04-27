@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -11,9 +12,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </struct>*/
 public class hkcdDynamicTreeDefaultTree32Storage extends hkcdDynamicTreeTreehkcdDynamicTreeDynamicStorage16 {
 		
-	public hkcdDynamicTreeDefaultTree32Storage(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdDynamicTreeDefaultTree32Storage(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		//ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
+		super(connector, stream, classOffset);
 	}
 }

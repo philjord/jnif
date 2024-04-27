@@ -36,17 +36,16 @@ public class hkcdStaticMeshTreeBase extends hkcdStaticTreeTreehkcdStaticTreeDyna
 	public hkcdStaticMeshTreeBasePrimitive[] primitives;
 	public int[] sharedVerticesIndex;
 	
-	public hkcdStaticMeshTreeBase(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticMeshTreeBase(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+		super(connector, stream, classOffset);		
 		
 		//<member name='numPrimitiveKeys' type='hkInt32' offset='48' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		numPrimitiveKeys =  stream.getInt(48);
+		numPrimitiveKeys = stream.getInt(classOffset + 48);
 		//<member name='bitsPerKey' type='hkInt32' offset='52' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		bitsPerKey =  stream.getInt(52);
+		bitsPerKey = stream.getInt(classOffset + 52);
 		//<member name='maxKeyValue' type='hkUint32' offset='56' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		maxKeyValue =  stream.getInt(56);
+		maxKeyValue = stream.getInt(classOffset + 56);
 		//<member name='sections' type='hkArray&lt;struct hkcdStaticMeshTreeBaseSection&gt;' ctype='hkcdStaticMeshTreeBaseSection' offset='64' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 64);
 		byte[] baseArrayBytes = new byte[0X10];
@@ -58,7 +57,7 @@ public class hkcdStaticMeshTreeBase extends hkcdStaticTreeTreehkcdStaticTreeDyna
 			assert arrValue.from == classOffset + 64;			
 			sections = new hkcdStaticMeshTreeBaseSection[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				sections[i] = new hkcdStaticMeshTreeBaseSection(connector, (int)arrValue.to + (i * hkcdStaticMeshTreeBaseSection.size));
+				sections[i] = new hkcdStaticMeshTreeBaseSection(connector, stream, (int)arrValue.to + (i * hkcdStaticMeshTreeBaseSection.size));
 			}
 		}
 		
@@ -73,7 +72,7 @@ public class hkcdStaticMeshTreeBase extends hkcdStaticTreeTreehkcdStaticTreeDyna
 			assert arrValue.from == classOffset + 80;
 			primitives = new hkcdStaticMeshTreeBasePrimitive[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				primitives[i] = new hkcdStaticMeshTreeBasePrimitive(connector, (int)arrValue.to + (i * hkcdStaticMeshTreeBasePrimitive.size));
+				primitives[i] = new hkcdStaticMeshTreeBasePrimitive(connector, stream, (int)arrValue.to + (i * hkcdStaticMeshTreeBasePrimitive.size));
 			}
 		}
 		//<member name='sharedVerticesIndex' type='hkArray&lt;hkUint16&gt;' offset='96' vtype='TYPE_ARRAY' vsubtype='TYPE_UINT16' arrsize='0' flags='FLAGS_NONE'/>

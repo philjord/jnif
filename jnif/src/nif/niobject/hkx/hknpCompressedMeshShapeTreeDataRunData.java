@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -15,11 +14,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hknpCompressedMeshShapeTreeDataRunData  {
 	int data;
-	public hknpCompressedMeshShapeTreeDataRunData(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public hknpCompressedMeshShapeTreeDataRunData(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{		
 		//<member name='data' type='hkUint16' offset='0' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		data = Short.toUnsignedInt(stream.getShort(0));
+		data = Short.toUnsignedInt(stream.getShort(classOffset + 0));
 	}
 }

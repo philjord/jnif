@@ -25,7 +25,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkRefCountedProperties  extends hkBaseObject {
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
 		
 		//<member name='entries' type='hkArray&lt;struct hkRefCountedPropertiesEntry&gt;' ctype='hkRefCountedPropertiesEntry' offset='0' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 0);
@@ -38,7 +38,7 @@ public class hkRefCountedProperties  extends hkBaseObject {
 			assert arrValue.from == classOffset + 0;
 			hkRefCountedPropertiesEntry[] entries = new hkRefCountedPropertiesEntry[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				entries[i] = new hkRefCountedPropertiesEntry(connector, (int)arrValue.to + (i*hkRefCountedPropertiesEntry.size));
+				entries[i] = new hkRefCountedPropertiesEntry(connector, stream, (int)arrValue.to + (i*hkRefCountedPropertiesEntry.size));
 			}
 		}
 		

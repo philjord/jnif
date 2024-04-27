@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -26,10 +25,8 @@ public class hknpConstraintCinfo  {
 	public int flags;	 
 
 	
-	public hknpConstraintCinfo(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public hknpConstraintCinfo(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{		
 		//<member name='constraintData' type='struct hkpConstraintData*' ctype='hkpConstraintData' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal data = connector.data2.readNext();
 		if (data.from == classOffset + 0) {
@@ -38,10 +35,10 @@ public class hknpConstraintCinfo  {
 			connector.data2.backtrack();
 		}
 		//<member name='bodyA' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		bodyA = stream.getInt(8);
+		bodyA = stream.getInt(classOffset + 8);
 		//<member name='bodyB' type='hkUint32' offset='12' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		bodyB = stream.getInt(12);
+		bodyB = stream.getInt(classOffset + 12);
 		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='16' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
-		flags = Byte.toUnsignedInt(stream.get(16));	
+		flags = Byte.toUnsignedInt(stream.get(classOffset + 16));	
 	}
 }	

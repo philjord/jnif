@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -24,10 +23,8 @@ public class hknpDecoratorShape extends hknpShape {
 	public int coreShapeSize;
  
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException {
-		boolean success = super.readFromStream(connector, classOffset);
-		
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
 		
 		//<member name='coreShape' type='struct hknpShape*' ctype='hknpShape' offset='48' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		DataExternal data = connector.data2.readNext();
@@ -38,7 +35,7 @@ public class hknpDecoratorShape extends hknpShape {
 		}
 		
 		//<member name='coreShapeSize' type='hkInt32' offset='56' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		coreShapeSize = stream.getInt(56);		
+		coreShapeSize = stream.getInt(classOffset + 56);		
 		
 		return success;
 	}

@@ -29,9 +29,9 @@ public class hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsigned
 	public long[] sharedVertices;
 	public hknpCompressedMeshShapeTreeDataRun[] primitiveDataRuns;
 	
-	public hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsignedlonglong1121hknpCompressedMeshShapeTreeDataRun(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsignedlonglong1121hknpCompressedMeshShapeTreeDataRun(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
+		super(connector, stream, classOffset);
 				
 		//<member name='packedVertices' type='hkArray&lt;hkUint32&gt;' offset='112' vtype='TYPE_ARRAY' vsubtype='TYPE_UINT32' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 112);
@@ -72,7 +72,7 @@ public class hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsigned
 			assert arrValue.from == classOffset + 144;
 			primitiveDataRuns = new hknpCompressedMeshShapeTreeDataRun[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				primitiveDataRuns[i] = new hknpCompressedMeshShapeTreeDataRun(connector, (int)arrValue.to + (i * hknpCompressedMeshShapeTreeDataRun.size));
+				primitiveDataRuns[i] = new hknpCompressedMeshShapeTreeDataRun(connector, stream, (int)arrValue.to + (i * hknpCompressedMeshShapeTreeDataRun.size));
 			}
 		}
 	}

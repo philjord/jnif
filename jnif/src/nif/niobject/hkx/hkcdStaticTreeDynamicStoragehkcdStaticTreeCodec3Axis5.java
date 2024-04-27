@@ -19,9 +19,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5 {
 	public hkcdStaticTreeCodec3Axis5[] nodes;
-	public hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
-	{
-		
+	public hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
+	{		
 		//<member name='nodes' type='hkArray&lt;struct hkcdStaticTreeCodec3Axis5&gt;' ctype='hkcdStaticTreeCodec3Axis5' offset='0' vtype='TYPE_ARRAY' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 0);
 		byte[] baseArrayBytes = new byte[0X10];
@@ -33,7 +32,7 @@ public class hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5 {
 			assert arrValue.from == classOffset + 0;
 			nodes = new hkcdStaticTreeCodec3Axis5[arrSize];
 			for (int i = 0; i < arrSize; i++) {
-				nodes[i] = new hkcdStaticTreeCodec3Axis5(connector, (int)arrValue.to + (i * hkcdStaticTreeCodec3Axis5.size));
+				nodes[i] = new hkcdStaticTreeCodec3Axis5(connector, stream, (int)arrValue.to + (i * hkcdStaticTreeCodec3Axis5.size));
 			}
 		}
 	}

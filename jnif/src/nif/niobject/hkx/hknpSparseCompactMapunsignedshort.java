@@ -26,15 +26,12 @@ public class hknpSparseCompactMapunsignedshort  {
 	int sencondaryKeyBits;
 	int[] primaryKeyToIndex;
 	int[] valueAndSecondaryKeys;
-	public hknpSparseCompactMapunsignedshort(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpSparseCompactMapunsignedshort(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-
-		
 		//<member name='secondaryKeyMask' type='hkUint32' offset='0' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		secondaryKeyMask =  stream.getInt(0);
+		secondaryKeyMask = stream.getInt(classOffset + 0);
 		//<member name='sencondaryKeyBits' type='hkUint32' offset='4' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		sencondaryKeyBits =  stream.getInt(4);
+		sencondaryKeyBits = stream.getInt(classOffset + 4);
 		//<member name='primaryKeyToIndex' type='hkArray&lt;hkUint16&gt;' offset='8' vtype='TYPE_ARRAY' vsubtype='TYPE_UINT16' arrsize='0' flags='FLAGS_NONE'/>
 		ByteBuffer file = connector.data.setup(classOffset + 8);
 		byte[] baseArrayBytes = new byte[0X10];

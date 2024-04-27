@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 
 import nif.niobject.hkx.hkBaseObject;
@@ -51,6 +52,11 @@ public class HKXReader {
 		// Create the return object
 		HKXContents content = new HKXContents(header.versionName, header.version);
 		
+		// note all calls must be absolute to allow any multi-thread, so the "from" relative position pointer is unuseful
+		// also many slice operations just make for memory burn nightmare
+		// notice we must slice to embed the dateHeader.offset into the position of this buffer
+		ByteBuffer stream = connector.data.setup(0).slice().order(ByteOrder.LITTLE_ENDIAN);
+		
 		// Retrieve the actual data
 		while (data3.hasReadPos(pos)) {
 			// Get the next data3 object
@@ -81,8 +87,8 @@ public class HKXReader {
 					continue;
 				}
 
-				//String objectName = generator.get(currentClass.from);
-				boolean success = obj.readFromStream(connector, (int)currentClass.from);	
+				//String objectName = generator.get(currentClass.from);				
+				boolean success = obj.readFromStream(connector, stream, (int)currentClass.from);	
 				
 				if(!success) {
 					new Throwable("bum read").printStackTrace();

@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -15,10 +14,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdStaticMeshTreeBaseSectionDataRuns {
 	public int data;
-	public hkcdStaticMeshTreeBaseSectionDataRuns(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdStaticMeshTreeBaseSectionDataRuns(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
 		//<member name='data' type='hkUint32' offset='0' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		data = stream.getInt(0);
+		data = stream.getInt(classOffset + 0);
 	}
 }

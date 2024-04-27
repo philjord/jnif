@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -13,9 +14,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hknpCompressedMeshShapeTreeDataRun extends hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTreeDataRunData {
 	public static final int size = 4;
 
-	public hknpCompressedMeshShapeTreeDataRun(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hknpCompressedMeshShapeTreeDataRun(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
-		super(connector, classOffset);
-		//ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);
+		super(connector, stream, classOffset);		
 	}
 }

@@ -1,6 +1,7 @@
 package nif.niobject.hkx;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
@@ -11,7 +12,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </struct>*/
 public class hkcdDynamicTreeAnisotropicMetric {
 		
-	public hkcdDynamicTreeAnisotropicMetric(HKXReaderConnector connector, int classOffset) throws IOException, InvalidPositionException
+	public hkcdDynamicTreeAnisotropicMetric(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
 	}
 }
