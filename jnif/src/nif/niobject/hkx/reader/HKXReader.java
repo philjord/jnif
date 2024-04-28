@@ -39,6 +39,10 @@ public class HKXReader {
 
 		// Connect the connector to the file.
 		HKXReaderConnector connector = new HKXReaderConnector(hkxBB);
+		
+		// unsupportedd file format :(
+		if(connector.header == null)
+			return null;
 
 		// Retrieve useful data and interfaces from the header
 		Data3Interface data3 = connector.data3;

@@ -57,24 +57,53 @@ public class HeaderInterface {
 	 * @return the extracted {@link HeaderData}
 	 */
 	public HeaderData extract() {
+		//https://github.com/blueskythlikesclouds/TagTools
+		//https://github.com/Olganix/LibXenoverse2/blob/master/LibXenoverse/LibXenoverse/Havok.h
+		//let's check for havok 2015 or later
+		/*  f.seek( 4 )
+          
+          signature = f.read( 4 )
+          if ( signature == "TAG0" ):
+              return TagFileType.Object
+          elif ( signature == "TCM0" ):
+              return TagFileType.Compendium
+          else:
+              return TagFileType.Invalid*/
+		byte[] sigb = new byte[4];
+		file.position(4);
+		file.get(sigb);
+		String signature = new String(sigb);
+		if (signature.equals("TAG0") ) {
+             //TagFileType.Object
+			return null; // FIXME: no support for now
+		} else if (signature.equals("TCM0") ) {
+             //TagFileType.Compendium
+			return null; // FIXME: no support for now
+		}
+
+		 
+		
+		
+		
 		HeaderData data = new HeaderData();
-		HeaderDescriptor descriptor = new HeaderDescriptor();
 		((Buffer) file).position(0);
-		file.get(descriptor.fileID);
-		file.get(descriptor.version);
-		file.get(descriptor.extras);
-		file.get(descriptor.constants);
-		file.get(descriptor.verName);
-		file.get(descriptor.constants2);
-		file.get(descriptor.extras11);
-		file.get(descriptor.padding11);
-		data.version = ByteUtils.getUInt(descriptor.version);
-		data.versionName = new String(descriptor.verName);
+		file.get(data.descriptor.fileID);
+		file.get(data.descriptor.version);
+		file.get(data.descriptor.extras);
+		file.get(data.descriptor.constants);
+		file.get(data.descriptor.verName);
+		file.get(data.descriptor.constants2);
+		file.get(data.descriptor.extras11);
+		file.get(data.descriptor.padding11);
+		data.version = ByteUtils.getUInt(data.descriptor.version);
+		data.versionName = new String(data.descriptor.verName);
 		if (data.version == HeaderDescriptor_v11.VERSION_11) {
-			data.paddingAfter = ByteUtils.getULong(descriptor.padding11);
+			data.paddingAfter = ByteUtils.getULong(data.descriptor.padding11);
 		} else {
 			data.paddingAfter = 0;
 		}
+		
+ 
 		return data;
 	}
 

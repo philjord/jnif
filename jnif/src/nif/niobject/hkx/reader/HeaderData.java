@@ -20,4 +20,7 @@ public class HeaderData {
 	 * and 0x10 (for animation files).
 	 */
 	public long paddingAfter;
+	
+	
+	public 	HeaderDescriptor descriptor = new HeaderDescriptor();
 }
