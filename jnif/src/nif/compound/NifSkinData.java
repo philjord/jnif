@@ -31,7 +31,10 @@ public class NifSkinData
 
 	public short numVertices;
 
-	public NifSkinWeight[] vertexWeights;
+	//public NifSkinWeight[] vertexWeights;
+	
+	public short[] vertexWeightsindex;
+	public float[] vertexWeightsweight;
 
 	public NifSkinData(boolean hasVertexWeights, ByteBuffer stream) throws IOException
 	{
@@ -41,10 +44,15 @@ public class NifSkinData
 		numVertices = ByteConvert.readShort(stream);
 		if (hasVertexWeights)
 		{
-			vertexWeights = new NifSkinWeight[numVertices];
+			//OPTOMISATION HERE			
+			//vertexWeights = new NifSkinWeight[numVertices];
+			vertexWeightsindex = new short[numVertices];
+			vertexWeightsweight = new float[numVertices];
 			for (int i = 0; i < numVertices; i++)
 			{
-				vertexWeights[i] = new NifSkinWeight(stream);
+				//vertexWeights[i] = new NifSkinWeight(stream);
+				vertexWeightsindex[i] = ByteConvert.readShort(stream);
+				vertexWeightsweight[i] = ByteConvert.readFloat(stream);
 			}
 		}
 	}
