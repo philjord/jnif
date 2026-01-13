@@ -26,6 +26,10 @@ public class NifVector4
 	public float z;
 
 	public float w;
+	
+	protected NifVector4() {
+		
+	}
 
 	public NifVector4(ByteBuffer stream) throws IOException
 	{
@@ -58,6 +62,7 @@ public class NifVector4
 		}
 	}
 
+	@Override
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifVector4)
@@ -68,6 +73,7 @@ public class NifVector4
 		return false;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "[NPVector4] x:" + x + " y:" + y + " z:" + z + " w:" + w;
