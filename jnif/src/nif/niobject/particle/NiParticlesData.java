@@ -182,7 +182,7 @@ public class NiParticlesData extends NiGeometryData
 			//<field name="Num Subtexture Offsets" type="byte" since="20.2.0.7" until="20.2.0.7" vercond="#BSSTREAM# #AND# #NI_BS_LTE_FO3#">2,4,8,16,32,64 are potential values. If "Has" was no then this should be 256, which represents a 16x16 framed image, which is invalid</field>
 			if(nifVer.BS_GT_FO3())
 				NumSubtextureOffsetUVs = ByteConvert.readInt(stream);
-			if(nifVer.BSSTREAM() && nifVer.NI_BS_LTE_FO3())
+			if(nifVer.NI_BS_LTE_FO3())
 				NumSubtextureOffsetUVs = ByteConvert.readByte(stream);
 		
 			//<field name="Subtexture Offsets" type="Vector4" length="Num Subtexture Offsets" vercond="#BS202#">Defines UV offsets</field>

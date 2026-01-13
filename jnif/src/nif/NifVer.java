@@ -5,21 +5,6 @@ import java.util.ArrayList;
 public class NifVer
 {
 	/**
-	 * #BS_GT_130#
-	 * #BS_GTE_F76#
-	 * #BS_FO4#
-	 * #FO4# 
-	 * #F76#
-	 * #BS_GTE_132#
-	 * #NI_BS_LTE_FO4#
-	 * #BS_GTE_F76#
-	 * #BS_GTE_STF#
-	 * #BS_SSE_FO4_FO76#
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 <version num="2.3">Dark Age of Camelot</version>
 	 <version num="3.0">Star Trek:  IV</version>
 	 <version num="4.2.1.0">Dark Age of Camelot, Civilization IV</version>
@@ -182,8 +167,7 @@ public class NifVer
 	}
 	
 	/**
-	 * An insane system to easily translate nifxml conditions into my code
-	 * 
+	 * to easily translate nifxml conditions into my code
 	 * 
 	 */
 	
@@ -210,6 +194,11 @@ public class NifVer
     //<verexpr token="#NI_BS_LTE_FO4#" string="(#BSVER# #LTE# 139)">All NI + BS until Fallout 4.</verexpr>
 	public boolean NI_BS_LTE_FO4() {
 		return BS_Version <= 139;
+	}
+    //<verexpr token="#NI_BS_LT_STF#" string="(#BSVER# #LT# 170)">All NI + BS before Starfield.</verexpr>
+	//TODO: this appears only in BSEffectShaderPropertyDataGTEFO76 but what is that anyway?	
+	public boolean NI_BS_LT_STF() {
+		return BS_Version < 170;
 	}
 	//<verexpr token="#BS_GT_FO3#" string="(#BSVER# #GT# 34)">Skyrim, SSE, and Fallout 4</verexpr>
 	public boolean BS_GT_FO3() {
@@ -239,6 +228,11 @@ public class NifVer
 	public boolean BS_SSE() {
 		return BS_Version == 100;
 	}
+	//<verexpr token="#BS_SKY_SSE#" string="((#BSVER# #GTE# 83) #AND# (#BSVER# #LTE# 100))">Skyrim and SSE.</verexpr>
+	//appears only in HavokFilter and HavokMaterial I only have HavokMaterial
+	public boolean BS_SKY_SSE() {
+		return BS_Version >= 83 && BS_Version <= 100;
+	}
 	//<verexpr token="#BS_FO4#" string="(#BSVER# #EQ# 130)">Fallout 4 strictly, excluding stream 132 and 139 in dev files.</verexpr>
 	public boolean BS_FO4() {
 		return BS_Version == 130;
@@ -259,6 +253,10 @@ public class NifVer
 	public boolean BS_GTE_132() {
 		return BS_Version >= 132;
 	}
+	//<verexpr token="#BS_132_139#" string="((#BSVER# #GTE# 132) #AND# (#BSVER# #LTE# 139))">Bethesda 132 to 139.</verexpr>
+	public boolean BS_132_139() {
+		return BS_Version >= 132 && BS_Version <= 139;
+	}
 	//<verexpr token="#BS_GTE_152#" string="(#BSVER# #GTE# 152)">Bethesda 152 and later.</verexpr>
 	public boolean BS_GTE_152() {
 		return BS_Version >= 152;
@@ -267,21 +265,21 @@ public class NifVer
 	public boolean BS_F76() {
 		return BS_Version == 155;
 	}
-	//<verexpr token="#BS_SSE_FO4_FO76#" string="((#BSVER# #GTE# 100) #AND# (#BSVER# #LT# 172))">SSE, FO4, FO76</verexpr>
-	public boolean BS_SSE_FO4_FO76() {
-		return BS_Version >= 100 && BS_Version < 172;
+	//<verexpr token="#BS_FO4_F76#" string="((#BSVER# #GTE# 130) #AND# (#BSVER# #LTE# 159))">FO4, FO76</verexpr>
+	public boolean BS_FO4_F76() {
+		return BS_Version >= 130 && BS_Version <= 159;
 	}
 	//<verexpr token="#BS202#" string="((#VER# #EQ# 20.2.0.7) #AND# (#BSVER# #GT# 0))">Bethesda 20.2 only.</verexpr>
 	public boolean BS202() {
 		return LOAD_VER == VER_20_2_0_7 && BS_Version > 0;
 	}
-	//<verexpr token="#BSSTREAM#" string="(#BSVER# #GT# 0)">NiStream that are Bethesda.</verexpr>
-	public boolean BSSTREAM() {
-		return BS_Version > 0;
+	//<verexpr token="#DIVINITY2#" string="((#USER# #EQ# 0x20000) #OR# (#USER# #EQ# 0x30000))">Divinity 2</verexpr>
+	public boolean DIVINITY2() {
+		return LOAD_USER_VER == 0x20000 || LOAD_USER_VER == 0x30000;
 	}
 
-	//TODO: nifVer is handed to all node to loading, so it is really more like teh niffile root, 
-	//and should have the header adn everything availible from it, it should be the header really
+	//TODO: nifVer is handed to all node to loading, so it is really more like the niffile root, 
+	//and should have the header and everything available from it, it should be the header really
 
 	public ArrayList<Integer> niGeometryDataToLoadMorphably = new ArrayList<Integer>();
 	public ArrayList<Integer> niGeometryDataExtraDataArriving = new ArrayList<Integer>();
