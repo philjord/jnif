@@ -397,7 +397,7 @@ public class BSTriShape extends NiTriBasedGeom
 		return success;
 	}
 
-	protected static FloatBuffer createFB(int l)
+	public static FloatBuffer createFB(int l)
 	{
 		ByteBuffer bb = ByteBuffer.allocateDirect(l * 4);
 		bb.order(ByteOrder.nativeOrder());
