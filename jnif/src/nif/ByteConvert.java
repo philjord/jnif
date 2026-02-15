@@ -301,10 +301,21 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 			ss[i] = stream.getShort();
 		return ss;
 	}
+	
+	public static long readLong(ByteBuffer stream) throws IOException
+	{
+		return stream.getLong();
+	}
 
 	public static float readFloat(ByteBuffer stream) throws IOException
 	{
 		return stream.getFloat();
+
+	}
+	
+	public static double readDouble(ByteBuffer stream) throws IOException
+	{
+		return stream.getDouble();
 
 	}
 
@@ -357,7 +368,7 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 	</compound>
 	*/
 
-	public static String readShortString(ByteBuffer stream) throws IOException
+	public static String readByteString(ByteBuffer stream) throws IOException
 	{
 		short len = readUnsignedByte(stream);
 		byte[] buffer = new byte[len];
@@ -365,7 +376,7 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 		return new String(buffer);
 	}
 
-	public static String readRealShortString(ByteBuffer stream) throws IOException
+	public static String readShortString(ByteBuffer stream) throws IOException
 	{
 		int len = readUnsignedShort(stream);
 		byte[] buffer = new byte[len];

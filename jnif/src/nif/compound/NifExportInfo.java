@@ -36,17 +36,17 @@ public class NifExportInfo
 		{
 			ByteConvert.readInt(stream);
 		}
-		creator = ByteConvert.readShortString(stream);
+		creator = ByteConvert.readByteString(stream);
 		
 		if(nifVer.BS_Version > 130)
 			ByteConvert.readInt(stream);
 		if(nifVer.BS_Version <= 130)
-			exportInfo1 = ByteConvert.readShortString(stream);
+			exportInfo1 = ByteConvert.readByteString(stream);
 
-		exportInfo2 = ByteConvert.readShortString(stream);
+		exportInfo2 = ByteConvert.readByteString(stream);
 
 		if(nifVer.BS_Version >= 103)
-			exportInfo3 = ByteConvert.readShortString(stream);
+			exportInfo3 = ByteConvert.readByteString(stream);
 
 
 	}

@@ -110,7 +110,7 @@ public class BSSubIndexTriShape extends BSTriShape
 				SubIndexRecord[i] = new SubIndexRecordB(stream);
 			}
 
-			SSFFile = ByteConvert.readRealShortString(stream);
+			SSFFile = ByteConvert.readShortString(stream);
 		}
 	}
 
