@@ -1,4 +1,4 @@
-package nif.niobject.bgsm;
+package nif.niobject.bgsm.bsmatcdb;
 
 /*
  * Copyright (C) 2006 The Android Open Source Project

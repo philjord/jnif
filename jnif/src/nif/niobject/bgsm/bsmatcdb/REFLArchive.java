@@ -1,4 +1,4 @@
-package nif.niobject.bgsm;
+package nif.niobject.bgsm.bsmatcdb;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,8 +38,8 @@ public class REFLArchive {
 					CLAS c = new CLAS(chunkSource.nextChunk());
 					CLASLookup.put(c.nameOffset, c);
 					//debug print
-					//System.out.println("CLAS  " + i + " version " + c.versionID + " flags " + c.flags + " "
-					//					+ STRT.getString(c.nameOffset));
+					System.out.println("CLAS  " + i + " version " + c.versionID + " flags " + c.flags + " "
+										+ STRT.getString(c.nameOffset));
 				}
 
 				//so now I think I'd get each of these by requesting via an offset
@@ -51,13 +51,15 @@ public class REFLArchive {
 
 					if (chunk != null) {
 						REFL refl = null;
-						if (chunk.type.equals("OBJT")) {
+						if (chunk.type.equals("OBJT")) {							
 							refl = new OBJT(chunk.chunkBB);
+						
 						} else if (chunk.type.equals("DIFF")) {
 							refl = new DIFF(chunk.chunkBB);
 						} else {
 							throw new IOException("opps not OBJT, DIFF read type " + chunk.type);
 						}
+						//System.out.println("OBJT " + STRT.getString(refl.classID));
 					} else {
 						// the numChunks from beth includes all the MAPC etc so it not the right number to iterate for OBJT and DIFF
 						break;
@@ -260,16 +262,16 @@ public class REFLArchive {
 				isUSER = ((flags & 0x0004) != 0);
 				int numFields = ByteConvert.readUnsignedShort(chunk.chunkBB);
 				fields = new CLASField[numFields];
-				//System.out.println(STRT.getString(nameOffset) + " {");
+				System.out.println(STRT.getString(nameOffset) + " {");
 				for (int i = 0; i < numFields; i++) {
 					fields[i] = new CLASField();
 					fields[i].fieldName = ByteConvert.readInt(chunk.chunkBB);
 					fields[i].fieldType = ByteConvert.readInt(chunk.chunkBB);
 					fields[i].fieldDataOffset = ByteConvert.readUnsignedShort(chunk.chunkBB);
 					fields[i].fieldSize = ByteConvert.readUnsignedShort(chunk.chunkBB);
-					//System.out.println("\t"+STRT.getString(fields[i].fieldType) + " " + STRT.getString(fields[i].fieldName));
+					System.out.println("\t"+STRT.getString(fields[i].fieldType) + " " + STRT.getString(fields[i].fieldName));
 				}
-				//System.out.println("}");
+				System.out.println("}");
 			}
 
 			@Override
