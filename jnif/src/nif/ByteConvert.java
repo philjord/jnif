@@ -371,6 +371,8 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 	public static String readByteString(ByteBuffer stream) throws IOException
 	{
 		short len = readUnsignedByte(stream);
+		if(len==0)
+			return"";
 		byte[] buffer = new byte[len];
 		stream.get(buffer);
 		return new String(buffer, 0, buffer.length-1);
@@ -379,6 +381,8 @@ public class ByteConvert extends LittleEndianPrimitiveBytes
 	public static String readShortString(ByteBuffer stream) throws IOException
 	{
 		int len = readUnsignedShort(stream);
+		if(len==0)
+			return"";
 		byte[] buffer = new byte[len];
 		stream.get(buffer);
 		return new String(buffer, 0, buffer.length-1);

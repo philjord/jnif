@@ -92,8 +92,10 @@ public class BSMaterialsCDB extends REFLArchive {
 	public static CompiledDB cdb ;
 	public static DBFileIndex dbfi;
 	
-	public static SparseArray<MaterialObject>	objectTable		= new SparseArray<MaterialObject>();
-	public static SparseArray<DBFileIndex.ComponentInfo2>		componentInfo;
+	//public static SparseArray<MaterialObject>	objectTable		= new SparseArray<MaterialObject>();
+	//public static SparseArray<DBFileIndex.ComponentInfo2>		componentInfo;
+	public static HashMap<Integer, MaterialObject>	objectTable		= new HashMap<Integer, MaterialObject>();
+	public static HashMap<Integer, DBFileIndex.ComponentInfo2>		componentInfo;
 	
 	public BSMaterialsCDB(ByteBuffer in) {
 		super(in);
@@ -204,8 +206,10 @@ public class BSMaterialsCDB extends REFLArchive {
 		System.out.println("Cdb converted to BSMaterialsCDB");
 	}
 	
-	
-	
+	//sorry excuse the madnees, I'm gonna sneak a CE2Material back across the BSMaterial interface
+	public static class CE2BSMaterial extends BSMaterial {
+		public CE2Material ce2material;
+	}
 
 	public BSMaterial getMaterialFileCDB(String fileName) throws IOException {
 		BSResourceID incomingFilename = new BSResourceID(fileName);
@@ -213,7 +217,9 @@ public class BSMaterialsCDB extends REFLArchive {
 		if (o == null) {
 			o = CE2MaterialDB.findMaterialObject(getMaterial(incomingFilename));
 		}
-		return null;
+		CE2BSMaterial ret = new CE2BSMaterial();
+		ret.ce2material = (CE2Material)o;
+		return ret;
 
 		//   
 		// position where a request for a hash return a BSMaterial sub class of some sort, 
@@ -341,7 +347,7 @@ public class BSMaterialsCDB extends REFLArchive {
 	public static class DBFileIndex {
 		public HashMap<Short, String>		ComponentTypes;
 		public ArrayList<ObjectInfo>		Objects;
-		public SparseArray<ComponentInfo2>	Components;
+		public HashMap<Integer, ComponentInfo2>	Components;
 		public ArrayList<EdgeInfo>			Edges;
 		public boolean						Optimized;
 
@@ -542,8 +548,8 @@ public class BSMaterialsCDB extends REFLArchive {
 			}
 			
 			
-			public static SparseArray<ComponentInfo2> convertObjectInfo(LIST list) {
-				SparseArray<ComponentInfo2> returnList = new SparseArray<ComponentInfo2>(list.list.size());
+			public static HashMap<Integer, ComponentInfo2> convertObjectInfo(LIST list) {
+				HashMap<Integer, ComponentInfo2> returnList = new HashMap<Integer, ComponentInfo2>(list.list.size());
 	
 				int idx = 0;
 				for (CDBObject o : list.list) {
@@ -988,36 +994,37 @@ public class BSMaterialsCDB extends REFLArchive {
 	public static class  CE2Material extends CE2MaterialObject   // object type 1
 	{
 		
-		  private static int 
+		public static int 
 		    // flag values can be combined (bitwise OR) with NIFFile.NIFTriShape.flags
 		    Flag_HasOpacity = 0x00000001,
-		    Flag_AlphaVertexColor = 0x00000002,
-		    Flag_IsEffect = 0x00000004,
-		    Flag_IsDecal = 0x00000008,
-		    Flag_TwoSided = 0x00000010,
-		    Flag_IsVegetation = 0x00000020,
-		    Flag_LayeredEmissivity = 0x00000040,
-		    //repeat of emissive Flag_Glow = 0x00000080,
-		    Flag_Emissive = 0x00000080,
-		    Flag_Translucency = 0x00000100,
-		    Flag_AlphaDetailBlendMask = 0x00000200,
-		    Flag_DitheredTransparency = 0x00000400,
-		    // Flag_TSOrdered = 0x00000800,
-		    Flag_AlphaBlending = 0x00001000,
-		    // Flag_TSVertexColors = 0x00002000,
-		    Flag_IsWater = 0x00004000,
-		    // Flag_TSHidden = 0x00008000,
-		    Flag_HasOpacityComponent = 0x00010000,
-		    Flag_OpacityLayer2Active = 0x00020000,
-		    Flag_OpacityLayer3Active = 0x00040000,
-		    Flag_IsTerrain = 0x00080000,
-		    Flag_IsHair = 0x00100000,
-		    Flag_UseDetailBlender = 0x00200000,
-		    Flag_LayeredEdgeFalloff = 0x00400000,
-		    Flag_GlobalLayerData = 0x00800000
-		    // Flag_TSMarker = 0x01000000
+		    Flag_AlphaVertexColor = 0x00000002
 		  ;
-		  private static int 
+		  public static int Flag_IsEffect = 0x00000004;
+		  public static int Flag_IsDecal = 0x00000008;
+		  public static int Flag_TwoSided = 0x00000010;
+		  public static int Flag_IsVegetation = 0x00000020;
+		  public static int Flag_LayeredEmissivity = 0x00000040;
+		  public static int //repeat of emissive Flag_Glow = 0x00000080,
+		  Flag_Emissive = 0x00000080;
+		  public static int Flag_Translucency = 0x00000100;
+		  public static int Flag_AlphaDetailBlendMask = 0x00000200;
+		  public static int Flag_DitheredTransparency = 0x00000400;
+		  public static int // Flag_TSOrdered = 0x00000800,
+		  Flag_AlphaBlending = 0x00001000;
+		  public static int // Flag_TSVertexColors = 0x00002000,
+		  Flag_IsWater = 0x00004000;
+		  public static int // Flag_TSHidden = 0x00008000,
+		  Flag_HasOpacityComponent = 0x00010000;
+		  public static int Flag_OpacityLayer2Active = 0x00020000;
+		  public static int Flag_OpacityLayer3Active = 0x00040000;
+		  public static int Flag_IsTerrain = 0x00080000;
+		  public static int Flag_IsHair = 0x00100000;
+		  public static int Flag_UseDetailBlender = 0x00200000;
+		  public static int Flag_LayeredEdgeFalloff = 0x00400000;
+		  public static int Flag_GlobalLayerData = 0x00800000
+		  // Flag_TSMarker = 0x01000000
+;
+		  public static int 
 		    EffectFlag_UseFalloff = 0x00000001,
 		    EffectFlag_UseRGBFalloff = 0x00000002,
 		    EffectFlag_VertexColorBlend = 0x00000040,
@@ -1029,73 +1036,109 @@ public class BSMaterialsCDB extends REFLArchive {
 		    EffectFlag_DirShadows = 0x00004000,
 		    EffectFlag_NonDirShadows = 0x00008000,
 		    EffectFlag_IsGlass = 0x00010000,
-		    EffectFlag_Frosting = 0x00020000,
-		    EffectFlag_ZTest = 0x00200000,
-		    EffectFlag_ZWrite = 0x00400000,
-		    EffectFlag_BacklightEnable = 0x01000000,
-		    EffectFlag_RenderBeforeClouds = 0x10000000,
-		    EffectFlag_MVFixup = 0x20000000,
-		    EffectFlag_MVFixupEdgesOnly = 0x40000000,
-		    EffectFlag_RenderBeforeOIT = 0x80000000;//U; unsigned means nothing for an int? unless if was FF in first byte?
-		  private static int 
+		    EffectFlag_Frosting = 0x00020000;//U; unsigned means nothing for an int? unless if was FF in first byte?
+		  public static int EffectFlag_ZTest = 0x00200000;
+		  public static int EffectFlag_ZWrite = 0x00400000;
+		  public static int EffectFlag_BacklightEnable = 0x01000000;
+		  public static int EffectFlag_RenderBeforeClouds = 0x10000000;
+		  public static int EffectFlag_MVFixup = 0x20000000;
+		  public static int EffectFlag_MVFixupEdgesOnly = 0x40000000;
+		  public static int EffectFlag_RenderBeforeOIT = 0x80000000;
+		  public static int 
 		    maxLayers = 6,
 		    maxBlenders = 5,
 		    maxLODMaterials = 3;
 		  
 		  
 		  
-		  static  String emptyStringView;
-		  static  CE2Material  defaultLayeredMaterial;
-		  static  Blender defaultBlender;
-		  static  Layer   defaultLayer;
-		  static  Material    defaultMaterial;
-		  static  TextureSet  defaultTextureSet;
-		  static  UVStream    defaultUVStream;
-		  int flags;
-		  int layerMask;
-		  Layer[]   layers = new Layer[maxLayers];
-		  float   alphaThreshold;
+		  //public static  String emptyStringView = "";
+		  private static  CE2Material  defaultLayeredMaterial;
+		  private static  Blender defaultBlender;
+		  private static  Layer   defaultLayer;
+		  private static  Material    defaultMaterial;
+		  private static  TextureSet  defaultTextureSet;
+		  private static  UVStream    defaultUVStream;
+
+			public static CE2Material defaultLayeredMaterial() {
+				if (defaultLayeredMaterial == null)
+					defaultLayeredMaterial = new CE2Material();
+				return defaultLayeredMaterial;
+			}
+
+			public static Blender defaultBlender() {
+				if (defaultBlender == null)
+					defaultBlender = new Blender();
+				return defaultBlender;
+			}
+
+			public static Layer defaultLayer() {
+				if (defaultLayer == null)
+					defaultLayer = new Layer();
+				return defaultLayer;
+			}
+
+			public static Material defaultMaterial() {
+				if (defaultMaterial == null)
+					defaultMaterial = new Material();
+				return defaultMaterial;
+			}
+
+			public static TextureSet defaultTextureSet() {
+				if (defaultTextureSet == null)
+					defaultTextureSet = new TextureSet();
+				return defaultTextureSet;
+			}
+
+			public static UVStream defaultUVStream() {
+				if (defaultUVStream == null)
+					defaultUVStream = new UVStream();
+				return defaultUVStream;
+			}
+		  public int flags;
+		  public int layerMask;
+		  public Layer[]   layers = new Layer[maxLayers];
+		  public float   alphaThreshold;
 		  // index to shaderModelNames, default: 31 ("BaseMaterial")
-		  byte shaderModel;
-		  byte alphaSourceLayer;
+		  public byte shaderModel;
+		  public byte alphaSourceLayer;
 		  // 0 = "Linear" (default), 1 = "Additive", 2 = "PositionContrast", 3 = "None"
-		  byte alphaBlendMode;
-		  byte alphaVertexColorChannel;
-		  float   alphaHeightBlendThreshold;
-		  float   alphaHeightBlendFactor;
-		  float   alphaPosition;
-		  float   alphaContrast;
-		  UVStream  alphaUVStream;               // can be NULL
+		  public byte alphaBlendMode;
+		  public byte alphaVertexColorChannel;
+		  public float   alphaHeightBlendThreshold;
+		  public float   alphaHeightBlendFactor;
+		  public float   alphaPosition;
+		  public float   alphaContrast;
+		  public UVStream  alphaUVStream;               // can be NULL
 		  // 0 = "Deferred" (default), 1 = "Effect", 2 = "PlanetaryRing",
 		  // 3 = "PrecomputedScattering", 4 = "Water"
-		  byte shaderRoute;
-		  byte opacityLayer1;
-		  byte opacityLayer2;
-		  byte opacityBlender1;
+		  public byte shaderRoute;
+		  public byte opacityLayer1;
+		  public byte opacityLayer2;
+		  public byte opacityBlender1;
 		  // 0 = "Lerp", 1 = "Additive", 2 = "Subtractive", 3 = "Multiplicative"
-		  byte opacityBlender1Mode;
-		  byte opacityLayer3;
-		  byte opacityBlender2;
-		  byte opacityBlender2Mode;
-		  float   specularOpacityOverride;
+		  public byte opacityBlender1Mode;
+		  public byte opacityLayer3;
+		  public byte opacityBlender2;
+		  public byte opacityBlender2Mode;
+		  public float   specularOpacityOverride;
 		  // 0 = "None" (default), 1 = "Carpet", 2 = "Mat",
 		  // 3 = "MaterialGroundTileVinyl", 4 = "MaterialMat",
 		  // 5 = "MaterialPHYIceDebrisLarge", 6 = "Metal", 7 = "Wood"
-		  byte physicsMaterialType;
-		  Blender[] blenders = new Blender[maxBlenders];
-		  CE2Material[] lodMaterials = new CE2Material[maxLODMaterials];
+		  public byte physicsMaterialType;
+		  public Blender[] blenders = new Blender[maxBlenders];
+		  public CE2Material[] lodMaterials = new CE2Material[maxLODMaterials];
 		  // the following pointers are valid if the corresponding bit in flags is set
-		  EffectSettings  effectSettings;
-		  EmissiveSettings  emissiveSettings;
-		  LayeredEmissiveSettings layeredEmissiveSettings;
-		  TranslucencySettings  translucencySettings;
-		  DecalSettings   decalSettings;
-		  VegetationSettings  vegetationSettings;
-		  DetailBlenderSettings detailBlenderSettings;
-		  LayeredEdgeFalloff  layeredEdgeFalloff;
-		  WaterSettings   waterSettings;
-		  GlobalLayerData globalLayerData;
-		  HairSettings  hairSettings;
+		  public EffectSettings  effectSettings;
+		  public EmissiveSettings  emissiveSettings;
+		  public LayeredEmissiveSettings layeredEmissiveSettings;
+		  public TranslucencySettings  translucencySettings;
+		  public DecalSettings   decalSettings;
+		  public VegetationSettings  vegetationSettings;
+		  public DetailBlenderSettings detailBlenderSettings;
+		  public LayeredEdgeFalloff  layeredEdgeFalloff;
+		  public WaterSettings   waterSettings;
+		  public GlobalLayerData globalLayerData;
+		  public HairSettings  hairSettings;
 	   
 	 	  
 		
@@ -1152,11 +1195,11 @@ public class BSMaterialsCDB extends REFLArchive {
 		public static class UVStream extends CE2MaterialObject // object type 6
 		{
 			// U scale, V scale, U offset, V offset
-			FloatVector4	scaleAndOffset;
+			public FloatVector4	scaleAndOffset;
 			// 0 = "Wrap", 1 = "Clamp", 2 = "Mirror", 3 = "Border"
-			byte			textureAddressMode;
+			public byte			textureAddressMode;
 			// 1 = "One" (default), 2 = "Two"
-			byte			channel;
+			public byte			channel;
 
 			public UVStream() {
 				super(6);
@@ -1167,24 +1210,24 @@ public class BSMaterialsCDB extends REFLArchive {
 			}
 		}
 	  
-		static int[] defaultTextureRepl = new int[]//CE2Material.TextureSet.maxTexturePaths]
-		{
-			// color, normal, opacity, rough
-			0xFF000000, 0xFFFF8080, 0xFFFFFFFF, 0xFF000000,
-			// metal, ao, height, emissive
-			0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFF000000,
-			// transmissive, curvature, mask, unknown
-			0xFF000000, 0xFF808080, 0xFF000000, 0xFF808080,
-			// Z offset, unknown, overlay color, overlay roughness
-			0xFF000000, 0xFF000000, 0xFF808080, 0xFF808080,
-			// overlay metalness, unknown, unknown, unknown
-			0xFF808080, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
-			// ID
-			0xFF808080};
+		
 		
 		public static class TextureSet extends CE2MaterialObject // object type 5
 		{
-
+			static int[] defaultTextureRepl = new int[]//CE2Material.TextureSet.maxTexturePaths]
+					{
+						// color, normal, opacity, rough
+						0xFF000000, 0xFFFF8080, 0xFFFFFFFF, 0xFF000000,
+						// metal, ao, height, emissive
+						0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFF000000,
+						// transmissive, curvature, mask, unknown
+						0xFF000000, 0xFF808080, 0xFF000000, 0xFF808080,
+						// Z offset, unknown, overlay color, overlay roughness
+						0xFF000000, 0xFF000000, 0xFF808080, 0xFF808080,
+						// overlay metalness, unknown, unknown, unknown
+						0xFF808080, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
+						// ID
+						0xFF808080};
 			private static int	
 					textureNumColor		= 0,
 					textureNumNormal = 1, 
@@ -1200,8 +1243,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 			private static int	maxTexturePaths		= 21;
 
-			int					texturePathMask;
-			float				floatParam;																				// normal map intensity
+			public int					texturePathMask;
+			public float				floatParam;																				// normal map intensity
 			// texturePaths[0] =  albedo (_color.dds)
 			// texturePaths[1] =  normal map (_normal.dds)
 			// texturePaths[2] =  alpha (_opacity.dds)
@@ -1220,13 +1263,13 @@ public class BSMaterialsCDB extends REFLArchive {
 			// texturePaths[20] = _id.dds
 			// NOTE: string view pointers are always valid and the strings are
 			// null-terminated
-			String[]			texturePaths		= new String[maxTexturePaths];
+			public String[]			texturePaths		= new String[maxTexturePaths];
 			// texture replacements are colors in R8G8B8A8 format
-			int					textureReplacementMask;
-			int[]				textureReplacements	= new int[maxTexturePaths];
+			public int					textureReplacementMask;
+			public int[]				textureReplacements	= new int[maxTexturePaths];
 			// 0 = "Tiling" (default), 1 = "UniqueMap", 2 = "DetailMapTiling", 3 = "HighResUniqueMap"
-			byte				resolutionHint;
-			boolean				disableMipBiasHint;
+			public byte				resolutionHint;
+			public boolean				disableMipBiasHint;
 
 			public TextureSet() {
 				super(5);
@@ -1245,16 +1288,16 @@ public class BSMaterialsCDB extends REFLArchive {
 
 		public static class Material extends CE2MaterialObject // object type 4
 		{
-			FloatVector4 color;
+			public FloatVector4 color;
 			// bit 0 = MaterialOverrideColorTypeComponent, 0: "Multiply", 1: "Lerp"
 			// bit 1 = ParamBool, 1: use vertex color as tint
-			byte		colorModeFlags;
+			public byte		colorModeFlags;
 			// bit 0 = is flipbook, bit 1 = loops
-			byte		flipbookFlags;
-			byte		flipbookColumns;
-			byte		flipbookRows;
-			float		flipbookFPS;
-			TextureSet	textureSet;
+			public byte		flipbookFlags;
+			public byte		flipbookColumns;
+			public byte		flipbookRows;
+			public float		flipbookFPS;
+			public TextureSet	textureSet;
 
 			public Material() {
 				super(4);
@@ -1271,8 +1314,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 		public static class Layer extends CE2MaterialObject // object type 3
 		{
-			Material	material;
-			UVStream	uvStream;
+			public Material	material;
+			public UVStream	uvStream;
 
 			public Layer() {
 				super(3);
@@ -1283,23 +1326,24 @@ public class BSMaterialsCDB extends REFLArchive {
 		
 		public static class Blender extends CE2MaterialObject // object type 2
 		{
-			private static int	maxFloatParams	= 5, maxBoolParams = 8;
-			UVStream			uvStream;
-			String				texturePath;
-			int					textureReplacement;
-			boolean				textureReplacementEnabled;
+			public static int maxFloatParams	= 5;
+			public static int maxBoolParams = 8;
+			public UVStream			uvStream;
+			public String				texturePath;
+			public int					textureReplacement;
+			public boolean				textureReplacementEnabled;
 			// 0 = "Linear" (default), 1 = "Additive", 2 = "PositionContrast",
 			// 3 = "None", 4 = "CharacterCombine", 5 = "Skin"
-			byte				blendMode;
+			public byte				blendMode;
 			// 0 = "Red" (default), 1 = "Green", 2 = "Blue", 3 = "Alpha"
-			byte				colorChannel;
+			public byte				colorChannel;
 			// values set via BSMaterial.MaterialParamFloat and BSMaterial.ParamBool
 			// 0: height blend threshold
 			// 1: height blend factor
 			// 2: position
 			// 3: 1.0 - contrast
 			// 4: mask intensity
-			float[]				floatParams		= new float[maxFloatParams];
+			public float[]				floatParams		= new float[maxFloatParams];
 			// 0: blend albedo texture
 			// 1: blend metalness texture
 			// 2: blend roughness texture
@@ -1308,7 +1352,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			// 5: vertex alpha
 			// 6: blend ambient occlusion texture
 			// 7: use dual blend mask
-			boolean[]			boolParams		= new boolean[maxBoolParams];
+			public boolean[]			boolParams		= new boolean[maxBoolParams];
 
 			public Blender() {
 				super(2);
@@ -1338,25 +1382,25 @@ public class BSMaterialsCDB extends REFLArchive {
 	  
 	  
 		public static class EffectSettings {
-			int				flags;
+			public int				flags;
 			// 0 = "AlphaBlend", 1 = "Additive", 2 = "SourceSoftAdditive",
 			// 3 = "Multiply", 4 = "DestinationSoftAdditive",
 			// 5 = "DestinationInvertedSoftAdditive", 6 = "TakeSmaller", 7 = "None"
-			byte			blendMode;
-			float			falloffStartAngle;
-			float			falloffStopAngle;
-			float			falloffStartOpacity;
-			float			falloffStopOpacity;
-			float			alphaThreshold;
-			float			softFalloffDepth;
-			float			frostingBgndBlend;
-			float			frostingBlurBias;
-			float			materialAlpha;
-			float			backlightScale;
-			float			backlightSharpness;
-			float			backlightTransparency;
-			FloatVector4	backlightTintColor;
-			int				depthBias;
+			public byte			blendMode;
+			public float			falloffStartAngle;
+			public float			falloffStopAngle;
+			public float			falloffStartOpacity;
+			public float			falloffStopOpacity;
+			public float			alphaThreshold;
+			public float			softFalloffDepth;
+			public float			frostingBgndBlend;
+			public float			frostingBlurBias;
+			public float			materialAlpha;
+			public float			backlightScale;
+			public float			backlightSharpness;
+			public float			backlightTransparency;
+			public FloatVector4	backlightTintColor;
+			public int				depthBias;
 
 			public EffectSettings() {
 				blendMode = (0); // "AlphaBlend"
@@ -1382,17 +1426,17 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class EmissiveSettings {
-			boolean			isEnabled;
-			byte			sourceLayer;
-			byte			maskSourceBlender;		// 0: "None", 1: "Blender1"
-			boolean			adaptiveEmittance;
-			boolean			enableAdaptiveLimits;
-			float			clipThreshold;
-			float			luminousEmittance;
-			FloatVector4	emissiveTint;			// R, G, B, overall scale
-			float			exposureOffset;
-			float			maxOffset;
-			float			minOffset;
+			public boolean			isEnabled;
+			public byte			sourceLayer;
+			public byte			maskSourceBlender;		// 0: "None", 1: "Blender1"
+			public boolean			adaptiveEmittance;
+			public boolean			enableAdaptiveLimits;
+			public float			clipThreshold;
+			public float			luminousEmittance;
+			public FloatVector4	emissiveTint;			// R, G, B, overall scale
+			public float			exposureOffset;
+			public float			maxOffset;
+			public float			minOffset;
 
 			public EmissiveSettings() {
 				isEnabled = (false);
@@ -1410,31 +1454,31 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class LayeredEmissiveSettings {
-			boolean	isEnabled;
-			byte	layer1Index;			// "MATERIAL_LAYER_n"
-			byte	layer1MaskIndex;		// 0: "None", 1: "Blender1"
-			boolean	layer2Active;
-			byte	layer2Index;
-			byte	layer2MaskIndex;
-			byte	blender1Index;			// "BLEND_LAYER_n"
+			public boolean	isEnabled;
+			public byte	layer1Index;			// "MATERIAL_LAYER_n"
+			public byte	layer1MaskIndex;		// 0: "None", 1: "Blender1"
+			public boolean	layer2Active;
+			public byte	layer2Index;
+			public byte	layer2MaskIndex;
+			public byte	blender1Index;			// "BLEND_LAYER_n"
 			// 0 = "Lerp", 1 = "Additive", 2 = "Subtractive", 3 = "Multiplicative"
-			byte	blender1Mode;
-			boolean	layer3Active;
-			byte	layer3Index;
-			byte	layer3MaskIndex;
-			byte	blender2Index;
-			byte	blender2Mode;
-			boolean	adaptiveEmittance;
-			boolean	enableAdaptiveLimits;
-			boolean	ignoresFog;
-			int		layer1Tint;				// R, G, B, overall scale
-			int		layer2Tint;
-			int		layer3Tint;
-			float	clipThreshold;
-			float	luminousEmittance;
-			float	exposureOffset;
-			float	maxOffset;
-			float	minOffset;
+			public byte	blender1Mode;
+			public boolean	layer3Active;
+			public byte	layer3Index;
+			public byte	layer3MaskIndex;
+			public byte	blender2Index;
+			public byte	blender2Mode;
+			public boolean	adaptiveEmittance;
+			public boolean	enableAdaptiveLimits;
+			public boolean	ignoresFog;
+			public int		layer1Tint;				// R, G, B, overall scale
+			public int		layer2Tint;
+			public int		layer3Tint;
+			public float	clipThreshold;
+			public float	luminousEmittance;
+			public float	exposureOffset;
+			public float	maxOffset;
+			public float	minOffset;
 
 			public LayeredEmissiveSettings() {
 				isEnabled = (false);
@@ -1466,17 +1510,17 @@ public class BSMaterialsCDB extends REFLArchive {
 	  
 	  
 		public static class TranslucencySettings {
-			boolean	isEnabled;
-			boolean	isThin;
-			boolean	flipBackFaceNormalsInVS;
-			boolean	useSSS;
-			float	sssWidth;
-			float	sssStrength;
-			float	transmissiveScale;
-			float	transmittanceWidth;
-			float	specLobe0RoughnessScale;
-			float	specLobe1RoughnessScale;
-			byte	sourceLayer;			// default: 0 ("MATERIAL_LAYER_0")
+			public boolean	isEnabled;
+			public boolean	isThin;
+			public boolean	flipBackFaceNormalsInVS;
+			public boolean	useSSS;
+			public float	sssWidth;
+			public float	sssStrength;
+			public float	transmissiveScale;
+			public float	transmittanceWidth;
+			public float	specLobe0RoughnessScale;
+			public float	specLobe1RoughnessScale;
+			public byte	sourceLayer;			// default: 0 ("MATERIAL_LAYER_0")
 
 			public TranslucencySettings() {
 				isEnabled = (false);
@@ -1494,12 +1538,12 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class DecalSettings {
-			boolean	isDecal;
-			boolean	isPlanet;
+			public boolean	isDecal;
+			public boolean	isPlanet;
 			// 0 = "None" (default), 1 = "Additive"
-			byte	blendMode;
-			boolean	animatedDecalIgnoresTAA;
-			float	decalAlpha;
+			public byte	blendMode;
+			public boolean	animatedDecalIgnoresTAA;
+			public float	decalAlpha;
 			// bits 0-2: output albedo R, G, B
 			// bits 4-5: output normal X, Y
 			// bit 8:    output ambient occlusion
@@ -1510,17 +1554,17 @@ public class BSMaterialsCDB extends REFLArchive {
 			// bit 22:   output emissive B
 			// bit 23:   output emissive A
 			// defaults to 0x0737 (all channels enabled)
-			int		writeMask;
-			boolean	isProjected;
+			public int		writeMask;
+			public boolean	isProjected;
 			// projected decal settings
-			boolean	useParallaxMapping;
-			boolean	parallaxOcclusionShadows;
-			byte	maxParallaxSteps;
-			String	surfaceHeightMap;
-			float	parallaxOcclusionScale;
+			public boolean	useParallaxMapping;
+			public boolean	parallaxOcclusionShadows;
+			public byte	maxParallaxSteps;
+			public String	surfaceHeightMap;
+			public float	parallaxOcclusionScale;
 			// 0 = "Top", 1 = "Middle", 2 = "Bottom" (default)
-			byte	renderLayer;
-			boolean	useGBufferNormals;
+			public byte	renderLayer;
+			public boolean	useGBufferNormals;
 
 			public DecalSettings() {
 				isDecal = (false);
@@ -1541,13 +1585,13 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class VegetationSettings {
-			boolean	isEnabled;
-			float	leafFrequency;
-			float	leafAmplitude;
-			float	branchFlexibility;
-			float	trunkFlexibility;
-			float	terrainBlendStrength;		// the last two variables are deprecated
-			float	terrainBlendGradientFactor;
+			public boolean	isEnabled;
+			public float	leafFrequency;
+			public float	leafAmplitude;
+			public float	branchFlexibility;
+			public float	trunkFlexibility;
+			public float	terrainBlendStrength;		// the last two variables are deprecated
+			public float	terrainBlendGradientFactor;
 
 			public VegetationSettings() {
 				isEnabled = (false);
@@ -1561,11 +1605,11 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class DetailBlenderSettings {
-			boolean		isEnabled;
-			boolean		textureReplacementEnabled;
-			int			textureReplacement;
-			String		texturePath;
-			UVStream	uvStream;
+			public boolean		isEnabled;
+			public boolean		textureReplacementEnabled;
+			public int			textureReplacement;
+			public String		texturePath;
+			public UVStream	uvStream;
 
 			public DetailBlenderSettings() {
 				isEnabled = (false);
@@ -1577,12 +1621,12 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class LayeredEdgeFalloff {
-			float[]	falloffStartAngles		= new float[3];
-			float[]	falloffStopAngles		= new float[3];
-			float[]	falloffStartOpacities	= new float[3];
-			float[]	falloffStopOpacities	= new float[3];
-			byte	activeLayersMask;
-			boolean	useRGBFalloff;
+			public float[]	falloffStartAngles		= new float[3];
+			public float[]	falloffStopAngles		= new float[3];
+			public float[]	falloffStartOpacities	= new float[3];
+			public float[]	falloffStopOpacities	= new float[3];
+			public byte	activeLayersMask;
+			public boolean	useRGBFalloff;
 
 			public LayeredEdgeFalloff() {
 				activeLayersMask = (0);
@@ -1603,18 +1647,18 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class WaterSettings {
-			float			waterEdgeFalloff;
-			float			waterWetnessMaxDepth;
-			float			waterEdgeNormalFalloff;
-			float			waterDepthBlur;
+			public float			waterEdgeFalloff;
+			public float			waterWetnessMaxDepth;
+			public float			waterEdgeNormalFalloff;
+			public float			waterDepthBlur;
 			// color R, color G, color B, refraction magnitude
-			FloatVector4	reflectance;
+			public FloatVector4	reflectance;
 			// color R, color G, color B, max. concentration
-			FloatVector4	phytoplanktonReflectance;
-			FloatVector4	sedimentReflectance;
-			FloatVector4	yellowMatterReflectance;
-			boolean			lowLOD;
-			boolean			placedWater;
+			public FloatVector4	phytoplanktonReflectance;
+			public FloatVector4	sedimentReflectance;
+			public FloatVector4	yellowMatterReflectance;
+			public boolean			lowLOD;
+			public boolean			placedWater;
 
 			public WaterSettings() {
 				waterEdgeFalloff = (0.1f);
@@ -1631,31 +1675,31 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	  
 		public static class GlobalLayerData {
-			float			texcoordScaleXY;
-			float			texcoordScaleYZ;
-			float			texcoordScaleXZ;
-			boolean			usesDirectionality;
-			boolean			blendNormalsAdditively;
-			boolean			useNoiseMaskTexture;
-			boolean			noiseMaskTxtReplacementEnabled;
-			FloatVector4	albedoTintColor;
+			public float			texcoordScaleXY;
+			public float			texcoordScaleYZ;
+			public float			texcoordScaleXZ;
+			public boolean			usesDirectionality;
+			public boolean			blendNormalsAdditively;
+			public boolean			useNoiseMaskTexture;
+			public boolean			noiseMaskTxtReplacementEnabled;
+			public FloatVector4	albedoTintColor;
 			// sourceDirection[3] = directionalityIntensity
-			FloatVector4	sourceDirection;
-			float			directionalityScale;
-			float			directionalitySaturation;
-			float			blendPosition;					// used if blendNormalsAdditively is false
-			float			blendContrast;
+			public FloatVector4	sourceDirection;
+			public float			directionalityScale;
+			public float			directionalitySaturation;
+			public float			blendPosition;					// used if blendNormalsAdditively is false
+			public float			blendContrast;
 			// GlobalLayerNoiseData
-			float			materialMaskIntensityScale;
-			int				noiseMaskTextureReplacement;
-			String			noiseMaskTexture;
-			FloatVector4	texcoordScaleAndBias;
-			float			worldspaceScaleFactor;
-			float			hurstExponent;
-			float			baseFrequency;
-			float			frequencyMultiplier;
-			float			maskIntensityMin;
-			float			maskIntensityMax;
+			public float			materialMaskIntensityScale;
+			public int				noiseMaskTextureReplacement;
+			public String			noiseMaskTexture;
+			public FloatVector4	texcoordScaleAndBias;
+			public float			worldspaceScaleFactor;
+			public float			hurstExponent;
+			public float			baseFrequency;
+			public float			frequencyMultiplier;
+			public float			maskIntensityMin;
+			public float			maskIntensityMax;
 
 			public GlobalLayerData() {
 				texcoordScaleXY = (0.25f);
@@ -1685,32 +1729,32 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 
 		public static class HairSettings {
-			boolean			isEnabled;
-			boolean			isSpikyHair;
-			byte			depthOffsetMaskVertexColorChannel;
-			byte			aoVertexColorChannel;
-			float			specScale;
-			float			specularTransmissionScale;
-			float			directTransmissionScale;
-			float			diffuseTransmissionScale;
-			float			roughness;
-			float			contactShadowSoftening;
-			float			backscatterStrength;
-			float			backscatterWrap;
-			float			variationStrength;
-			float			indirectSpecularScale;
-			float			indirectSpecularTransmissionScale;
-			float			indirectSpecRoughness;
-			float			edgeMaskContrast;
-			float			edgeMaskMin;
-			float			edgeMaskDistanceMin;
-			float			edgeMaskDistanceMax;
-			float			ditherScale;
-			float			ditherDistanceMin;
-			float			ditherDistanceMax;
+			public boolean			isEnabled;
+			public boolean			isSpikyHair;
+			public byte			depthOffsetMaskVertexColorChannel;
+			public byte			aoVertexColorChannel;
+			public float			specScale;
+			public float			specularTransmissionScale;
+			public float			directTransmissionScale;
+			public float			diffuseTransmissionScale;
+			public float			roughness;
+			public float			contactShadowSoftening;
+			public float			backscatterStrength;
+			public float			backscatterWrap;
+			public float			variationStrength;
+			public float			indirectSpecularScale;
+			public float			indirectSpecularTransmissionScale;
+			public float			indirectSpecRoughness;
+			public float			edgeMaskContrast;
+			public float			edgeMaskMin;
+			public float			edgeMaskDistanceMin;
+			public float			edgeMaskDistanceMax;
+			public float			ditherScale;
+			public float			ditherDistanceMin;
+			public float			ditherDistanceMax;
 			// tangent[3] = TangentBend
-			FloatVector4	tangent;
-			float			maxDepthOffset;
+			public FloatVector4	tangent;
+			public float			maxDepthOffset;
 
 			public HairSettings() {
 				isEnabled = (false);
@@ -1740,6 +1784,8 @@ public class BSMaterialsCDB extends REFLArchive {
 				maxDepthOffset = (0.075f);
 			}
 		}
+
+		
 	}
 
 	//no members so just a scoping class name
@@ -2684,9 +2730,11 @@ public class BSMaterialsCDB extends REFLArchive {
 				}
 				//readSourceTextureWithReplacement(sp.texturePath, sp.textureReplacement, sp.textureReplacementEnabled, p, 1);
 				TexWithRep twr = readSourceTextureWithReplacement(p, 1);
-				sp.texturePath=twr.texturePath;
-				sp.textureReplacement= twr.textureReplacement;
-				sp.textureReplacementEnabled=twr.textureReplacementEnabled;
+				if (twr != null) {
+					sp.texturePath = twr.texturePath;
+					sp.textureReplacement = twr.textureReplacement;
+					sp.textureReplacementEnabled = twr.textureReplacementEnabled;
+				}
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 3)
 					readUVStreamID(p.children()[2]);
 			}
@@ -3216,9 +3264,11 @@ public class BSMaterialsCDB extends REFLArchive {
 				//readSourceTextureWithReplacement(sp.noiseMaskTexture, sp.noiseMaskTextureReplacement,
 				//		sp.noiseMaskTxtReplacementEnabled, p, 2);
 				TexWithRep twr = readSourceTextureWithReplacement(p, 2);
-				sp.noiseMaskTexture=twr.texturePath;
-				sp.noiseMaskTextureReplacement= twr.textureReplacement;
-				sp.noiseMaskTxtReplacementEnabled=twr.textureReplacementEnabled;
+				if (twr != null) {
+					sp.noiseMaskTexture = twr.texturePath;
+					sp.noiseMaskTextureReplacement = twr.textureReplacement;
+					sp.noiseMaskTxtReplacementEnabled = twr.textureReplacementEnabled;
+				}
 				readXMFLOAT4(sp.texcoordScaleAndBias, p, 3);
 				sp.worldspaceScaleFactor = readFloat(sp.worldspaceScaleFactor , p, 4);
 				sp.hurstExponent = readFloat(sp.hurstExponent, p, 5);
@@ -3287,7 +3337,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			//   Float  MaxOffsetEmittance
 			//   Float  MinOffsetEmittance
 			void readEmittanceSettings(CDBObject p) {
-				if (!(p == null && p.type == String_BSMaterial_EmittanceSettings))
+				if (!(p != null && p.type == String_BSMaterial_EmittanceSettings))
 					return;
 				if (o.type != 1)
 					return;
@@ -4061,6 +4111,12 @@ public class BSMaterialsCDB extends REFLArchive {
 			this.z = z;
 			this.w = w;
 		}
+		public FloatVector4(FloatVector4 v) {
+			this.x = v.x;
+			this.y = v.y;
+			this.z = v.z;
+			this.w = v.w;
+		}
 
 		public FloatVector4 minValues(FloatVector4 c) {
 			this.x = c.x > this.x ? c.x : this.x;
@@ -4097,6 +4153,37 @@ public class BSMaterialsCDB extends REFLArchive {
 			this.y *= v;
 			this.z *= v;
 			this.w *= v;
+		}
+		
+		public void div(float v) {
+			this.x /= v;
+			this.y /= v;
+			this.z /= v;
+			this.w /= v;
+		}
+		public void add(float v) {
+			this.x += v;
+			this.y += v;
+			this.z += v;
+			this.w += v;
+		}
+		public void sub(float v) {
+			this.x -= v;
+			this.y -= v;
+			this.z -= v;
+			this.w -= v;
+		}
+		public void set(FloatVector4 v) {
+			this.x = v.x;
+			this.y = v.y;
+			this.z = v.z;
+			this.w = v.w;
+		}
+		public void add(FloatVector4 v) {
+			this.x += v.x;
+			this.y += v.y;
+			this.z += v.z;
+			this.w += v.w;
 		}
 	}
 	

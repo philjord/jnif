@@ -182,11 +182,17 @@ public class BSEffectShaderProperty extends BSShaderProperty
 		SoftFalloffDepth = ByteConvert.readFloat(stream);
 		GreyscaleTexture = ByteConvert.readSizedString(stream);		  
 	  
+		
+		
 		if (nifVer.BS_GTE_130()){
 			EnvMapTexture = ByteConvert.readSizedString(stream);//e.g. Shared/Cubemaps/mipblur_DefaultOutside1.dds
 			NormalTexture = ByteConvert.readSizedString(stream);//e.g. actors/bloatfly/bloatfly_n.dds
-			EnvMaskTexture = ByteConvert.readSizedString(stream);
-			EnvironmentMapScale = ByteConvert.readFloat(stream);
+		
+			//not in Meshes\Markers\EditorMarkers\containermarker.nif  tested empirically
+			if(!nifVer.BS_GTE_STF())
+				EnvMaskTexture = ByteConvert.readSizedString(stream);
+			EnvironmentMapScale = ByteConvert.readFloat(stream);	
+			 
 		}
 		
 		if(nifVer.BS_GTE_F76()) {			
@@ -196,6 +202,7 @@ public class BSEffectShaderProperty extends BSShaderProperty
 			EmitGradientTexture = ByteConvert.readSizedString(stream);//<field name="Emit Gradient Texture" type="SizedString" vercond="#BS_GTE_F76#" />
 			Luminance = new BSSPLuminanceParams(stream);//<field name="Luminance" type="BSSPLuminanceParams" vercond="#BS_GTE_F76#" />
 		}
+		
 		
 		if(nifVer.BS_GTE_STF()) {
 			byte[] UnknownBytes = ByteConvert.readBytes(7, stream);//<field name="Unknown Bytes" type="byte" length="7" vercond="#BS_GTE_STF#" />

@@ -24,7 +24,9 @@ public enum TexClampMode
 
 	WRAP_S_WRAP_T (3),// Wrap in both directions.</option> 
 
-	MIRRORED_S_MIRRORED_T (0xFF00);
+	MIRRORED_S_MIRRORED_T (0xFF00),
+	
+	BORDER_S_BORDER_T (4);
 
 	public int mode;
 
