@@ -19,6 +19,7 @@ public class BSMeshData {
 	
 	public static final boolean LOAD_OPTIMIZED = true;
 	public static final boolean TANGENTS =true;
+	private static final float SCALE_SCALE = 1f/512f; //either 0.01 or this number
 	
 	
 	/**
@@ -89,7 +90,7 @@ public class BSMeshData {
 	public FloatBuffer				uVSetOptBuf;
 	public FloatBuffer				uVSet2OptBuf;
 
-	//tODO: not done yet
+	//TODO: not done yet
 	public float[]					BoneWeights;
 	public int[]					BoneIndices;
 
@@ -112,7 +113,7 @@ public class BSMeshData {
 				Triangles[i] = new NifTriangle(stream);
 			}
 			//<field name="Scale" type="float">Vertex coordinate scale</field>
-			Scale = ByteConvert.readFloat(stream);
+			Scale = ByteConvert.readFloat(stream) * SCALE_SCALE;
 			//<field name="Weights Per Vertex" type="uint" />
 			WeightsPerVertex = ByteConvert.readInt(stream);
 			//<field name="Num Verts" type="uint" />
@@ -172,7 +173,8 @@ public class BSMeshData {
 				trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
 			}
 
-			Scale = ByteConvert.readFloat(stream);
+			// seems mighty big, how about a /100 or somethings
+			Scale = ByteConvert.readFloat(stream) * SCALE_SCALE;
 			WeightsPerVertex = ByteConvert.readInt(stream);
 
 			NumVerts = ByteConvert.readInt(stream);
@@ -180,12 +182,9 @@ public class BSMeshData {
 			verticesOptBuf = BSTriShape.createFB(NumVerts * 3);
 
 			for (int i = 0; i < NumVerts; i++) {
-				verticesOptBuf.put(i * 3 + 0,
-						MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * BSTriShape.ES_TO_METERS_SCALE);
-				verticesOptBuf.put(i * 3 + 2,
-						-MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * BSTriShape.ES_TO_METERS_SCALE);
-				verticesOptBuf.put(i * 3 + 1,
-						MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * BSTriShape.ES_TO_METERS_SCALE);
+				verticesOptBuf.put(i * 3 + 0, ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
+				verticesOptBuf.put(i * 3 + 2, -ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
+				verticesOptBuf.put(i * 3 + 1, ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
 			}
 
 			NumUVs = ByteConvert.readInt(stream);

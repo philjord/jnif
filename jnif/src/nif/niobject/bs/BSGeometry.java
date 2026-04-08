@@ -18,7 +18,8 @@ public class BSGeometry extends NiAVObject {
 	 * and NiParticleSystem are still true
 	 * 
 	 * <niobject name="BSGeometry" inherit="NiAVObject" module="BSMain" versions="#STF#">
-	 * <field name="Bounding Sphere" type="NiBound"publicv me="Bounding Box" type="BSBoundingBox" />
+	 * <field name="Bounding Sphere" type="NiBound" />
+	 * <field name="Bounding Box" type="BSBoundingBox" />
 	 * <field name="Skin" type="Ref" template="NiObject" />
 	 * <field name="Shader Property" type="Ref" template="BSShaderProperty" />
 	 * <field name="Alpha Property" type="Ref" template="NiAlphaProperty" />
