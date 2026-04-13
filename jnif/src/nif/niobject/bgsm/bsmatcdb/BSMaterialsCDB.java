@@ -915,6 +915,10 @@ public class BSMaterialsCDB extends REFLArchive {
 			name = null;//-1;
 			parent = (null);
 		}
+		
+		public String toString() {
+			return "CE2MaterialObject " + name + " " + type; 
+		}
 	}
 
 	public static class  CE2Material extends CE2MaterialObject   // object type 1
@@ -3020,7 +3024,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			//   BSComponentDB2_ID  ID
 			void readTextureSetID(CDBObject p) {
 				if (o.type != 4)
-					return;
+					return;				
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, 5);
 				if (tmp != null) {
 					((CE2Material.Material)(o)).textureSet = (CE2Material.TextureSet)(tmp);
@@ -3453,7 +3457,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			// BSMaterial_MRTextureFile
 			//   String  FileName
 			void readMRTextureFile(CDBObject p) {
-				String txtPath;
+				String txtPath;//reused twice
 				int txtMask;
 				int i = componentData.key & 0xFFFF;
 				if (o.type == 5 && i < CE2Material.TextureSet.maxTexturePaths) {
@@ -3477,6 +3481,14 @@ public class BSMaterialsCDB extends REFLArchive {
 					else
 						txtMask |= (1 << i);
 				}
+				// now assign it to the pointer
+				if (o.type == 5 && i < CE2Material.TextureSet.maxTexturePaths) {
+					((CE2Material.TextureSet)(o)).texturePaths[i] = txtPath;
+					 ((CE2Material.TextureSet)(o)).texturePathMask = txtMask;
+				} else if (o.type == 2) {
+					txtPath = ((CE2Material.Blender)(o)).texturePath;
+					txtMask = i;
+				} 
 			}
 	
 			// BSMaterial_TextureSetKindComponent
