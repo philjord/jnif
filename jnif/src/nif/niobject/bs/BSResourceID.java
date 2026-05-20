@@ -2,6 +2,7 @@ package nif.niobject.bs;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 import nif.ByteConvert;
 
@@ -14,9 +15,9 @@ import nif.ByteConvert;
     </struct>
  */
 public  class BSResourceID {
-	long file; // CRC32 of base name (not including the extension)
-	long ext=0x0074616D;  // extension (0x0074616D for "mat\0") (decimal of that is 7627117)
-	long dir;  // CRC32 of directory name (e.g. "materials\\test")
+	private Long file; // CRC32 of base name (not including the extension)
+	private Long ext = 0x0074616DL;  // extension (0x0074616D for "mat\0") (decimal of that is 7627117)
+	private Long dir;  // CRC32 of directory name (e.g. "materials\\test")
 			
 	public BSResourceID(long file, long ext, long dir) {
 		this.file = file;
@@ -31,15 +32,15 @@ public  class BSResourceID {
 	}
 	                              
 	
-	public long file() {
+	public Long file() {
 		return file;
 	}
 
-	public long ext() {
+	public Long ext() {
 		return ext;
 	}
 	
-	public long dir() {
+	public Long dir() {
 		return dir;
 	}
 
@@ -72,7 +73,7 @@ public  class BSResourceID {
 			}
 			i++;//skip the '\' between dir and file
 		}
-		dir = crcValue[0];
+		dir = Long.valueOf(crcValue[0]);
 		crcValue[0] = 0;
 		for (; i < extPos; i++) {
 			// base name
@@ -81,29 +82,29 @@ public  class BSResourceID {
 				c = (byte)(c | 0x20); // convert to lower case
 			hashFunctionCRC32(crcValue, c);
 		}
-		file = crcValue[0];
+		file = Long.valueOf(crcValue[0]);
 
 		switch (fileNamedata.length - i) {
 			case 0:
 			case 1:
-				ext = 0;
+				ext = 0L;
 				break;
 			case 2:
-				ext = fileNamedata[i + 1];
+				ext = Long.valueOf(fileNamedata[i + 1]);
 				break;
 			case 3:
-				ext = fileNamedata[i + 2] << 8 | fileNamedata[i + 1];
+				ext = Long.valueOf(fileNamedata[i + 2] << 8 | fileNamedata[i + 1]);
 				break;
 			case 4:
-				ext = fileNamedata[i + 3] << 16 | fileNamedata[i + 2] << 8 | fileNamedata[i + 1];
+				ext = Long.valueOf(fileNamedata[i + 3] << 16 | fileNamedata[i + 2] << 8 | fileNamedata[i + 1]);
 				break;
 			default:
-				ext = fileNamedata[i + 4] << 24 | fileNamedata[i + 3] << 16 | fileNamedata[i + 2] << 8
-						| fileNamedata[i + 1];
+				ext = Long.valueOf(fileNamedata[i + 4] << 24 | fileNamedata[i + 3] << 16 | fileNamedata[i + 2] << 8
+						| fileNamedata[i + 1]);
 				break;
 		}
 		// convert extension to lower case
-		ext = ext | ((ext >> 1) & 0x20202020);
+		ext = Long.valueOf(ext | ((ext >> 1) & 0x20202020));
 	}
 	
 	//h is a 1 element pointer
@@ -169,6 +170,33 @@ public  class BSResourceID {
 			b[j] = (byte) buffer[j];
 		return b;
 	}
-
+	
+	public static class BSResourceIDMap<T> {
+		
+		private HashMap<Long, HashMap<Long, T>> foldersMap = new HashMap<Long,  HashMap<Long, T>>(); 
+	
+		public T get(BSResourceID persistentID) {
+			HashMap<Long, T> matFolderObjectMap = foldersMap.get(persistentID.dir());
+			if(matFolderObjectMap != null) {
+				return matFolderObjectMap.get(persistentID.file());
+			}
+			
+			//System.err.println("FolderHashMap missing in BSMaterialsCDB " + persistentID.dir());		
+			return null;
+		}
+	
+		public void put(BSResourceID persistentID, T o) {
+			//custom put and get to make fast thing at small cost in memory, turn into a tree search faster
+			//ext is fixed and can be ignored
+			 
+			HashMap<Long, T> matFolderObjectMap = foldersMap.get(persistentID.dir());
+			if(matFolderObjectMap == null) {
+				matFolderObjectMap = new HashMap<Long, T>();	
+				foldersMap.put(persistentID.dir(), matFolderObjectMap);
+			}
+			
+			matFolderObjectMap.put(persistentID.file(), o);
+		}
+	}
 	
 }

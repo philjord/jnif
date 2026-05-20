@@ -10,7 +10,7 @@ import nif.niobject.bgsm.bsmatcdb.BSMaterialsCDB.CDBObject;
 
 public class REFLArchive {	
 
-	protected ArrayList<OBJT> objts = new ArrayList<OBJT>();	 
+	protected ArrayList<OBJT> objts = new ArrayList<OBJT>(1409756);	 
 
 	protected static ChunkSource		chunkSource;
 	protected BETH						BETH;
@@ -32,7 +32,7 @@ public class REFLArchive {
 			};
 	 */
 	
-	//the 4 char strings as a 4 bytre integer for speed
+	//the 4 char strings as a 4 byte integer for speed
 	protected static int					OBJT		= 1414152783;				
 	protected static int					DIFF		= 1179011396;				
 	//private static int					LIST		= 1414744396;				
@@ -40,10 +40,10 @@ public class REFLArchive {
 	//private static int					USER		= 1380275029;				
 	//private static int					USRD		= 1146245973;				
 
-	protected static SparseArray<CLAS>	CLASLookup	= new SparseArray<CLAS>();
+	protected static HashMap<Integer, CLAS>	CLASLookup	= new HashMap<Integer, CLAS>(95);
 
 	public REFLArchive(ByteBuffer in) {
-
+		long start = System.currentTimeMillis();
 		try {
 
 			chunkSource = new ChunkSource(in);
@@ -59,7 +59,6 @@ public class REFLArchive {
 				//					+ STRT.getString(c.nameOffset));
 			}
 
-
 			// grab all the OBJT entries and put them in a straight list to be processed later
 			Chunk chunk = chunkSource.nextChunk();
 			while (chunk != null) {
@@ -70,12 +69,11 @@ public class REFLArchive {
 				//System.out.println("OBJT " + STRT.getString(objt.classID));
 				chunk = chunkSource.nextChunk();
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Cdb loaded without issue");
-
+		System.out.println("Cdb loaded without issue in " + (System.currentTimeMillis() - start));
+		
 	}
 
 	public static class ChunkSource {
