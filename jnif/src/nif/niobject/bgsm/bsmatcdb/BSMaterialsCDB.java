@@ -103,27 +103,33 @@ public class BSMaterialsCDB extends REFLArchive {
 		
 		 cdb = new CompiledDB(this.objts.get(0));
 		 dbfi = new DBFileIndex(this.objts.get(1));
-		 HashMap<Integer, DBFileIndex.ComponentInfo2> componentInfo = dbfi.Components;
+		 HashMap<Integer, DBFileIndex.DBFileIndex_ComponentInfo> componentInfo = dbfi.Components;
+		 
+		 // Once we've built the relationships from the DBFileIndex into the full list of MaterialObjects
+		 // now we need to go through the OBJT list and attach each one to the relevant MaterialObject's 
+		 // component list, by way of dbID and the component key (type and index)
 
-		//objts 2+ are OBJT (incl diffs)
+		//objts 2 and up are OBJT (or DIFF) that hold component data
 		for (int i = 2; i < objts.size(); i++) {
 			OBJT objt = objts.get(i);
 			int componentID = i - 2;// the components are loaded in the same order so the 0 index again
-			DBFileIndex.ComponentInfo2 compInfo = componentInfo.get(componentID);
+			DBFileIndex.DBFileIndex_ComponentInfo compInfo = componentInfo.get(componentID);
 
 			int dbID = compInfo.dbID.id;
 			int key = compInfo.key;
 			
 			int className = objt.type;
-			key = (key & 0xFFFF) | (className << 16); // edit key across to be the objt not the comp id odd
+			key = (key & 0xFFFF) | (className << 16); // edit key to be the objt.type or'ed with compInfo.type (key was (type << 16) | index;)
 			
-			MaterialObject  o = findObject(dbID);
-			if (o != null && className > REFLArchive.String_Unknown) {
-				if (o.baseObject != null && o.baseObject.baseObject != null)
-					copyBaseObject(o);
+			MaterialObject mo = findObject(dbID);
+			// so here mo is the MaterialObject for this OBJT defining a component of that			
+			if (mo != null && className > REFLArchive.String_Unknown) {
+				if (mo.baseObject != null && mo.baseObject.baseObject != null) {					
+					copyBaseObject(mo);
+				}
 				
-				// attach this OBJT to the MaterialComponent to allow it to be loaded later
-				findComponent(o, key, className).o = objt;
+				// attach this OBJT to the MaterialComponent of the MaterialObject to allow it to be loaded later
+				findComponent(mo, key, className).objt = objt;
 			}  
 		}
 
@@ -132,7 +138,7 @@ public class BSMaterialsCDB extends REFLArchive {
 		// requested at findMatFileObject(BSResourceID objectID)
 		// so really I just need to call storeMatFileObject(p);	here and now
 		
-		// dbfi filled the objectTable by way of creating the ObjectIfo list
+		// dbfi filled the objectTable by way of creating the ObjectInfo list
 		// now pull those from objectTable, do a weird copyBaseObject 
 		// then populate the matFileObjectMap hash with persistentID vs MaterialObject
 
@@ -141,9 +147,10 @@ public class BSMaterialsCDB extends REFLArchive {
 			MaterialObject p = objectTable.get(i);
 			if (p == null)
 				continue;
-			if (p.baseObject != null && p.baseObject.baseObject != null)
-				copyBaseObject(p);
 			
+			//I'm expecting this to ALWaYS always short out
+			if (p.baseObject != null && p.baseObject.baseObject != null)
+				copyBaseObject(p);			
 		
 			//FIXME: this seems to be at odds with the  ObjectInfo(REFL refl)  below, only one should do the work surely
 			if (p.persistentID != null)
@@ -159,41 +166,75 @@ public class BSMaterialsCDB extends REFLArchive {
 	}
 
 	public BSMaterial getMaterialFileCDB(String fileName) throws IOException {
-		BSResourceID incomingFilename = new BSResourceID(fileName);
-		CE2MaterialObject o = CE2MaterialDB.materialIdMap.get(incomingFilename);
-		if (o == null) {
-			o = CE2MaterialDB.findMaterialObject(getMaterial(incomingFilename));
+		
+		//Materials\Common\Metal\MetalGoldWorn01.mat
+		//Materials\Architecture\City\Neon\SlaytonAeroSpacePaintedBlue01.mat
+		//Materials\Common\Glow\GlowMedium02Blue.mat
+		
+		if(fileName.equals("Materials\\Common\\Glow\\GlowMedium02Blue.mat")) {
+			System.out.println("Ok the investigation begins...");
 		}
+		
+		
+		BSResourceID incomingFilename = new BSResourceID(fileName);
+		CE2MaterialObject ce2mo = CE2MaterialDB.materialIdMap.get(incomingFilename);
+		if (ce2mo == null) {
+			MaterialObject mo = getMaterial(incomingFilename);
+			ce2mo = CE2MaterialDB.findMaterialObject(mo);
+		}
+		
+		if (ce2mo.parent != null) {
+			//FIXME: it looks like every parent is always null, if so whats it for?
+			System.out.println("FOUND A CE2MaterialObject with ce2mo.parent!=null");
+		}
+		
+		//sorry excuse the madness, I'm gonna sneak a CE2Material back across the BSMaterial interface
 		CE2BSMaterial ret = new CE2BSMaterial();
-		ret.ce2material = (CE2Material)o;
+		ret.ce2material = (CE2Material)ce2mo;
 		return ret;
 	}
 
 
-	//This appears to set the linked list on components for an object to those of it's parent, then it's own
-	// but I don't fully understand it, it looks like it should only be called once per MaterialObject
-	// but the line o.baseObject = p.baseObject; might do that gate
+	/** This appears to set the linked list on components for an object to those of it's parent, then it's own
+	* but I don't fully understand it, it looks like it should only be called once per MaterialObject
+	* but the line o.baseObject = p.baseObject; might do that gate
+	* that line plus the gate before the call to this method might do it perhaps
+	* 
+	* 
+	* NOTES is this to compress the tree structure? doen't seem useful to me
+	* just get based on the MO or it's parent etc
+	* 
+	* BIG FAT mC FATSER NOTE!! I see a Materials\Common\Glow\GlowMedium02Blue.mat
+	* full to the brim with null children, this stupid bullshit here
+	* is supposed to flatten the class tree and insert the values direct
+	* so let's see why it doesn't do that
+	* 
+	* 
+	*/
 	void copyBaseObject(MaterialObject o)
 	{
 		MaterialObject p = o.baseObject;
+		
+		// compress our parent up, so after this call the parent should be "at the top" (with one of the 6 as base)
 		if (p.baseObject.baseObject != null)
 			copyBaseObject(p);
+		
+		// set our parent up one layer this means we will be fully flattened
 		o.baseObject = p.baseObject;
 		
 		//TODO: check on this being set NULL I think we want to end with the current set of o.components
 		//o.components = null;
 		MaterialComponent prv = (o.components);// this was MaterialComponent **prv = &(o.components);
 		for (MaterialComponent i = p.components; i != null; i = i.next) {
-			MaterialComponent tmp = new MaterialComponent();
-			tmp.key = i.key;
-			tmp.className = i.className;
-			tmp.o = i.o;
-
+			
+			
+			//FIXME: why am I copying this, just so I can use teh next pointer to fomr the list for this MatObject, crazy
+			MaterialComponent tmp = new MaterialComponent(i.key, i.className, i.objt, null);
+			
 			//if (tmp.o != null)
 			//	copyObject((tmp.o));
-			tmp.next = null;
 
-			//  some c++ linked list contortion, I think insert its into the linked list but o.components is head
+			//  some c++ linked list contortion, ps component copied and inserted in order, with previous list at the end
 			//prv = tmp;//*prv = tmp;
 			//prv = (tmp.next);//prv = &(tmp->next);
 			if (prv == null) {
@@ -206,7 +247,10 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	}
 
-	//This appears to do nothing?? Not calling it, o is alive and fine
+	/**
+	 * This copies a CDBObject, it seems from the above call that the OBJT pointed to by the tmp
+	 * wants to be cloned for some reason, it's not mutable at this point, c++ devs are just c++ts?
+	 */
 	/*void copyObject(CDBObject o) {
 		CDBObject[] ps = o.children();//CDBObject **p = o.children();
 		for (int pi = 0; pi < ps.length; pi++) {
@@ -217,7 +261,7 @@ public class BSMaterialsCDB extends REFLArchive {
 	}*/
 	
 
-	/*
+	/**
 	 BSComponentDB2.ID {
 		uint Value
 	}*/
@@ -226,56 +270,78 @@ public class BSMaterialsCDB extends REFLArchive {
 		int id;
 		public BSComponentDB2_ID(REFL refl) {
 			//check for being type 74   
-			if (refl != null && refl.type == REFLArchive.STRT_String_BSComponentDB2_ID) {
-				id = refl.children[0].intValue();					
+			if (refl != null && refl.type() == REFLArchive.STRT_String_BSComponentDB2_ID) {
+				id = refl.child(0).intValue();					
 			} else {
 				throw new RuntimeException("Bad readVal");
 			}
 		}
+		
+		@Override
+		public String toString() {
+			return "BSComponentDB2_ID: " + id;
+		}
 	}
 
-	/*
+	/**
 	BSMaterial.Internal.CompiledDB {
 		String BuildVersion
 		Map HashMap
 		List Collisions - empty
 		List Circular - empty
-	}*/
+	}
+	* BuildVersion is the version of the game (currently "1.8.86.0"),
+	* and HashMap is a map from BSResource.ID to uint64_t. It maps material paths (represented as CRC32 hashes of the base 
+	* name without the .mat extension and the directory name, and the extension that is always "mat\0") to an unknown 64-bit hash.
+	* Note that while the definition of BSResource.ID has the fields in Dir, File, Ext order, File is actually the first in the data.
+	* 
+	*/
 	public static class CompiledDB {
 		public String BuildVersion;//currently "1.8.86.0"
-		public MAPC HashMap;
+		private MAPC HashMap; // not used, usage unknown
 		public CompiledDB(OBJT objt) {
-			BuildVersion = objt.children[0].stringValue();
-			HashMap = (MAPC)objt.children[1];
+			BuildVersion = objt.child(0).stringValue();
+			HashMap = (MAPC)objt.child(1);
 		}
 	}
 
-	/*BSComponentDB2.DBFileIndex {
+	/**
+	 * BSComponentDB2.DBFileIndex {
 		Map ComponentTypes
 		List Objects =MaterialObjects
 		List Components =MaterialComponants 
 		List Edges
 		boolean Optimized
-	}
+	 * }
  	 * 
 	 * 'ComponentTypes' maps 16-bit component type IDs to string format class names. (followed by an int and then a bool)
 	 * 
-	*/
-	
-	// for Components note I DO have a class called ComponentInfo below
+	 * 
+	 * 
+	 * NOTES
+	 *  ObjectInfo.convertObjectInfo fills the <objectTable> with equivalent MaterialObjects
+	 *  and Objects is not used thereafter
+	 *  DBFileIndex_EdgeInfo.convertEdgeInfo does the same to build equivalent MaterialComponants
+	 *  by setting the values into the parent/children/next of MaterialsObjects from the <objectTable>
+	 *  and Edges is not used thereafter
+	 *  
+	 *  Components is used the the constructor to do the crazy muck about
+	 *  presumably because we need ... I'm not sure
+	 * 
+	 */
 	public static class DBFileIndex {
-		public HashMap<Short, String>		ComponentTypes;
-		public ArrayList<ObjectInfo>		Objects;
-		public HashMap<Integer, ComponentInfo2>	Components;
-		public ArrayList<EdgeInfo>			Edges;
-		public boolean						Optimized;
+		private  HashMap<Short, String>		ComponentTypes; // not used, usage unknown
+		private  ArrayList<ObjectInfo>		Objects; 
+		private  HashMap<Integer, DBFileIndex_ComponentInfo>	Components;
+		private  ArrayList<DBFileIndex_EdgeInfo>			Edges;
+		private  boolean						Optimized; // not used, usage unknown
 
 		public  DBFileIndex(OBJT objt) {
-			ComponentTypes = convertComponentTypes((MAPC)objt.children[0]);
-			Objects = ObjectInfo.convertObjectInfo((LIST)objt.children[1]);
-			Components = ComponentInfo2.convertObjectInfo((LIST)objt.children[2]);
-			Edges = EdgeInfo.convertEdgeInfo( (LIST)objt.children[3]);
-			Optimized = objt.children[4].boolValue();
+			ComponentTypes = convertComponentTypes((MAPC)objt.child(0));
+			Objects = ObjectInfo.convertObjectInfo((LIST)objt.child(1));
+			Components = DBFileIndex_ComponentInfo.convertObjectInfo((LIST)objt.child(2));
+			Edges = DBFileIndex_EdgeInfo.convertEdgeInfo( (LIST)objt.child(3));
+			Optimized = objt.child(4).boolValue();
 		}
 		
 		
@@ -285,9 +351,9 @@ public class BSMaterialsCDB extends REFLArchive {
 			HashMap<Short, String> returnList = new HashMap<Short, String>(map.map.size());
 			for (Entry<CDBObject, CDBObject> o : map.map.entrySet()) {				 
 				Short k = o.getKey().shortValue();
-				String v = ((USER)o.getValue().children[0]).zerofieldsValue.stringValue();
+				String v = ((USER)o.getValue().child(0)).zerofieldsValue.stringValue();
 				//children[1]=Short, children[2]=boolean
-				// 2 other children ignored fornow
+				// 2 other children ignored for now
 				returnList.put(k, v);
 				 
 			}
@@ -295,7 +361,7 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 	 
 		
-		/* 
+		/** 
 		 * 'Objects' is a list of all material objects, in this format: 
 		 * BSComponentDB2.DBFileIndex.ObjectInfo { 
 		 * BSResource.ID PersistentID 
@@ -308,30 +374,39 @@ public class BSMaterialsCDB extends REFLArchive {
 		 * is used as the base object to construct this object from. HasData is true for all except 6 "root" objects from which
 		 * all others are derived, and only for those, the Parent is 0. These 6 objects are for the 6 material object types,
 		 * denoted by the base names "layeredmaterials", "blenders", "layers", "materials", "texturesets" and "uvstreams".
+		 * 
+		 * 
+		 * 
+		 * NOTES
+		 * It looks like after construction this class is discarded, it is used only to create the equivilent
+		 * MaterialObject in the <objectTable>
 		 * */
 	public static class ObjectInfo {
 		
 		public static boolean hasParentBSResourceID = false;
 		
-		BSResourceID persistentID;  
-		BSComponentDB2_ID dbID;
-		BSComponentDB2_ID parentID;
-		BSResourceID parentID2; // version >= 1.11.33.0 also stores the parent ID as BSResource::ID
-		boolean hasData = false;
+		private BSResourceID persistentID;  
+		private BSComponentDB2_ID dbID;
+		private BSComponentDB2_ID parentID; // can be anything, so this builds a "tree" of ObjectInfo up to the top 6
+		private BSResourceID parentID2; // version >= 1.11.33.0 also stores the parent ID as BSResource::ID
+		private boolean hasData = false;
 
 		public ObjectInfo(REFL refl) {
 			//https://github.com/fo76utils/nifskope/blob/develop/lib/libfo76utils/src/bsmatcdb.cpp#L814
 
-			persistentID = createBSResourceID((REFL)refl.children[0]);
-			dbID = new BSComponentDB2_ID((REFL)refl.children[1]);
-			parentID = new BSComponentDB2_ID((REFL)refl.children[2]);
+			persistentID = createBSResourceID((REFL)refl.child(0));
+			dbID = new BSComponentDB2_ID((REFL)refl.child(1));			
+			parentID = new BSComponentDB2_ID((REFL)refl.child(2));
+			
+			if (dbID.id <= 6 && parentID.id != 0)
+				System.err.println("Top 7 parents " + dbID.id + " has a parent! " + parentID.id);
 
 			//optional ParentID now
 			if (hasParentBSResourceID) {
-				parentID2 = createBSResourceID((REFL)refl.children[3]);
-				hasData = refl.children[4].boolValue();
+				parentID2 = createBSResourceID((REFL)refl.child(3));
+				hasData = refl.child(4).boolValue();
 			} else {
-				hasData = refl.children[3].boolValue();
+				hasData = refl.child(3).boolValue();
 			}
 
 			//now we create the MaterialObject to be loaded by the chunk looper in a while and we put it in
@@ -344,26 +419,25 @@ public class BSMaterialsCDB extends REFLArchive {
 			if (findMatFileObject(persistentID) != null && hasData)
 				return; // ignore duplicate objects
 
-			MaterialObject o = new MaterialObject();
+						
 			if (objectTable.get(dbID.id) != null)
 				System.err.println("duplicate object ID in material database");
-			objectTable.put(dbID.id, o);
-			o.persistentID = persistentID;
-			o.dbID = dbID.id;
-			o.baseObject = findObject(parentID.id);
-			if (o.baseObject == null && hasParentBSResourceID && hasData) {
-				o.baseObject = findMatFileObject(parentID2);
-			}
-			o.components = null;
-			o.parent = null;
-			o.children = null;
-			o.next = null;
+			
+			MaterialObject baseObject = findObject(parentID.id);
+					if (baseObject == null && hasParentBSResourceID && hasData) {
+						baseObject = findMatFileObject(parentID2);
+					}
+			
+			//create a MaterialObject based on this ObjectInfo and put it in the <objectTable>
+			MaterialObject o = new MaterialObject(persistentID, dbID.id, baseObject);
+			objectTable.put(dbID.id, o);			
+			
 		}
 		
 		public static ArrayList<ObjectInfo> convertObjectInfo(LIST list) {
 			ArrayList<ObjectInfo> returnList = new ArrayList<ObjectInfo>(list.list.size());
 			// version >= 1.11.33.0 also stores the parent ID as BSResource::ID after the dbID
-			CLAS clas = CLASLookup.get(list.list.get(0).type);
+			CLAS clas = CLASLookup.get(list.list.get(0).type());
 			hasParentBSResourceID = clas.fields.length > 4;
 			
 			for (CDBObject o : list.list) {
@@ -390,38 +464,36 @@ public class BSMaterialsCDB extends REFLArchive {
 		 * can be more than one for a single object (e.g. a TextureSet object may have texture files associated with it at Index
 		 * = 0 to 20), otherwise it is 0, and Type is one of the 16-bit component type IDs previously defined in ComponentTypes.
 		 * */
-		public static class  ComponentInfo2 {
+		public static class  DBFileIndex_ComponentInfo {
 			public BSComponentDB2_ID dbID;
 			public short index;
 			public short type;
 			
 			public int key; // derived
 			
-			public ComponentInfo2(REFL refl) {
-				dbID = new BSComponentDB2_ID((REFL)refl.children[0]);
-				index =  refl.children[1].shortValue();
-				type =  refl.children[2].shortValue();					
+			public DBFileIndex_ComponentInfo(REFL refl) {
+				dbID = new BSComponentDB2_ID((REFL)refl.child(0));
+				index =  refl.child(1).shortValue();
+				type =  refl.child(2).shortValue();					
 				key = (type << 16) | index;
 			}
 			
 			
-			public static HashMap<Integer, ComponentInfo2> convertObjectInfo(LIST list) {
-				HashMap<Integer, ComponentInfo2> returnList = new HashMap<Integer, ComponentInfo2>(list.list.size());
+			public static HashMap<Integer, DBFileIndex_ComponentInfo> convertObjectInfo(LIST list) {
+				HashMap<Integer, DBFileIndex_ComponentInfo> returnList = new HashMap<Integer, DBFileIndex_ComponentInfo>(list.list.size());
 	
 				int idx = 0;
 				for (CDBObject o : list.list) {
 					if (o instanceof REFL) {
 						REFL r = (REFL)o;
-						returnList.put(idx++, new ComponentInfo2(r));
+						returnList.put(idx++, new DBFileIndex_ComponentInfo(r));
 					}
 				}
 				return returnList;
 			}		
 		}
 		
-		/*
-		 * 
-		 * 
+		/** 
 		 * Finally, 'Edges' describes how the material objects are organized in a tree structure:  
 		 * BSComponentDB2.DBFileIndex.EdgeInfo { 
 		 * BSComponentDB2.ID SourceID 
@@ -431,54 +503,65 @@ public class BSMaterialsCDB extends REFLArchive {
 		 * 
 		 * Index seems to be always 0, and Type is always the ID of BSComponentDB2.OuterEdge. This defines TargetID as
 		 * logically the parent of SourceID.
+		 * 
+		 * NOTES
+		 * Given that this class is created then used to point the child/parent structure
+		 * it doesn't seem to need to be kept after that point, but what is this for? If it's a components thing then why do the
+		 * main materials have it?
 		 */
-		public static class  EdgeInfo {
+		public static class  DBFileIndex_EdgeInfo {
 			
-			BSComponentDB2_ID	sourceID;
-			BSComponentDB2_ID	targetID;
-			short				index;
-			short				type;
+			private BSComponentDB2_ID	sourceID;
+			private BSComponentDB2_ID	targetID;
+			private short				index;//Index seems to be always 0
+			private short				type;//Type is always the ID of BSComponentDB2.OuterEdge
 
-			public EdgeInfo(REFL refl) {
-				sourceID = new BSComponentDB2_ID((REFL)refl.children[0]);
-				targetID = new BSComponentDB2_ID((REFL)refl.children[1]);
-				index = refl.children[2].shortValue();
-				type = refl.children[3].shortValue();
+			public DBFileIndex_EdgeInfo(REFL refl) {
+				sourceID = new BSComponentDB2_ID((REFL)refl.child(0));
+				targetID = new BSComponentDB2_ID((REFL)refl.child(1));
+				index = refl.child(2).shortValue();
+				type = refl.child(3).shortValue();
 				
 				MaterialObject o = findObject(sourceID.id);
 				MaterialObject p = findObject(targetID.id);
 				if (o != null && p != null) {
 					if (o.parent != null) {
 						throw new RuntimeException(
-								"object 0x%08X has multiple parents in " + "material database " + sourceID);
+								"MaterialObject " + sourceID.id + " has multiple parents in the material database");
 					}
+					//NOTE this looks like the config of the "tree" structure, after this the data in this class is 
+					// not needed
+					
+					//crazy crap seems to be setting the child of p to this o and the next of this o as the 
+					// current child of p, in other words this o is inserted at the front of a linked list of children
+					// for the parent, fuck thos c++nts
 					o.parent = p;
 					o.next = p.children;
 					p.children = o;
 				}
 			}
-			
-			public static ArrayList<EdgeInfo> convertEdgeInfo(LIST list) {
-				ArrayList<EdgeInfo> returnList = new ArrayList<EdgeInfo>(list.list.size());				 
-				
+
+			public static ArrayList<DBFileIndex_EdgeInfo> convertEdgeInfo(LIST list) {
+				ArrayList<DBFileIndex_EdgeInfo> returnList = new ArrayList<DBFileIndex_EdgeInfo>(list.list.size());
+
 				for (CDBObject o : list.list) {
 					if (o instanceof REFL) {
 						REFL r = (REFL)o;
-						returnList.add(new EdgeInfo(r));					 
+						returnList.add(new DBFileIndex_EdgeInfo(r));
 					}
 				}
 				return returnList;
-			}		
+			}
 		}
 	}
 
 	public static BSResourceID createBSResourceID(REFL refl) {
 
 		//check for being type 74   
-		if (refl != null && refl.type == REFLArchive.STRT_String_BSResource_ID) {
-			return new BSResourceID(refl.children[0].uintValue() & 0x00000000FFFFFFFFL,
-					refl.children[1].uintValue() & 0x00000000FFFFFFFFL,
-					refl.children[2].uintValue() & 0x00000000FFFFFFFFL);
+		if (refl != null && refl.type() == REFLArchive.STRT_String_BSResource_ID) {
+			return new BSResourceID(refl.child(0).uintValue() & 0x00000000FFFFFFFFL,
+					refl.child(1).uintValue() & 0x00000000FFFFFFFFL,
+					refl.child(2).uintValue() & 0x00000000FFFFFFFFL);
 		} else {
 			throw new RuntimeException("Bad BSResourceID type");
 		}
@@ -505,19 +588,20 @@ public class BSMaterialsCDB extends REFLArchive {
 		}
 
 
-		public int			type = REFLArchive.String_Unknown;		// BSReflStream::stringTable[] index
-
+		protected int type = REFLArchive.String_Unknown;		// BSReflStream::stringTable[] index
+		int type() {return type;}
+		
 		// Size of children[] for compound types (struct, ref, list and map).
 		// For maps, childCnt = 2 * elements, and data.children[N * 2] and
 		// data.children[N * 2 + 1] contain the key and value for element N.
-		public int			childCnt() {return children.length;}
+		protected int childCnt() {return children.length;}
 
 		//this is the field primitive data, but could be structured, however it is never the list or mapc data			   
-		CDBObject[]	children;
+		protected CDBObject[]	children;
 
 		// for type == String_List, String_Map, String_Ref and structures
-		CDBObject[] children() {
-			return children;
+		CDBObject child(int idx) {
+			return children[idx];
 		}
 
 		//the value part of this is only primitive types
@@ -568,9 +652,8 @@ public class BSMaterialsCDB extends REFLArchive {
 			return (String)value;
 		}
 
-		// for type == String_BSComponentDB2_ID
-		MaterialObject linkedObject;
-
+		// cache it once found, for type == String_BSComponentDB2_ID
+		private MaterialObject linkedObject;		
 		MaterialObject linkedObject() {
 			//example of use here readBSComponentDB2ID(p, (byte)2);
 			if (type == REFLArchive.STRT_String_BSComponentDB2_ID) {
@@ -592,14 +675,27 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 	//MaterialComponent does not have any class hierarchy, it is used to load the parts of the 
 	//MaterialObject into the CE2MaterialObject, via the DBFileIndex.Components look up
-	public static class MaterialObject { 
-		BSResourceID			persistentID; 
-		int						dbID; 
-		MaterialObject			baseObject; // linked list generally (set to the highest one?)
-		MaterialComponent		components; // linked list of MaterialComponents, each has a next pointer
-		MaterialObject			parent;
-		MaterialObject			children; // linked list, using next and parent somehow
-		MaterialObject			next;
+	public static class MaterialObject { 		
+
+		BSResourceID		persistentID;
+		int					dbID;
+		MaterialObject		baseObject;			// full tree built form the ObjectInfo parentID all the way up to the 7 top types
+		MaterialComponent	components	= null;	// linked list of MaterialComponents, each has a next pointer
+
+		// this is the tree built from the EdgeInfo
+		// next seems to be a way for a child of p to hold the next child of p
+		// like a linked list perhaps		
+		MaterialObject		parent		= null;
+		MaterialObject		children	= null;	// linked list, using next and parent somehow
+		MaterialObject		next		= null;
+		
+		
+		
+		public MaterialObject(BSResourceID persistentID, int dbID, MaterialObject baseObject) {
+			this.persistentID = persistentID;
+			this.dbID = dbID;
+			this.baseObject = baseObject;
+		}
 
 		//currently unused anywhere
 		MaterialObject getNextChildObject() {
@@ -610,14 +706,32 @@ public class BSMaterialsCDB extends REFLArchive {
 				;
 			return i.next;
 		}
+		
+		@Override
+		public String toString() {
+			return "MaterialObject dbID: " + dbID; 
+		}
 	}
 
 	  
 	public static class MaterialComponent {
+
 		int					key;		// (type << 16) | index
 		int					className;
-		CDBObject			o;
+		CDBObject			objt;		
+		// is this next some sort of linked list system for a givenMaterialObject to have it's components 
+		// in a list?
 		MaterialComponent	next;
+		
+		
+		public MaterialComponent(int key, int className, CDBObject objt, MaterialComponent next) {
+			this.key = key;
+			this.className = className;
+			this.objt = objt;
+			this.next = next;
+		}
+		
+		// presumably this was to get the MaterialComponent in the right order in the MaterialObject
 		//  boolean operator<(const MaterialComponent& r) const
 		//   {
 		//     return (key < r.key);
@@ -634,6 +748,12 @@ public class BSMaterialsCDB extends REFLArchive {
 	 * @param key to find if the component is already in the list
 	 * @param className used to construct the required component
 	 * @return
+	 * 
+	 * 
+	 * NOTES
+	 * MaterialObejct has had it's MaterialComponent loaded up during the DBIndex loading stage
+	 * 
+	 * 
 	 */
 	public static MaterialComponent findComponent(MaterialObject o, int key, int className) {
 		MaterialComponent prv = null;
@@ -643,11 +763,9 @@ public class BSMaterialsCDB extends REFLArchive {
 			prv = i;
 		if (i != null && i.key == key)
 			return i;
-		MaterialComponent p = new MaterialComponent();
-		p.key = key;
-		p.className = className;
-		p.o = null;
-		p.next = i;
+		
+		// if we didn't find it then create a new one and insert it linked list
+		MaterialComponent p = new MaterialComponent(key, className, null, i);		
 		if (prv == null)
 			o.components = p;
 		else
@@ -710,11 +828,12 @@ public class BSMaterialsCDB extends REFLArchive {
 		String							name;
 		CE2MaterialObject				parent;
 
+		//t==-1 mean invalid object
 		CE2MaterialObject(int t) {
 			type = (t);
 			cdbObject = (null);
 			name = null;//-1;
-			parent = (null);
+			parent = (null); 
 		}
 		
 		@Override
@@ -920,7 +1039,7 @@ public class BSMaterialsCDB extends REFLArchive {
 		 
 	
 		void setFlags(int m, boolean n) {
-			flags = n ? (flags & ~m) : (flags | m);//(flags & ~m) | ((0U - std.uint32_t(n)) & m);	
+			flags = n ? (flags | m) : (flags & ~m);//(flags & ~m) | ((0U - std.uint32_t(n)) & m);	
 		}
 	
 	 
@@ -1153,7 +1272,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			}
 
 			void setFlags(int m, boolean n) {
-				flags = n ? (flags & ~m) : (flags | m);// (flags & ~m) | ((0U - std.uint32_t(n)) & m);	 
+				flags = n ? (flags | m) : (flags & ~m);// (flags & ~m) | ((0U - std.uint32_t(n)) & m);	 
 			}
 		}
 	  
@@ -1538,45 +1657,46 @@ public class BSMaterialsCDB extends REFLArchive {
 				o = (q);
 			}
 	    
-			// this method can't send back a "not able to be loaded" signal, like other, that can use -1 or somesuch
-			// so in the case of a default false we can't be sure why it's false, prolly got to
-			// use an in and out an int, allowing a singal
+			//-1 means not able to be loaded
 			int readBool(CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_Bool) {
-					return p.children()[fieldNum].boolValue() ? 1 : 0;
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_Bool) {
+					return p.child(fieldNum).boolValue() ? 1 : 0;
 				}
 				return -1;
 			}
 			
+			// this method can't send back a "not able to be loaded" signal, like other, that can use -1 or somesuch
+			// so in the case of a default false we can't be sure why it's false, prolly got to
+			// use an in and out an int, allowing a signal
 			boolean readBool(boolean def, CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_Bool) {
-					return p.children()[fieldNum].boolValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_Bool) {
+					return p.child(fieldNum).boolValue();
 				}
 				return def;
 			}
 
 			byte readUInt8(byte def,CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_UInt8) {
-					return p.children()[fieldNum].byteValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_UInt8) {
+					return p.child(fieldNum).byteValue();
 				}
 				return def;
 			}
 
 			int readUInt16(int def,CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_UInt16) {
-					return p.children()[fieldNum].shortValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_UInt16) {
+					return p.child(fieldNum).shortValue();
 				}
 				return def;
 			}
 
 			int readUInt32(int def,CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_UInt32) {
-					return (p.children()[fieldNum].uintValue());
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_UInt32) {
+					return (p.child(fieldNum).uintValue());
 				}
 				return def;
 			}
@@ -1587,8 +1707,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 			float readFloat(float def, CDBObject p, int fieldNum, boolean clampTo0To1) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_Float) {
-					float n = p.children()[fieldNum].floatValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_Float) {
+					float n = p.child(fieldNum).floatValue();
 					if (clampTo0To1)
 						n = Math.min((n > 0.0f ? n : 0.0f), 1.0f);
 					return n;
@@ -1598,8 +1718,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 			String readString(String def,CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					return p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_String) {
+					return p.child(fieldNum).stringValue();
 				}
 				return def;
 			}
@@ -1607,8 +1727,8 @@ public class BSMaterialsCDB extends REFLArchive {
 			
 			String readPath(String def,CDBObject p, int fieldNum, String prefix, String suffix) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					String t = p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_String) {
+					String t = p.child(fieldNum).stringValue();
 					t = readPath(t, 0, prefix, suffix);
 					return t;
 				}
@@ -1646,8 +1766,8 @@ public class BSMaterialsCDB extends REFLArchive {
 			byte readEnum(byte def,CDBObject p, int fieldNum, String[] enumStrings) {
 				
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					String s = p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_String) {
+					String s = p.child(fieldNum).stringValue();
 					for (int i = 0; i < enumStrings.length; i++) {
 						if (enumStrings[i].equals(s))
 							return (byte)i;
@@ -1659,8 +1779,8 @@ public class BSMaterialsCDB extends REFLArchive {
 				//c++ code very poor design
 			/*	byte[] esb = enumsString.getBytes(StandardCharsets.UTF_8); 
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					String s = p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum] != null && p.child(fieldNum].type == REFLArchive.String_String) {
+					String s = p.child(fieldNum].stringValue();
 					byte[] sbytes = s.getBytes(StandardCharsets.UTF_8); 
 					int len = s.length();
 					int t = 0;
@@ -1684,8 +1804,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 			byte readLayerNumber(byte def, CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					String s = p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_String) {
+					String s = p.child(fieldNum).stringValue();
 					byte[] sbytes = getBytesFast(s);
 					if (s.startsWith("MATERIAL_LAYER_") && sbytes[15] >= '0'
 						&& sbytes[15] < (CE2Material.maxLayers + '0')) {
@@ -1698,8 +1818,8 @@ public class BSMaterialsCDB extends REFLArchive {
 
 			byte readBlenderNumber(byte def, CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null && p.children()[fieldNum].type == REFLArchive.String_String) {
-					String s = p.children()[fieldNum].stringValue();
+					&& p.child(fieldNum) != null && p.child(fieldNum).type == REFLArchive.String_String) {
+					String s = p.child(fieldNum).stringValue();
 					byte[] sbytes = getBytesFast(s);
 					if (s.startsWith("BLEND_LAYER_")	&& sbytes[12] >= '0'
 						&& sbytes[12] < (CE2Material.maxBlenders + '0')) {
@@ -1741,7 +1861,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				CE2Material m = (CE2Material)(o);
 				CE2Material.LayeredEmissiveSettings sp = new CE2Material.LayeredEmissiveSettings();
 				m.layeredEmissiveSettings = sp;
-				int tmp = readBool(p, 0);
+				int tmp = readBool(p, 0);tmp=1;//TESTY
 				if (tmp!=-1) {
 					m.setFlags(CE2Material.Flag_LayeredEmissivity, tmp==1);
 					sp.isEnabled = tmp==1;
@@ -1763,7 +1883,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				sp.blender2Mode = readEnum(sp.blender2Mode, p, 15, blenderModeNames);
 				sp.clipThreshold = readFloat(sp.clipThreshold, p, 16);
 				sp.adaptiveEmittance = readBool(sp.adaptiveEmittance, p, 17);
-				sp.luminousEmittance = readFloat(sp.luminousEmittance, p, 18);
+				sp.luminousEmittance = readFloat(sp.luminousEmittance, p, 18);//55.7299
 				sp.exposureOffset = readFloat(sp.exposureOffset, p, 19);
 				sp.enableAdaptiveLimits = readBool(sp.enableAdaptiveLimits, p, 20);
 				sp.maxOffset = readFloat(sp.maxOffset, p, 21);
@@ -1797,7 +1917,7 @@ public class BSMaterialsCDB extends REFLArchive {
 					m.setFlags(CE2Material.Flag_AlphaVertexColor, tmp==1);
 				m.alphaVertexColorChannel = readEnum(m.alphaVertexColorChannel, p, 3, colorChannelNames);
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 5)
-					readUVStreamID(p.children()[4]);
+					readUVStreamID(p.child(4));
 				m.alphaHeightBlendThreshold = readFloat(m.alphaHeightBlendThreshold, p, 5, true);
 				m.alphaHeightBlendFactor = readFloat(m.alphaHeightBlendFactor, p, 6, true);
 				m.alphaPosition = readFloat(m.alphaPosition, p, 7, true);
@@ -1829,13 +1949,13 @@ public class BSMaterialsCDB extends REFLArchive {
 				CE2Material m = (CE2Material)(o);
 				CE2Material.EmissiveSettings sp = new CE2Material.EmissiveSettings();
 				m.emissiveSettings = sp;
-				int tmp = readBool(p, 0);
+				int tmp = readBool(p, 0);tmp=1;//FIXME: emissive enable alway false, may come from null values in CDObjects
 				if (tmp!=-1) {
 					m.setFlags(CE2Material.Flag_Emissive, tmp==1);
 					sp.isEnabled = tmp==1;
 				}
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 2)
-					readEmittanceSettings(p.children()[1]);
+					readEmittanceSettings(p.child(1));				
 			}
 	
 			// BSMaterial_WaterFoamSettingsComponent
@@ -1945,7 +2065,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			//   BSComponentDB2_ID  ID
 			void readUVStreamID(CDBObject p) {
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, (byte)6);
-				if (tmp == null)
+				if (tmp == invalidCE2MaterialObject)
 					return;
 				CE2Material.UVStream uvStream = (CE2Material.UVStream)(tmp);
 				switch (componentData.className) {
@@ -1994,7 +2114,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				sp.isPlanet = readBool(sp.isPlanet, p, 3);
 				sp.isProjected = readBool(sp.isProjected, p, 4);
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 6)
-					readProjectedDecalSettings(p.children()[5]);
+					readProjectedDecalSettings(p.child(5));
 				sp.blendMode = readEnum(sp.blendMode, p, 6, decalBlendModeNames);
 				sp.animatedDecalIgnoresTAA = readBool(sp.animatedDecalIgnoresTAA, p, 7);
 			}
@@ -2086,7 +2206,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			boolean readXMFLOAT4(FloatVector4 v, CDBObject p, int fieldNum) {
 				if (!(p != null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()))
 					return false;
-				CDBObject q = p.children()[fieldNum];
+				CDBObject q = p.child(fieldNum);
 				if (!(q != null && q.type == REFLArchive.String_XMFLOAT4 && q.childCnt() == 4))
 					return false;
 				v.x = readFloat(v.x, q, 0);
@@ -2257,7 +2377,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				sp.blendPosition = readFloat(sp.blendPosition, p, 10);
 				sp.blendContrast = readFloat(sp.blendContrast, p, 11);
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 13)
-					readGlobalLayerNoiseSettings(p.children()[12]);
+					readGlobalLayerNoiseSettings(p.child(12));
 			}
 	
 			// BSMaterial_Offset
@@ -2309,7 +2429,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				CE2Material.DecalSettings sp = m.decalSettings;
 				sp.useParallaxMapping = readBool(sp.useParallaxMapping, p, 0);
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 2)
-					readTextureFile(p.children()[1]);
+					readTextureFile(p.child(1));
 				sp.parallaxOcclusionScale = readFloat(sp.parallaxOcclusionScale, p, 2);
 				sp.parallaxOcclusionShadows = readBool(sp.parallaxOcclusionShadows, p, 3);
 				sp.maxParallaxSteps = readUInt8(sp.maxParallaxSteps, p, 4);
@@ -2349,11 +2469,11 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 			void readColorValues(FloatVector4 ret, CDBObject p, int fieldNum) {
 				if (p != null	&& p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-					&& p.children()[fieldNum] != null
-					&& p.children()[fieldNum].type == String_BSMaterial_Color) {
+					&& p.child(fieldNum) != null
+					&& p.child(fieldNum).type == String_BSMaterial_Color) {
 					 
-					readXMFLOAT4(ret, p.children()[fieldNum], 0);
-					// if (readXMFLOAT4( p.children()[fieldNum], 0))
+					readXMFLOAT4(ret, p.child(fieldNum), 0);
+					// if (readXMFLOAT4( p.child(fieldNum], 0))
 					{
 						ret.maxValues(new FloatVector4(0.0f)).minValues(new FloatVector4(1.0f));
 					}
@@ -2363,13 +2483,13 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 			int readColorValue(int def, CDBObject p, int fieldNum) {
 			  if (p!=null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt() &&
-			      p.children()[fieldNum] != null &&
-			      p.children()[fieldNum].type == String_BSMaterial_Color)
+			      p.child(fieldNum) != null &&
+			      p.child(fieldNum).type == String_BSMaterial_Color)
 			  {
 			    FloatVector4  tmp = new FloatVector4((1.0f / 255.0f));
 			    //tmp *= (1.0f / 255.0f);
-			    readXMFLOAT4(tmp, p.children()[fieldNum], 0);
-			    //if (readXMFLOAT4(tmp, p.children()[fieldNum], 0)) {
+			    readXMFLOAT4(tmp, p.child(fieldNum), 0);
+			    //if (readXMFLOAT4(tmp, p.child(fieldNum], 0)) {
 			      return (int)(tmp.x * 255.0f);
 			    //}
 			  }
@@ -2403,19 +2523,19 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 														CDBObject p, int fieldNum) {
 				if (!(p != null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()
-						&& p.children()[fieldNum] != null
-						&& p.children()[fieldNum].type == String_BSMaterial_SourceTextureWithReplacement)) {
+						&& p.child(fieldNum) != null
+						&& p.child(fieldNum).type == String_BSMaterial_SourceTextureWithReplacement)) {
 					return null;
 				}
-				CDBObject q = p.children()[fieldNum];
+				CDBObject q = p.child(fieldNum);
 				TexWithRep twr = new TexWithRep();
-				if (q.childCnt() >= 1 && q.children()[0] != null
-					&& q.children()[0].type == String_BSMaterial_MRTextureFile) {
-					twr.texturePath = readPath(twr.texturePath, q.children()[0], 0, "textures/", ".dds");
+				if (q.childCnt() >= 1 && q.child(0) != null
+					&& q.child(0).type == String_BSMaterial_MRTextureFile) {
+					twr.texturePath = readPath(twr.texturePath, q.child(0), 0, "textures/", ".dds");
 				}
-				if (q.childCnt() >= 2 && q.children()[1] != null
-					&& q.children()[1].type == String_BSMaterial_TextureReplacement) {
-					q = q.children()[1];
+				if (q.childCnt() >= 2 && q.child(1) != null
+					&& q.child(1).type == String_BSMaterial_TextureReplacement) {
+					q = q.child(1);
 					twr.textureReplacementEnabled = readBool(twr.textureReplacementEnabled,q, 0);
 					twr.textureReplacement = readColorValue(twr.textureReplacement,q, 1);
 				}
@@ -2468,7 +2588,7 @@ public class BSMaterialsCDB extends REFLArchive {
 					sp.textureReplacementEnabled = twr.textureReplacementEnabled;
 				}
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 3)
-					readUVStreamID(p.children()[2]);
+					readUVStreamID(p.child(2));
 			}
 	
 			// BSMaterial_LayerID
@@ -2478,7 +2598,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				if (!(o.type == 1 && i < CE2Material.maxLayers))
 					return;
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, 3);
-				if (tmp != null) {
+				if (tmp != invalidCE2MaterialObject) {
 					CE2Material m = (CE2Material)(o);
 					m.layers[i] = (CE2Material.Layer)(tmp);
 					if (!(tmp != null))
@@ -2622,16 +2742,17 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 			// BSComponentDB2_ID
 			//   UInt32  Value
+			static CE2MaterialObject invalidCE2MaterialObject = new CE2MaterialObject(-1);
 			CE2MaterialObject readBSComponentDB2ID(CDBObject p, int typeRequired) {
-				if (p != null	&& p.type > REFLArchive.String_Unknown && p.childCnt() >= 1 && p.children()[0] != null
-					&& p.children()[0].type == REFLArchive.String_BSComponentDB2_ID) {
-					CE2MaterialObject tmp = findMaterialObject(p.children()[0].linkedObject());
+				if (p != null	&& p.type > REFLArchive.String_Unknown && p.childCnt() >= 1 && p.child(0) != null
+					&& p.child(0).type == REFLArchive.String_BSComponentDB2_ID) {
+					CE2MaterialObject tmp = findMaterialObject(p.child(0).linkedObject());
 					if (typeRequired != 0 && tmp != null && tmp.type != typeRequired)
 						tmp = null;
 					return tmp;
 				}
 	
-				return null;//p could be null or whatever
+				return invalidCE2MaterialObject;//p could be null or whatever
 			}
 	
 			// BSMaterial_TextureReplacement
@@ -2678,11 +2799,11 @@ public class BSMaterialsCDB extends REFLArchive {
 				CE2Material.LayeredEdgeFalloff sp = new CE2Material.LayeredEdgeFalloff();
 				m.layeredEdgeFalloff = sp;
 				for (int i = 0; i < 4; i++) {
-					if (!(p != null && p.type > REFLArchive.String_Unknown && i < p.childCnt() && p.children()[i] != null
-							&& p.children()[i].type == REFLArchive.String_List)) {
+					if (!(p != null && p.type > REFLArchive.String_Unknown && i < p.childCnt() && p.child(i) != null
+							&& p.child(i).type == REFLArchive.String_List)) {
 						continue;
 					}
-					CDBObject q = p.children()[i];
+					CDBObject q = p.child(i);
 					float[] tmp = (sp.falloffStartAngles);
 					if (i == 1)
 						tmp = (sp.falloffStopAngles);
@@ -2691,8 +2812,8 @@ public class BSMaterialsCDB extends REFLArchive {
 					else if (i == 3)
 						tmp = (sp.falloffStopOpacities);
 					for (int j = 0; j < 3; j++) {
-						if (j < q.childCnt() && q.children()[j] != null && q.children()[j].type == REFLArchive.String_Float) {
-							tmp[j] = q.children()[j].floatValue();
+						if (j < q.childCnt() && q.child(j) != null && q.child(j).type == REFLArchive.String_Float) {
+							tmp[j] = q.child(j).floatValue();
 						}
 					}
 				}
@@ -2804,7 +2925,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				m.alphaThreshold = readFloat(m.alphaThreshold, p, 1, true);
 				m.alphaSourceLayer = readLayerNumber(m.alphaSourceLayer, p, 2);
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 4)
-					readAlphaBlenderSettings(p.children()[3]);
+					readAlphaBlenderSettings(p.child(3));
 				tmp = readBool(p, 4);
 				if (tmp!=-1)
 					m.setFlags(CE2Material.Flag_DitheredTransparency, tmp==1);
@@ -2828,7 +2949,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				if (o.type != 4)
 					return;				
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, 5);
-				if (tmp != null) {
+				if (tmp != invalidCE2MaterialObject) {
 					((CE2Material.Material)(o)).textureSet = (CE2Material.TextureSet)(tmp);
 				}
 			}
@@ -2919,7 +3040,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				CE2Material.DetailBlenderSettings sp = new CE2Material.DetailBlenderSettings();
 				m.detailBlenderSettings = sp;
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 1)
-					readDetailBlenderSettings(p.children()[0]);
+					readDetailBlenderSettings(p.child(0));
 			}
 	
 			// BSMaterial_StarmapBodyEffectComponent
@@ -2970,7 +3091,7 @@ public class BSMaterialsCDB extends REFLArchive {
 					sp.isEnabled = tmp==1;
 				}
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 2)
-					readTranslucencySettings(p.children()[1]);
+					readTranslucencySettings(p.child(1));
 			}
 	
 			// BSMaterial_GlobalLayerNoiseSettings
@@ -3016,7 +3137,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				if (o.type != 3)
 					return;
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, 4);
-				if (tmp != null) {
+				if (tmp != invalidCE2MaterialObject) {
 					((CE2Material.Layer)(o)).material = (CE2Material.Material)(tmp);
 				}
 			}
@@ -3027,7 +3148,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			void readXMFLOAT2L(FloatVector4 v, CDBObject p, int fieldNum) {
 				if (!(p != null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()))
 					return;
-				CDBObject q = p.children()[fieldNum];
+				CDBObject q = p.child(fieldNum);
 				if (!(q != null && q.type == REFLArchive.String_XMFLOAT2 && q.childCnt() == 2))
 					return;
 				v.x = readFloat(v.x, q, 0);
@@ -3037,7 +3158,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			void readXMFLOAT2H(FloatVector4 v, CDBObject p, int fieldNum) {
 				if (!(p != null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()))
 					return;
-				CDBObject q = p.children()[fieldNum];
+				CDBObject q = p.child(fieldNum);
 				if (!(q != null && q.type == REFLArchive.String_XMFLOAT2 && q.childCnt() == 2))
 					return;
 				v.z = readFloat(v.z, q, 0);
@@ -3127,7 +3248,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			void readXMFLOAT3(FloatVector4 v, CDBObject p, int fieldNum) {
 				if (!(p != null && p.type > REFLArchive.String_Unknown && fieldNum < p.childCnt()))
 					return;
-				CDBObject q = p.children()[fieldNum];
+				CDBObject q = p.child(fieldNum);
 				if (!(q != null && q.type == REFLArchive.String_XMFLOAT3 && q.childCnt() == 3))
 					return;
 				v.x = readFloat(v.x,q, 0);
@@ -3306,7 +3427,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				if (!(o.type == 1 && i < CE2Material.maxBlenders))
 					return;
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, (byte)2);
-				if (tmp != null) {
+				if (tmp != invalidCE2MaterialObject) {
 					((CE2Material)(o)).blenders[i] = (CE2Material.Blender)(tmp);
 				}
 			}
@@ -3315,7 +3436,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			//   BSMaterial_PhysicsMaterialType  MaterialTypeOverride
 			void readCollisionComponent(CDBObject p) {
 				if (p != null && p.type > REFLArchive.String_Unknown && p.childCnt() >= 1)
-					readPhysicsMaterialType(p.children()[0]);
+					readPhysicsMaterialType(p.child(0));
 			}
 	
 			// BSMaterial_TerrainSettingsComponent
@@ -3341,7 +3462,7 @@ public class BSMaterialsCDB extends REFLArchive {
 				if (!(o.type == 1 && i < CE2Material.maxLODMaterials))
 					return;
 				CE2MaterialObject tmp = readBSComponentDB2ID(p, (byte)1);
-				if (tmp != null) {
+				if (tmp != invalidCE2MaterialObject) {
 					((CE2Material)o).lodMaterials[i] = (CE2Material)(tmp);
 				}
 			}
@@ -3361,7 +3482,7 @@ public class BSMaterialsCDB extends REFLArchive {
 	
 			void loadComponent(MaterialComponent p) {
 				componentData = p;
-				CDBObject q = p.o;
+				CDBObject q = p.objt;
 				switch (p.className) {
 					case REFLArchive.String_BSBind_ControllerComponent:
 						readControllerComponent(q);//not imp
@@ -3713,8 +3834,6 @@ public class BSMaterialsCDB extends REFLArchive {
 			if (o != null)
 				return o;
 	
-			o = null;
-	
 			MaterialObject q = p;//q is about to go to to the topmost base object to figure which of the 6 base types we are loading in
 			while (q.baseObject != null)
 				q = q.baseObject;
@@ -3722,6 +3841,7 @@ public class BSMaterialsCDB extends REFLArchive {
 			if (q.persistentID.dir() != 0x1D95562F || // "materials\\layered\\root"
 				q.persistentID.ext() != 0x0074616D)// "mat\0"
 			{
+				System.err.println("baseObject not from dir materials\\layered\\root!");
 				return null;
 			}
 			// allocate object and initialize with defaults	    
@@ -3793,10 +3913,10 @@ public class BSMaterialsCDB extends REFLArchive {
 			      {
 			        if (j->className == BSReflStream::String_BSComponentDB_CTName &&
 			            j->o && j->o->type == BSReflStream::String_BSComponentDB_CTName &&
-			            j->o->childCnt >= 1 && j->o->children()[0] &&
-			            j->o->children()[0]->type == BSReflStream::String_String)
+			            j->o->childCnt >= 1 && j->o->child(0] &&
+			            j->o->child(0]->type == BSReflStream::String_String)
 			        {
-			          baseName = j->o->children()[0]->stringValue();
+			          baseName = j->o->child(0]->stringValue();
 			          break;
 			        }
 			      }
