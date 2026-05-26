@@ -16,7 +16,12 @@ public class BSTriShape extends NiTriBasedGeom
 {
 	public static boolean LOAD_OPTIMIZED = true;
 	public static boolean LOAD_MEGA_OPTIMIZED = false;
-	public static final float ES_TO_METERS_SCALE = 0.0254f / 2f;//0.02f;
+	// Fallout modular dungeon sections are 2.56 meters (are they? possible 256 unit or 3.25m)
+	// 128 units is 1.625.6m so a very short human
+	// NOTE TES x,y,z goes to j3d x,z,-y
+	// TES units are in fact definitively one half inch per unit!
+	// NOTE!!! this constant is referred to by ConvertFromNif
+	public static final float ES_TO_METERS_SCALE = 0.0127f; //1 unit = 1/2 inch = 12.7mm
 
 	public int dwordsPerVertex;
 	public int vertexFormat2;

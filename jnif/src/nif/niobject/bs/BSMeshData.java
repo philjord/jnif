@@ -10,6 +10,7 @@ import nif.compound.BSHalfFloatTexCoord2;
 import nif.compound.NifByteColor4BGRA;
 import nif.compound.NifShortVector3;
 import nif.compound.NifTriangle;
+import nif.compound.NifVector4;
 import nif.niobject.bs.BSGeometry.BSBoundingBox;
 import nif.niobject.bs.BSGeometry.NiBound;
 import nif.tools.MiniFloat;
@@ -18,9 +19,7 @@ import nif.tools.MiniFloat;
 public class BSMeshData {
 	
 	public static final boolean LOAD_OPTIMIZED = true;
-	public static final boolean TANGENTS =true;
-	private static final float SCALE_SCALE = 1f/512f; //either 0.01 or this number
-	
+	public static final boolean TANGENTS = true;
 	
 	/**
 	 * 
@@ -113,7 +112,7 @@ public class BSMeshData {
 				Triangles[i] = new NifTriangle(stream);
 			}
 			//<field name="Scale" type="float">Vertex coordinate scale</field>
-			Scale = ByteConvert.readFloat(stream) * SCALE_SCALE;
+			Scale = ByteConvert.readFloat(stream) / 32767f;
 			//<field name="Weights Per Vertex" type="uint" />
 			WeightsPerVertex = ByteConvert.readInt(stream);
 			//<field name="Num Verts" type="uint" />
@@ -173,18 +172,27 @@ public class BSMeshData {
 				trianglesOpt[i * 3 + 2] = ByteConvert.readUnsignedShort(stream);
 			}
 
-			// seems mighty big, how about a /100 or somethings
-			Scale = ByteConvert.readFloat(stream) * SCALE_SCALE;
+			
+			// magic number from here
+			//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/src/io/MeshFile.cpp#L107C3-L108C16
+			//xyz /= 32767.0f; looks like a tinyGL magically rubbish number to me
+			//xyz *= scale;
+			
+			//32=1024 ish
+			
+			float scale = 1024; // 1024 is 1/32 of 32768
+			Scale = ByteConvert.readFloat(stream) / scale;
+			
 			WeightsPerVertex = ByteConvert.readInt(stream);
 
 			NumVerts = ByteConvert.readInt(stream);
 
 			verticesOptBuf = BSTriShape.createFB(NumVerts * 3);
 
-			for (int i = 0; i < NumVerts; i++) {
-				verticesOptBuf.put(i * 3 + 0, ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
-				verticesOptBuf.put(i * 3 + 2, -ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
-				verticesOptBuf.put(i * 3 + 1, ByteConvert.readShort(stream) * BSTriShape.ES_TO_METERS_SCALE * Scale);
+			for (int i = 0; i < NumVerts; i++) {						
+				verticesOptBuf.put(i * 3 + 0, ByteConvert.readShort(stream)  * Scale * BSTriShape.ES_TO_METERS_SCALE);
+				verticesOptBuf.put(i * 3 + 2, -ByteConvert.readShort(stream) * Scale * BSTriShape.ES_TO_METERS_SCALE);
+				verticesOptBuf.put(i * 3 + 1, ByteConvert.readShort(stream)  * Scale * BSTriShape.ES_TO_METERS_SCALE);
 			}
 
 			NumUVs = ByteConvert.readInt(stream);
@@ -208,6 +216,7 @@ public class BSMeshData {
 				colorsOptBuf = BSTriShape.createFB(NumVertexColors * 4);
 				for (int i = 0; i < NumVertexColors; i++) {
 					//TODO: TEST!! BGRA!!! put into a RGBA shape
+					//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/src/io/MeshFile.cpp#L147
 					colorsOptBuf.put(i * 4 + 2, ByteConvert.readUnsignedByte(stream) / 255f);
 					colorsOptBuf.put(i * 4 + 1, ByteConvert.readUnsignedByte(stream) / 255f);
 					colorsOptBuf.put(i * 4 + 0, ByteConvert.readUnsignedByte(stream) / 255f);
@@ -217,24 +226,40 @@ public class BSMeshData {
 
 			NumNormals = ByteConvert.readInt(stream);
 			normalsOptBuf = BSTriShape.createFB(NumNormals * 3);
+			byte[] b = new byte[4];
 			for (int i = 0; i < NumNormals; i++) {
-				normalsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-				normalsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
-				normalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-				//java3d only accepts vec3 not vec4 at this stage
-				//normalsOptBuf.put(i * 4 + 3, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);// w
-				ByteConvert.readUnsignedByte(stream);
+				//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/src/io/MeshFile.cpp#L158
+				// a UDecVector4? https://github.com/fo76utils/nifskope/blob/develop/src/data/niftypes.h#L831				
+				//UDecVector4( const std::uint32_t & v ) : Vector4( FloatVector4::convertX10Y10Z10W2( v ) )		
+				// note c++ts read the bytes of an int in some damn stupid order that's unspoken, cos shh
+				
+				stream.get(b);				 
+				int n = (((b[0] & 0xff) << 24) | ((b[1] & 0xff) << 16) | ((b[2] & 0xff) << 8) | (b[3] & 0xff));
+				float x = (n & 0x000003FF) * (float)(2.0 / 1023.0) - 1.0f;
+				float y = (n & 0x000FFC00) * (float)(2.0 / 1047552.0) - 1.0f;
+				float z = (n & 0x3FF00000) * (float)(2.0 / 1072693248.0) - 1.0f;
+				//float w = (n >> 30) * (float)(2.0 / 3.0) - 1.0f;				 
+				
+				normalsOptBuf.put(i * 3 + 0, x);
+				normalsOptBuf.put(i * 3 + 2, -y);
+				normalsOptBuf.put(i * 3 + 1, z);
 			}
 
 			NumTangents = ByteConvert.readInt(stream);
 			tangentsOptBuf = BSTriShape.createFB(NumTangents * 3);
+			
 			for (int i = 0; i < NumTangents; i++) {
-				tangentsOptBuf.put(i * 3 + 0, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-				tangentsOptBuf.put(i * 3 + 2, -((ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f));
-				tangentsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
-				//java3d only accepts vec3 not vec4 at this stage
-				//tangentsOptBuf.put(i * 4 + 3, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);// w
-				ByteConvert.readUnsignedByte(stream);
+				//UDecVector4
+				
+				stream.get(b);				 
+				int n = (((b[0] & 0xff) << 24) | ((b[1] & 0xff) << 16) | ((b[2] & 0xff) << 8) | (b[3] & 0xff));
+				float x = (n & 0x000003FF) * (float)(2.0 / 1023.0) - 1.0f;
+				float y = (n & 0x000FFC00) * (float)(2.0 / 1047552.0) - 1.0f;
+				float z = (n & 0x3FF00000) * (float)(2.0 / 1072693248.0) - 1.0f;
+				//float w = (n >> 30) * (float)(2.0 / 3.0) - 1.0f;				 
+				tangentsOptBuf.put(i * 3 + 0, x);
+				tangentsOptBuf.put(i * 3 + 2, -y);
+				tangentsOptBuf.put(i * 3 + 1, z);
 			}
 
 		}
@@ -281,6 +306,16 @@ public class BSMeshData {
 			}
 		}
 
+	}
+	
+	//https://github.com/fo76utils/nifskope/blob/develop/lib/libfo76utils/src/fp32vec4_base.hpp#L674
+	public static NifVector4 convertX10Y10Z10W2(int n) {
+		NifVector4 tmp = new NifVector4();
+		tmp.x = (n & 0x000003FF) * (float)(2.0 / 1023.0) - 1.0f;
+		tmp.y = (n & 0x000FFC00) * (float)(2.0 / 1047552.0) - 1.0f;
+		tmp.z = (n & 0x3FF00000) * (float)(2.0 / 1072693248.0) - 1.0f;
+		tmp.w = (n >> 30) * (float)(2.0 / 3.0) - 1.0f;
+		return tmp;
 	}
 
 	/**

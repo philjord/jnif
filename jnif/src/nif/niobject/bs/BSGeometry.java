@@ -166,6 +166,12 @@ public class BSGeometry extends NiAVObject {
 			//	System.out.println(new Throwable("Unfinished NiBound").getStackTrace()[0]);
 			//}
 		}
+		
+
+		@Override
+		public String toString() {
+			return "NiBound cent= " + Center + " rad= " + Radius;
+		}
 	}
 
 	/**
@@ -180,6 +186,11 @@ public class BSGeometry extends NiAVObject {
 		public BSBoundingBox(ByteBuffer stream) throws IOException {
 			Center = new NifVector3(stream);
 			Dimensions = new NifVector3(stream);
+		}
+		
+		@Override
+		public String toString() {
+			return "BSBoundingBox cent= " + Center + " dims= " + Dimensions;
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class NifVector4
 
 	public float w;
 	
-	protected NifVector4() {
+	public NifVector4() {
 		
 	}
 
