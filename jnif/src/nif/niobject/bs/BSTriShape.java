@@ -10,7 +10,7 @@ import nif.NifVer;
 import nif.compound.BSVertexData;
 import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSTriShape extends NiTriBasedGeom
 {
@@ -146,9 +146,9 @@ public class BSTriShape extends NiTriBasedGeom
 							interleavedBuffer.position(i * interleavedStride);
 							if (vertexFormat.isSet(VertexFormat.VF_Full_Precision))
 							{
-								short x = (short) MiniFloat.fromFloat(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-								short z = (short) -MiniFloat.fromFloat(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
-								short y = (short) MiniFloat.fromFloat(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+								short x = FP16.toHalf(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+								short z = (short) -FP16.toHalf(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
+								short y = FP16.toHalf(ByteConvert.readFloat(stream) * ES_TO_METERS_SCALE);
 
 								interleavedBuffer.putShort(x);
 								interleavedBuffer.putShort(y);
@@ -166,12 +166,12 @@ public class BSTriShape extends NiTriBasedGeom
 							}
 							else
 							{
-								short x = (short) MiniFloat
-										.fromFloat(MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
-								short z = (short) MiniFloat
-										.fromFloat(-MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
-								short y = (short) MiniFloat
-										.fromFloat(MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+								short x = FP16
+										.toHalf(FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
+								short z = FP16
+										.toHalf(-FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
+								short y = FP16
+										.toHalf(FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
 
 								interleavedBuffer.putShort(x);
 								interleavedBuffer.putShort(y);
@@ -179,7 +179,7 @@ public class BSTriShape extends NiTriBasedGeom
 								if (vertexFormat.isSet(VertexFormat.VF_Normals) && vertexFormat.isSet(VertexFormat.VF_Tangents))
 								{
 									interleavedBuffer.position(i * interleavedStride + geoToBiTanOffset + 0);
-									interleavedBuffer.put((byte) (MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * 255));
+									interleavedBuffer.put((byte) (FP16.toFloat(ByteConvert.readShort(stream)) * 255));
 								}
 								else
 								{
@@ -242,7 +242,7 @@ public class BSTriShape extends NiTriBasedGeom
 						{
 							BoneWeights = new float[4];
 							for (int b = 0; b < 4; b++)
-								BoneWeights[b] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+								BoneWeights[b] = FP16.toFloat(ByteConvert.readShort(stream));
 							BoneIndices = new int[4];
 							for (int b = 0; b < 4; b++)
 								BoneIndices[b] = ByteConvert.readUnsignedByte(stream);
@@ -301,26 +301,26 @@ public class BSTriShape extends NiTriBasedGeom
 							else
 							{
 								verticesOptBuf.put(i * 3 + 0,
-										MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+										FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
 								verticesOptBuf.put(i * 3 + 2,
-										-MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+										-FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
 								verticesOptBuf.put(i * 3 + 1,
-										MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)) * ES_TO_METERS_SCALE);
+										FP16.toFloat(ByteConvert.readShort(stream)) * ES_TO_METERS_SCALE);
 								if (vertexFormat.isSet(VertexFormat.VF_Normals))
 								{
-									binormalsOptBuf.put(i * 3 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+									binormalsOptBuf.put(i * 3 + 0, FP16.toFloat(ByteConvert.readShort(stream)));
 								}
 								else
 								{
-									MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));//discard
+									FP16.toFloat(ByteConvert.readShort(stream));//discard
 								}
 							}
 						}
 
 						if (vertexFormat.isSet(VertexFormat.VF_UVs))
 						{
-							uVSetOptBuf.put(i * 2 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
-							uVSetOptBuf.put(i * 2 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+							uVSetOptBuf.put(i * 2 + 0, FP16.toFloat(ByteConvert.readShort(stream)));
+							uVSetOptBuf.put(i * 2 + 1, FP16.toFloat(ByteConvert.readShort(stream)));
 						}
 
 						if (vertexFormat.isSet(VertexFormat.VF_Normals))
@@ -352,7 +352,7 @@ public class BSTriShape extends NiTriBasedGeom
 						{
 							BoneWeights = new float[4];
 							for (int b = 0; b < 4; b++)
-								BoneWeights[b] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+								BoneWeights[b] = FP16.toFloat(ByteConvert.readShort(stream));
 							BoneIndices = new int[4];
 							for (int b = 0; b < 4; b++)
 								BoneIndices[b] = ByteConvert.readUnsignedByte(stream);

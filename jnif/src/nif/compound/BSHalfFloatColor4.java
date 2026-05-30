@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSHalfFloatColor4
 {
@@ -19,10 +19,10 @@ public class BSHalfFloatColor4
 
 	public BSHalfFloatColor4(ByteBuffer stream) throws IOException
 	{
-		r = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		g = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		b = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		a = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+		r = FP16.toFloat(ByteConvert.readShort(stream));
+		g = FP16.toFloat(ByteConvert.readShort(stream));
+		b = FP16.toFloat(ByteConvert.readShort(stream));
+		a = FP16.toFloat(ByteConvert.readShort(stream));
 	}
 
 	public String toString()

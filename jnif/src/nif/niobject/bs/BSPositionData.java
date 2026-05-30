@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import nif.ByteConvert;
 import nif.NifVer;
 import nif.niobject.NiExtraData;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSPositionData extends NiExtraData
 {
@@ -22,6 +22,7 @@ public class BSPositionData extends NiExtraData
 	public int NumData;
 	public float[] Data;
 
+	@Override
 	public boolean readFromStream(ByteBuffer stream, NifVer nifVer) throws IOException
 	{
 		boolean success = super.readFromStream(stream, nifVer);
@@ -29,7 +30,7 @@ public class BSPositionData extends NiExtraData
 		Data = new float[NumData];
 		for (int i = 0; i < NumData; i++)
 		{
-			Data[i] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+			Data[i] = FP16.toFloat(ByteConvert.readShort(stream));
 		}
 
 		return success;

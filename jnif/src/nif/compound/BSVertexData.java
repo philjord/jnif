@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
 import nif.niobject.bs.BSTriShape.VertexFormat;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSVertexData
 {
@@ -147,7 +147,7 @@ public class BSVertexData
 			else
 			{
 				vertex = new BSHalfFloatVector3(stream);
-				bitangentX = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+				bitangentX = FP16.toFloat(ByteConvert.readShort(stream));
 			}
 		}
 
@@ -176,7 +176,7 @@ public class BSVertexData
 		{
 			BoneWeights = new float[4];
 			for (int b = 0; b < 4; b++)
-				BoneWeights[b] = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+				BoneWeights[b] = FP16.toFloat(ByteConvert.readShort(stream));
 			BoneIndices = new int[4];
 			for (int b = 0; b < 4; b++)
 				BoneIndices[b] = ByteConvert.readUnsignedByte(stream);

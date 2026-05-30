@@ -9,7 +9,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 import nif.niobject.hkx.reader.byteutils.ByteUtils;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 	
 /**<struct name='hknpMaterial' version='1' signature='0xb7c5f24e'>
@@ -112,11 +112,11 @@ public class hknpMaterial  {
 		// <member name='triggerManifoldTolerance' type='struct hkUFloat8' ctype='hkUFloat8' offset='17' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		triggerManifoldTolerance = stream.get(classOffset + 17);//FIXME!!!! 8 bit float/ like a half half float? 255 rather than -1 type thign
 		// <member name='dynamicFriction' type='hkHalf' offset='18' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		dynamicFriction = MiniFloat.toFloat(stream.getShort(classOffset + 18));
+		dynamicFriction = FP16.toFloat(stream.getShort(classOffset + 18));
 		// <member name='staticFriction' type='hkHalf' offset='20' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		staticFriction = MiniFloat.toFloat(stream.getShort(classOffset + 20));
+		staticFriction = FP16.toFloat(stream.getShort(classOffset + 20));
 		// <member name='restitution' type='hkHalf' offset='22' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		restitution = MiniFloat.toFloat(stream.getShort(classOffset + 22));
+		restitution = FP16.toFloat(stream.getShort(classOffset + 22));
 		// <member name='frictionCombinePolicy' type='enum CombinePolicy' etype='CombinePolicy' offset='24' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int frictionCombinePolicyv = Byte.toUnsignedInt(stream.get(classOffset + 24));// seems to allow 255 as a value? odd
 		//frictionCombinePolicy = CombinePolicy.values()[];
@@ -128,7 +128,7 @@ public class hknpMaterial  {
 		//restitutionCombinePolicy = CombinePolicy.values()[Byte.toUnsignedInt(stream.get(25))];
 		
 		// <member name='weldingTolerance' type='hkHalf' offset='26' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		weldingTolerance = MiniFloat.toFloat(stream.getShort(classOffset + 26));
+		weldingTolerance = FP16.toFloat(stream.getShort(classOffset + 26));
 		// <member name='maxContactImpulse' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxContactImpulse = stream.getFloat(classOffset + 28);
 		// <member name='fractionOfClippedImpulseToApply' type='hkReal' offset='32' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
@@ -138,11 +138,11 @@ public class hknpMaterial  {
 		//massChangerCategory = MassChangerCategory.values()[Byte.toUnsignedInt(stream.get(36))];
 		
 		// <member name='massChangerHeavyObjectFactor' type='hkHalf' offset='38' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		massChangerHeavyObjectFactor = MiniFloat.toFloat(stream.getShort(classOffset + 38));
+		massChangerHeavyObjectFactor = FP16.toFloat(stream.getShort(classOffset + 38));
 		// <member name='softContactForceFactor' type='hkHalf' offset='40' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		softContactForceFactor = MiniFloat.toFloat(stream.getShort(classOffset + 40));
+		softContactForceFactor = FP16.toFloat(stream.getShort(classOffset + 40));
 		// <member name='softContactDampFactor' type='hkHalf' offset='42' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		softContactDampFactor = MiniFloat.toFloat(stream.getShort(classOffset + 42));
+		softContactDampFactor = FP16.toFloat(stream.getShort(classOffset + 42));
 		// <member name='softContactSeperationVelocity' type='struct hkUFloat8' ctype='hkUFloat8' offset='44' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		softContactSeperationVelocity = stream.get(classOffset + 44);//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
 		 
@@ -154,7 +154,7 @@ public class hknpMaterial  {
 			connector.data2.backtrack();
 		}
 		// <member name='disablingCollisionsBetweenCvxCvxDynamicObjectsDistance' type='hkHalf' offset='56' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = MiniFloat.toFloat(stream.getShort(classOffset + 56));
+		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = FP16.toFloat(stream.getShort(classOffset + 56));
 		// <member name='userData' type='hkUint64' offset='64' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_8'/>
 		userData = stream.getLong(classOffset + 64);
 		// <member name='isShared' type='hkBool' offset='72' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>

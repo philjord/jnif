@@ -13,7 +13,7 @@ import nif.compound.NifTriangle;
 import nif.compound.NifVector4;
 import nif.niobject.bs.BSGeometry.BSBoundingBox;
 import nif.niobject.bs.BSGeometry.NiBound;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 
 public class BSMeshData {
@@ -163,7 +163,10 @@ public class BSMeshData {
 			}
 
 		} else {
-
+			// for pulling bytes in a bigendian fashion
+			byte[] b = new byte[4];
+			
+			
 			int numTriangles = IndicesSize / 3;
 			trianglesOpt = new int[numTriangles * 3];
 			for (int i = 0; i < numTriangles; i++) {
@@ -178,10 +181,7 @@ public class BSMeshData {
 			//xyz /= 32767.0f; looks like a tinyGL magically rubbish number to me
 			//xyz *= scale;
 			
-			//32=1024 ish
-			
-			float scale = 1024; // 1024 is 1/32 of 32768
-			Scale = ByteConvert.readFloat(stream) / scale;
+			Scale = ByteConvert.readFloat(stream) / 1024; // Empirically proven dead accurate, note this is 1/32 of 32767, interesting
 			
 			WeightsPerVertex = ByteConvert.readInt(stream);
 
@@ -198,16 +198,20 @@ public class BSMeshData {
 			NumUVs = ByteConvert.readInt(stream);
 			uVSetOptBuf = BSTriShape.createFB(NumUVs * 2);
 			for (int i = 0; i < NumUVs; i++) {
-				uVSetOptBuf.put(i * 2 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
-				uVSetOptBuf.put(i * 2 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+				//HalfTexCoord
+				//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/src/io/MeshFile.cpp#L121
+				//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/lib/libfo76utils/src/fp32vec4_base.hpp#L69
+				  
+				uVSetOptBuf.put(i * 2 + 0, FP16.toFloat(ByteConvert.readShort(stream)));
+				uVSetOptBuf.put(i * 2 + 1, FP16.toFloat(ByteConvert.readShort(stream)));
 			}
 			
 			NumUVs2 = ByteConvert.readInt(stream);
 			if (NumUVs2 > 0) {
 				uVSet2OptBuf = BSTriShape.createFB(NumUVs2 * 2);
 				for (int i = 0; i < NumUVs2; i++) {
-					uVSet2OptBuf.put(i * 2 + 0, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
-					uVSet2OptBuf.put(i * 2 + 1, MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream)));
+					uVSet2OptBuf.put(i * 2 + 0, FP16.toFloat(ByteConvert.readShort(stream)));
+					uVSet2OptBuf.put(i * 2 + 1, FP16.toFloat(ByteConvert.readShort(stream)));
 				}
 			}
 
@@ -226,7 +230,7 @@ public class BSMeshData {
 
 			NumNormals = ByteConvert.readInt(stream);
 			normalsOptBuf = BSTriShape.createFB(NumNormals * 3);
-			byte[] b = new byte[4];
+
 			for (int i = 0; i < NumNormals; i++) {
 				//https://github.com/fo76utils/nifskope/blob/8e117d5406a561e057db37f967d84773aa8df833/src/io/MeshFile.cpp#L158
 				// a UDecVector4? https://github.com/fo76utils/nifskope/blob/develop/src/data/niftypes.h#L831				

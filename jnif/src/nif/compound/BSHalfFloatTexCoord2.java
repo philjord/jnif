@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSHalfFloatTexCoord2
 {
@@ -14,8 +14,8 @@ public class BSHalfFloatTexCoord2
 
 	public BSHalfFloatTexCoord2(ByteBuffer stream) throws IOException
 	{
-		u = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		v = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+		u = FP16.toFloat(ByteConvert.readShort(stream));
+		v = FP16.toFloat(ByteConvert.readShort(stream));
 	}
 
 	public String toString()

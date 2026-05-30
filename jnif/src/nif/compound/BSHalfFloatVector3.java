@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.ByteConvert;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSHalfFloatVector3 extends NifVector3
 {
 	public BSHalfFloatVector3(ByteBuffer stream) throws IOException
 	{
 		super();
-		x = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		y = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
-		z = MiniFloat.toFloat(ByteConvert.readUnsignedShort(stream));
+		x = FP16.toFloat(ByteConvert.readShort(stream));
+		y = FP16.toFloat(ByteConvert.readShort(stream));
+		z = FP16.toFloat(ByteConvert.readShort(stream));
 
 		if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
 		{

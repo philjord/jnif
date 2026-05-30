@@ -12,7 +12,7 @@ import nif.compound.NifSphereBV;
 import nif.compound.NifTriangle;
 import nif.compound.NifVector3;
 import nif.niobject.NiExtraData;
-import nif.tools.MiniFloat;
+import nif.tools.FP16;
 
 public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 {
@@ -357,8 +357,8 @@ public class BSPackedCombinedSharedGeomDataExtra extends NiExtraData
 			ObjectHash = ByteConvert.toInt(bs);
 			s1 = ByteConvert.toShort(new byte[] { bs[0], bs[1] });
 			s2 = ByteConvert.toShort(new byte[] { bs[1], bs[2] });
-			f1 = MiniFloat.toFloat(s1);
-			f2 = MiniFloat.toFloat(s2);
+			f1 = FP16.toFloat(s1);
+			f2 = FP16.toFloat(s2);
 
 			//ByteConvert.readByte(stream);
 			//ByteConvert.readByte(stream);
