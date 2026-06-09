@@ -12,6 +12,30 @@ import nif.compound.NifTriangle;
 import nif.niobject.NiTriBasedGeom;
 import nif.tools.FP16;
 
+/**
+ * <!-- Fallout 4 Geometry -->
+    
+    <niobject name="BSTriShape" inherit="NiAVObject" module="BSMain" versions="#SSE# #FO4# #F76#">
+        Fallout 4 Tri Shape
+        <field name="Bounding Sphere" type="NiBound" />
+        <field name="Bound Min Max" type="float" length="6" vercond="#BS_GTE_F76#" />
+        <field name="Skin" type="Ref" template="NiObject" />
+        <field name="Shader Property" type="Ref" template="BSShaderProperty" />
+        <field name="Alpha Property" type="Ref" template="NiAlphaProperty" />
+        <field name="Vertex Desc" type="BSVertexDesc" />
+        <field name="Num Triangles" type="uint" vercond="#BS_GTE_130#" />
+        <field name="Num Triangles" type="ushort" vercond="#NI_BS_LT_FO4#" />
+        <field name="Num Vertices" type="ushort" />
+        <field name="Data Size" type="uint" calc="((Vertex Desc #BITAND# 0xF) #MUL# Num Vertices #MUL# 4) #ADD# (Num Triangles #MUL# 6)" />
+        <field name="Vertex Data" type="BSVertexData" length="Num Vertices" arg="Vertex Desc #RSH# 44" cond="Data Size #GT# 0" vercond="#BS_GTE_130#" />
+        <field name="Vertex Data" type="BSVertexDataSSE" length="Num Vertices" arg="Vertex Desc #RSH# 44" cond="Data Size #GT# 0" vercond="#BS_SSE#" />
+        <field name="Triangles" type="Triangle" length="Num Triangles" cond="Data Size #GT# 0" />
+        <field name="Particle Data Size" type="uint" calc="(Num Vertices #MUL# 6) #ADD# (Num Triangles #MUL# 3)" vercond="#BS_SSE#" />
+        <field name="Particle Vertices" type="HalfVector3" length="Num Vertices" cond="Particle Data Size #GT# 0" vercond="#BS_SSE#" />
+        <field name="Particle Normals" type="HalfVector3" length="Num Vertices" cond="Particle Data Size #GT# 0" vercond="#BS_SSE#" />
+        <field name="Particle Triangles" type="Triangle" length="Num Triangles" cond="Particle Data Size #GT# 0" vercond="#BS_SSE#" />
+    </niobject>
+ */
 public class BSTriShape extends NiTriBasedGeom
 {
 	public static boolean LOAD_OPTIMIZED = true;
@@ -339,7 +363,10 @@ public class BSTriShape extends NiTriBasedGeom
 								binormalsOptBuf.put(i * 3 + 1, (ByteConvert.readUnsignedByte(stream) / 255.0f) * 2.0f - 1.0f);
 							}
 						}
-
+						
+						
+						
+						
 						if (vertexFormat.isSet(VertexFormat.VF_Vertex_Colors))
 						{
 							colorsOptBuf.put(i * 4 + 0, ByteConvert.readUnsignedByte(stream) / 255f);
@@ -363,8 +390,9 @@ public class BSTriShape extends NiTriBasedGeom
 							//<add name="Unknown Int 2" type="uint" cond="(ARG &amp; 4096) != 0" />
 							ByteConvert.readInt(stream);
 						}
-
+						
 					}
+					
 				}
 
 				trianglesOpt = new int[numTriangles * 3];
