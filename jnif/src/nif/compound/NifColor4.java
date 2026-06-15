@@ -35,9 +35,10 @@ public class NifColor4
 		a = ByteConvert.readFloat(stream);
 	}
 
+	@Override
 	public String toString()
 	{
-		return "NifColor4: r" + r + " b" + b + " g" + g + " a" + a;
+		return "NifColor4: r=" + r + ",g=" + g + ",b=" + b + ",a=" + a;
 
 	}
 }
