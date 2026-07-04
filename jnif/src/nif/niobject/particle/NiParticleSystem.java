@@ -71,7 +71,7 @@ public class NiParticleSystem extends NiParticles
 	public int UnknownInt1;
 	public int UnknownInt2;
 	public int UnknownInt3;
-	public NifRef Data;
+	//public NifRef Data;//using the already defined data variable
 
 	public boolean worldSpace;
 
@@ -94,7 +94,7 @@ public class NiParticleSystem extends NiParticles
 		{
 			UnknownInt2 = ByteConvert.readInt(stream);
 			UnknownInt3 = ByteConvert.readInt(stream);
-			Data = new NifRef(NiPSysData.class, stream);
+			data = new NifRef(NiPSysData.class, stream);
 		}
 
 		//crazy black prophecy stuff
