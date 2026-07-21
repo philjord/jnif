@@ -35,7 +35,7 @@ public class HeaderInterface {
 			((Buffer) file).position(0);
 			file.put(descriptor.fileID);
 			file.put(descriptor.version);
-			file.put(descriptor.extras);
+			file.put(descriptor.extras);			
 			file.put(descriptor.constants);
 			file.put(descriptor.verName);
 			file.put(descriptor.constants2);
@@ -96,6 +96,9 @@ public class HeaderInterface {
 		file.get(data.descriptor.extras11);
 		file.get(data.descriptor.padding11);
 		data.version = ByteUtils.getUInt(data.descriptor.version);
+		data.versionName = new String(data.descriptor.verName);
+		data.is64bit = data.descriptor.extras[0] == 8;
+		data.endian = data.descriptor.extras[1];
 		data.versionName = new String(data.descriptor.verName);
 		if (data.version == HeaderDescriptor_v11.VERSION_11) {
 			data.paddingAfter = ByteUtils.getULong(data.descriptor.padding11);

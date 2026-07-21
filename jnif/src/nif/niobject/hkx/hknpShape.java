@@ -2,9 +2,8 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-import nif.niobject.hkx.reader.DataExternal;
+import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
@@ -76,12 +75,7 @@ public class hknpShape extends hkReferencedObject {
 		//<member name='userData' type='hkUint64' offset='24' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		userData = stream.getLong(classOffset + 24);
 		//<member name='properties' type='struct hkRefCountedProperties*' ctype='hkRefCountedProperties' offset='32' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
-		DataExternal data = connector.data2.readNext();
-		if (data.from == classOffset + 32) {
-			properties = data.to;
-		} else {
-			connector.data2.backtrack();
-		}
+		properties = HKXReader.getPointer(connector, classOffset + 32);
 		return success;
 	}
 }

@@ -2,16 +2,13 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.reader.DataExternal;
-import nif.niobject.hkx.reader.DataInternal;
+import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
-import nif.niobject.hkx.reader.byteutils.ByteUtils;
 import nif.tools.FP16;
 
-	
 /**<struct name='hknpMaterial' version='1' signature='0xb7c5f24e'>
 	<enums>
 		<enum name='TriggerType' flags='00000000'>
@@ -57,58 +54,54 @@ import nif.tools.FP16;
 	</members>
 </struct>*/
 
-enum TriggerType {TRIGGER_TYPE_NONE, TRIGGER_TYPE_BROAD_PHASE,TRIGGER_TYPE_NARROW_PHASE, TRIGGER_TYPE_CONTACT_SOLVER};
-enum CombinePolicy {COMBINE_AVG, COMBINE_MIN,COMBINE_MAX};
-enum MassChangerCategory {MASS_CHANGER_IGNORE, MASS_CHANGER_DEBRIS,MASS_CHANGER_HEAVY};
+public class hknpMaterial {
+	enum TriggerType {
+		TRIGGER_TYPE_NONE, TRIGGER_TYPE_BROAD_PHASE, TRIGGER_TYPE_NARROW_PHASE, TRIGGER_TYPE_CONTACT_SOLVER
+	};
 
-public class hknpMaterial  {
-	public static final int size = 73; // or does align 16 want this to be 80?
-	public String name;
-	public int isExclusive;
-	public int flags;
-	public TriggerType triggerType;
-	public byte triggerManifoldTolerance;
-	public float dynamicFriction;
-	public float staticFriction;
-	public float restitution;
-	public CombinePolicy frictionCombinePolicy;
-	public CombinePolicy restitutionCombinePolicy;
-	public float weldingTolerance;
-	public float maxContactImpulse;
-	public float fractionOfClippedImpulseToApply;
-	public MassChangerCategory massChangerCategory;
-	public float massChangerHeavyObjectFactor;
-	public float softContactForceFactor;
-	public float softContactDampFactor;
-	public byte softContactSeperationVelocity;
-	public long surfaceVelocity;
-	public float disablingCollisionsBetweenCvxCvxDynamicObjectsDistance;
-	public long userData;
-	public boolean isShared;
-	
-	public hknpMaterial(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{			
+	enum CombinePolicy {
+		COMBINE_AVG, COMBINE_MIN, COMBINE_MAX
+	};
+
+	enum MassChangerCategory {
+		MASS_CHANGER_IGNORE, MASS_CHANGER_DEBRIS, MASS_CHANGER_HEAVY
+	};
+
+	public static final int		size	= 72 + 1;										// or does align 16 want this to be 80?
+	public String				name;
+	public int					isExclusive;
+	public int					flags;
+	public TriggerType			triggerType;
+	public byte					triggerManifoldTolerance;
+	public float				dynamicFriction;
+	public float				staticFriction;
+	public float				restitution;
+	public CombinePolicy		frictionCombinePolicy;
+	public CombinePolicy		restitutionCombinePolicy;
+	public float				weldingTolerance;
+	public float				maxContactImpulse;
+	public float				fractionOfClippedImpulseToApply;
+	public MassChangerCategory	massChangerCategory;
+	public float				massChangerHeavyObjectFactor;
+	public float				softContactForceFactor;
+	public float				softContactDampFactor;
+	public byte					softContactSeperationVelocity;
+	public long					surfaceVelocity;
+	public float				disablingCollisionsBetweenCvxCvxDynamicObjectsDistance;
+	public long					userData;
+	public boolean				isShared;
+
+	public hknpMaterial(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		// <member name='name' type='hkStringPtr' offset='0' vtype='TYPE_STRINGPTR' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
-		name = "";
-		try {
-			DataInternal data = connector.data1.readNext();
-			if (data.from == classOffset + 0) {
-				ByteBuffer file2 = connector.data.setup(data.to);
-				name = ByteUtils.readString(file2);
-			} else {
-				connector.data1.backtrack();
-			}
-		} catch (InvalidPositionException e) {
-			// NO OP. Met when the last item of the HKX file is a String and is empty.
-			name = "";
-		}
+		name = HKXReader.hkStringPtr(connector, classOffset + 0);
 		// <member name='isExclusive' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		isExclusive = stream.getInt(classOffset + 8);
 		// <member name='flags' type='hkInt32' offset='12' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		flags = stream.getInt(classOffset + 12);
 		// <member name='triggerType' type='enum TriggerType' etype='TriggerType' offset='16' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int tt = stream.get(classOffset + 16); //Index 76 out of bounds for length 4
-		triggerType = tt >=0 && tt < TriggerType.values().length ? TriggerType.values()[tt] : TriggerType.values()[0];
+		triggerType = tt >= 0 && tt < TriggerType.values().length ? TriggerType.values()[tt] : TriggerType.values()[0];
 		// <member name='triggerManifoldTolerance' type='struct hkUFloat8' ctype='hkUFloat8' offset='17' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		triggerManifoldTolerance = stream.get(classOffset + 17);//FIXME!!!! 8 bit float/ like a half half float? 255 rather than -1 type thign
 		// <member name='dynamicFriction' type='hkHalf' offset='18' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
@@ -120,13 +113,13 @@ public class hknpMaterial  {
 		// <member name='frictionCombinePolicy' type='enum CombinePolicy' etype='CombinePolicy' offset='24' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int frictionCombinePolicyv = Byte.toUnsignedInt(stream.get(classOffset + 24));// seems to allow 255 as a value? odd
 		//frictionCombinePolicy = CombinePolicy.values()[];
-		
+
 		// <member name='restitutionCombinePolicy' type='enum CombinePolicy' etype='CombinePolicy' offset='25' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		// I've seen 205, 160?  what are these nomralized ordinals? so 0, 160,205,255which are 00000000,10100000,11100001,11111111,
 		// I could use the xml exporter and see what it says about the enum value
 		int restitutionCombinePolicyv = Byte.toUnsignedInt(stream.get(classOffset + 25));// seems to allow 255 as a value? odd
 		//restitutionCombinePolicy = CombinePolicy.values()[Byte.toUnsignedInt(stream.get(25))];
-		
+
 		// <member name='weldingTolerance' type='hkHalf' offset='26' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		weldingTolerance = FP16.toFloat(stream.getShort(classOffset + 26));
 		// <member name='maxContactImpulse' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
@@ -136,7 +129,7 @@ public class hknpMaterial  {
 		// <member name='massChangerCategory' type='enum MassChangerCategory' etype='MassChangerCategory' offset='36' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int massChangerCategoryv = Byte.toUnsignedInt(stream.get(classOffset + 36));// seems to allow 255 as a value? odd
 		//massChangerCategory = MassChangerCategory.values()[Byte.toUnsignedInt(stream.get(36))];
-		
+
 		// <member name='massChangerHeavyObjectFactor' type='hkHalf' offset='38' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		massChangerHeavyObjectFactor = FP16.toFloat(stream.getShort(classOffset + 38));
 		// <member name='softContactForceFactor' type='hkHalf' offset='40' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
@@ -145,21 +138,16 @@ public class hknpMaterial  {
 		softContactDampFactor = FP16.toFloat(stream.getShort(classOffset + 42));
 		// <member name='softContactSeperationVelocity' type='struct hkUFloat8' ctype='hkUFloat8' offset='44' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		softContactSeperationVelocity = stream.get(classOffset + 44);//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
-		 
+
 		// <member name='surfaceVelocity' type='struct hknpSurfaceVelocity*' ctype='hknpSurfaceVelocity' offset='48' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
-		DataExternal data = connector.data2.readNext();
-		if (data.from == classOffset + 48) {
-			surfaceVelocity = data.to;
-		} else {
-			connector.data2.backtrack();
-		}
+		surfaceVelocity = HKXReader.getPointer(connector, classOffset + 48);
 		// <member name='disablingCollisionsBetweenCvxCvxDynamicObjectsDistance' type='hkHalf' offset='56' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = FP16.toFloat(stream.getShort(classOffset + 56));
 		// <member name='userData' type='hkUint64' offset='64' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_8'/>
 		userData = stream.getLong(classOffset + 64);
 		// <member name='isShared' type='hkBool' offset='72' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		isShared = stream.get(classOffset + 72) != 0;
-		
+
 	}
-	
+
 }

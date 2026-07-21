@@ -5,9 +5,6 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
-import nif.niobject.hkx.reader.byteutils.ByteUtils;
-
- 
 
 /**<class name='hkBaseObject' version='0' signature='0xe0708a00'>
 	<members>
@@ -15,19 +12,19 @@ import nif.niobject.hkx.reader.byteutils.ByteUtils;
 </class>
 */
 public class hkBaseObject {
-	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+	
+	 
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
+		
+		// hkReferencedObject starts at offset 8 
+//https://github.com/SARDONYX-sard/serde-hkx/tree/0.1.0/docs/handson_hex_dump/defaultmale
+		//states 
+		/// The class size is pointer size.
+		/// - size: 32bit: 4, 64bit: 8
+	 
 		return true;
 	}
 
-	// util for array size getting
-	// offset should be classOffset+something
-	protected static int getArraySize(HKXReaderConnector connector, int offset) throws InvalidPositionException {
-		ByteBuffer stream = connector.data.setup(offset);
-		byte[] sizeSpecificBytes = new byte[4];
-		for( int i = 0; i < sizeSpecificBytes.length; i++)
-			sizeSpecificBytes[i] = stream.get(offset + 8 + i);//8,9,10,11 are an uint of array size		 
-		return ByteUtils.getUInt(sizeSpecificBytes);		
-		// SEE return HKXReader.getSizeComponent(baseArrayBytes);
-	}
+	
 }

@@ -2,7 +2,6 @@ package nif.niobject.hkx;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.compound.NifQuaternionXYZW;
 import nif.compound.NifVector4;
@@ -24,23 +23,23 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 		<member name='angularVelocity' type='hkVector4' offset='96' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 	</members>
 </struct>*/
-public class hknpMotionCinfo  {
-	
-	public static final int size = 112;  
-	int motionPropertiesId;
-	boolean enableDeactivation;
-	float inverseMass;
-	float massFactor;
-	float maxLinearAccelerationDistancePerStep;
-	float maxRotationToPreventTunneling;
-	NifVector4 inverseInertiaLocal;
-	NifVector4 centerOfMassWorld;
-	NifQuaternionXYZW orientation;
-	NifVector4 linearVelocity;
-	NifVector4 angularVelocity;
-	
-	public hknpMotionCinfo(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+public class hknpMotionCinfo {
+
+	public static final int	size	= 96 + 16;
+	int						motionPropertiesId;
+	boolean					enableDeactivation;
+	float					inverseMass;
+	float					massFactor;
+	float					maxLinearAccelerationDistancePerStep;
+	float					maxRotationToPreventTunneling;
+	NifVector4				inverseInertiaLocal;
+	NifVector4				centerOfMassWorld;
+	NifQuaternionXYZW		orientation;
+	NifVector4				linearVelocity;
+	NifVector4				angularVelocity;
+
+	public hknpMotionCinfo(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		//<member name='motionPropertiesId' type='hkUint16' offset='0' vtype='TYPE_UINT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		motionPropertiesId = Short.toUnsignedInt(stream.getShort(classOffset + 0));
 		//<member name='enableDeactivation' type='hkBool' offset='2' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='true'/>
@@ -63,7 +62,6 @@ public class hknpMotionCinfo  {
 		linearVelocity = new NifVector4(stream, classOffset + 80);
 		//<member name='angularVelocity' type='hkVector4' offset='96' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		angularVelocity = new NifVector4(stream, classOffset + 96);
-		
-		
+
 	}
 }

@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.Data1Interface;
-import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
-import nif.niobject.hkx.reader.byteutils.ByteUtils;
 
 /**
  * <class name='hknpPhysicsSystemData' version='0' signature='0xb857718b' parent='hkReferencedObject'> 
@@ -125,30 +123,13 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 			referencedObjects = new long[arrSize];
 			for (int i = 0; i < arrSize; i++) {
 				long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
-				DataExternal data = connector.data2.readNext();
-				if (data.from == contentsPosition) {
-					referencedObjects[i] = data.to;// needs to use generator to flip to the #91 type names (so my 320 match the object #91 in the xml)
-				} else {
-					connector.data2.backtrack();
-				}			
+				referencedObjects[i] = HKXReader.getPointer(connector, contentsPosition);
 			}
 		}
 		
 		
 		//<member name='name' type='hkStringPtr' offset='112' vtype='TYPE_STRINGPTR' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>  
-		name = "";
-		try {
-			DataInternal data = connector.data1.readNext();
-			if (data.from == classOffset + 112) {
-				ByteBuffer file2 = connector.data.setup(data.to);
-				name = ByteUtils.readString(file2);
-			} else {
-				connector.data1.backtrack();
-			}
-		} catch (InvalidPositionException e) {
-			// NO OP. Met when the last item of the HKX file is a String and is empty.
-			name = "";
-		}
+		name = HKXReader.hkStringPtr(connector, classOffset + 112);	
 
 		return success;
 	}

@@ -3,7 +3,7 @@ package nif.niobject.hkx;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nif.niobject.hkx.reader.DataExternal;
+import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
@@ -28,13 +28,7 @@ public class hknpCompressedMeshShape extends hknpCompositeShape {
 		boolean success = super.readFromStream(connector, stream, classOffset);
 		
 		//<member name='data' type='struct hknpCompressedMeshShapeData*' ctype='hknpCompressedMeshShapeData' offset='96' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
-		DataExternal de = connector.data2.readNext();
-		if (de.from == classOffset + 96) {
-			data = de.to;
-		} else {
-			connector.data2.backtrack();
-		}
-				
+		data = HKXReader.getPointer(connector, classOffset + 96);	
 		//<member name='quadIsFlat' type='struct hkBitField' ctype='hkBitField' offset='104' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		quadIsFlat = new hkBitField(connector, stream, classOffset + 104);
 		//<member name='triangleIsInterior' type='struct hkBitField' ctype='hkBitField' offset='128' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>

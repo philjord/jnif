@@ -18,6 +18,7 @@ import nif.niobject.hkx.hkBaseObject;
 public class HKXContents {
 	private final transient String contentsversion;
 	private final transient int classversion;
+	private final transient HeaderData header;
 	private final transient LinkedHashMap<Long, hkBaseObject> content;
 
 	/**
@@ -27,10 +28,11 @@ public class HKXContents {
 	 * @param classversion    the class version of this {@link HKXContents}.
 	 */
 	// TODO add ways to select between content/class version with a specific class.
-	public HKXContents(final String contentsversion, final int classversion) {
+	public HKXContents(HeaderData header) {
 		content = new LinkedHashMap<Long, hkBaseObject>();
-		this.contentsversion = contentsversion;
-		this.classversion = classversion;
+		this.header = header;
+		this.contentsversion = header.versionName;
+		this.classversion = header.version;
 	}
 
 	/**
@@ -51,6 +53,11 @@ public class HKXContents {
 		return classversion;
 	}
 
+	
+	public HeaderData getHeaderData() {
+		return header;
+	}
+	
 	/**
 	 * Retrieves all base {@link HKXObject}
 	 * 

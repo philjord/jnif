@@ -11,6 +11,17 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 		<member name='memSizeAndRefCount' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
 	</members>
 </class>
+
+
+    /// - offset: 32bit: 4, 64bit:  8
+    /// -  flags: `FLAGS_NONE|SERIALIZE_IGNORED`
+    hkUint16 memSizeAndFlags;
+    /// - offset: 32bit: 6, 64bit: 10
+    /// -  flags: `FLAGS_NONE|SERIALIZE_IGNORED`
+    hkUint16 referenceCount;
+    
+    // 64bit: 8 + 2 + 2 = 12 -> need 4bytes for 8bytes align hence the 16 bit start after this
+    
 */
 public class hkReferencedObject extends hkBaseObject {
 	@Override
@@ -20,5 +31,7 @@ public class hkReferencedObject extends hkBaseObject {
 
 		return success;
 	}
+	
+	
 	
 }

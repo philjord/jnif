@@ -23,4 +23,17 @@ public class HeaderData {
 	
 	
 	public 	HeaderDescriptor descriptor = new HeaderDescriptor();
+
+	/** 
+	 * true mean 8 byte alignments
+	 * false means 32bit and 4 byte alignments
+	 * 
+	 */
+	public boolean is64bit; 
+
+	/**
+	 * 1 = little endian
+	 * ? = big endian
+	 */
+	public byte endian;
 }

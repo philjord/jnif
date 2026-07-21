@@ -52,32 +52,32 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	</members>
 </struct>*/
 
-public class hknpMotionProperties  {
-	
-	public static final int size = 61; // or does align 16 want this to be 64?
-	int isExclusive;
-	int flags;
-	float gravityFactor;
-	float timeFactor;
-	float maxLinearSpeed;
-	float maxAngularSpeed;
-	float linearDamping;
-	float angularDamping;
-	float solverStabilizationSpeedThreshold;
-	float solverStabilizationSpeedReduction;
-	float maxDistSqrd;
-	float maxRotSqrd;
-	float invBlockSize;
-	int pathingUpperThreshold;
-	int pathingLowerThreshold;
-	int numDeactivationFrequencyPasses;
-	int deactivationVelocityScaleSquare;
-	int minimumPathingVelocityScaleSquare;
-	int spikingVelocityScaleThresholdSquared;
-	int minimumSpikingVelocityScaleSquared;
-	
-	public hknpMotionProperties(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{		
+public class hknpMotionProperties {
+
+	public static final int	size	= 60 + 1;						// or does align 16 want this to be 64?
+	int						isExclusive;
+	int						flags;
+	float					gravityFactor;
+	float					timeFactor;
+	float					maxLinearSpeed;
+	float					maxAngularSpeed;
+	float					linearDamping;
+	float					angularDamping;
+	float					solverStabilizationSpeedThreshold;
+	float					solverStabilizationSpeedReduction;
+	float					maxDistSqrd;
+	float					maxRotSqrd;
+	float					invBlockSize;
+	int						pathingUpperThreshold;
+	int						pathingLowerThreshold;
+	int						numDeactivationFrequencyPasses;
+	int						deactivationVelocityScaleSquare;
+	int						minimumPathingVelocityScaleSquare;
+	int						spikingVelocityScaleThresholdSquared;
+	int						minimumSpikingVelocityScaleSquared;
+
+	public hknpMotionProperties(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		//<member name='isExclusive' type='hkUint32' offset='0' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
 		isExclusive = stream.getInt(classOffset + 0);
 		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='4' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT32' arrsize='0' flags='FLAGS_NONE'/>

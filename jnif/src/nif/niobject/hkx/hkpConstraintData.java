@@ -1,0 +1,73 @@
+package nif.niobject.hkx;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import nif.niobject.hkx.reader.HKXReaderConnector;
+import nif.niobject.hkx.reader.InvalidPositionException;
+
+/**
+<class name='hkpConstraintData' version='0' signature='0x57339dd7' parent='hkReferencedObject'>
+	<enums>
+		<enum name='ConstraintType' flags='00000000'>
+			 CONSTRAINT_TYPE_BALLANDSOCKET , 0'/>
+			 CONSTRAINT_TYPE_HINGE , 1'/>
+			 CONSTRAINT_TYPE_LIMITEDHINGE , 2'/>
+			 CONSTRAINT_TYPE_POINTTOPATH , 3'/>
+			 CONSTRAINT_TYPE_PRISMATIC , 6'/>
+			 CONSTRAINT_TYPE_RAGDOLL , 7'/>
+			 CONSTRAINT_TYPE_STIFFSPRING , 8'/>
+			 CONSTRAINT_TYPE_WHEEL , 9'/>
+			 CONSTRAINT_TYPE_GENERIC , 10'/>
+			 CONSTRAINT_TYPE_CONTACT , 11'/>
+			 CONSTRAINT_TYPE_BREAKABLE , 12'/>
+			 CONSTRAINT_TYPE_MALLEABLE , 13'/>
+			 CONSTRAINT_TYPE_POINTTOPLANE , 14'/>
+			 CONSTRAINT_TYPE_PULLEY , 15'/>
+			 CONSTRAINT_TYPE_ROTATIONAL , 16'/>
+			 CONSTRAINT_TYPE_HINGE_LIMITS , 18'/>
+			 CONSTRAINT_TYPE_RAGDOLL_LIMITS , 19'/>
+			 CONSTRAINT_TYPE_CUSTOM , 20'/>
+			 CONSTRAINT_TYPE_RACK_AND_PINION , 21'/>
+			 CONSTRAINT_TYPE_COG_WHEEL , 22'/>
+			 CONSTRAINT_TYPE_FIXED , 23'/>
+			 CONSTRAINT_TYPE_DEFORMABLE_FIXED , 24'/>
+			 CONSTRAINT_TYPE_LINEAR_SLACK , 25'/>
+			 BEGIN_CONSTRAINT_CHAIN_TYPES , 100'/>
+			 CONSTRAINT_TYPE_STIFF_SPRING_CHAIN , 100'/>
+			 CONSTRAINT_TYPE_BALL_SOCKET_CHAIN , 101'/>
+			 CONSTRAINT_TYPE_POWERED_CHAIN , 102'/>
+		</enum>
+	</enums>
+	<members>
+		<member name='userData' type='hkUlong' offset='16' vtype='TYPE_ULONG' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0'/>
+	</members>
+</class>
+*/
+
+public class hkpConstraintData extends hkReferencedObject {
+
+	enum ConstraintType {
+		CONSTRAINT_TYPE_BALLANDSOCKET, CONSTRAINT_TYPE_HINGE, CONSTRAINT_TYPE_LIMITEDHINGE, //
+		CONSTRAINT_TYPE_POINTTOPATH, CONSTRAINT_TYPE_PRISMATIC, CONSTRAINT_TYPE_RAGDOLL, //
+		CONSTRAINT_TYPE_STIFFSPRING, CONSTRAINT_TYPE_WHEEL, CONSTRAINT_TYPE_GENERIC, //
+		CONSTRAINT_TYPE_CONTACT, CONSTRAINT_TYPE_BREAKABLE, CONSTRAINT_TYPE_MALLEABLE, //
+		CONSTRAINT_TYPE_POINTTOPLANE, CONSTRAINT_TYPE_PULLEY, CONSTRAINT_TYPE_ROTATIONAL, //
+		CONSTRAINT_TYPE_HINGE_LIMITS, CONSTRAINT_TYPE_RAGDOLL_LIMITS, CONSTRAINT_TYPE_CUSTOM, //
+		CONSTRAINT_TYPE_RACK_AND_PINION, CONSTRAINT_TYPE_COG_WHEEL, CONSTRAINT_TYPE_FIXED, //
+		CONSTRAINT_TYPE_DEFORMABLE_FIXED, CONSTRAINT_TYPE_LINEAR_SLACK, BEGIN_CONSTRAINT_CHAIN_TYPES, //
+		CONSTRAINT_TYPE_STIFF_SPRING_CHAIN, CONSTRAINT_TYPE_BALL_SOCKET_CHAIN, CONSTRAINT_TYPE_POWERED_CHAIN
+	};
+
+	public long userData;
+
+	@Override
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
+		boolean success = super.readFromStream(connector, stream, classOffset);
+
+		userData = stream.getLong(classOffset + 16);
+		return success;
+	}
+
+}

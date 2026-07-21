@@ -3,11 +3,12 @@ package nif.niobject.hkx;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nif.niobject.hkx.reader.DataExternal;
+import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
-/**<struct name='hknpShapeSignals' version='0' signature='0xc18bf544'>
+/**
+<struct name='hknpShapeSignals' version='0' signature='0xc18bf544'>
 	<enums>
 		<enum name='MutationFlagsEnum' flags='00000000'>
 			<enumitem name='MUTATION_AABB_CHANGED' value='1'/>
@@ -19,28 +20,17 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 		<member name='shapeMutated' type='void*' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
 		<member name='shapeDestroyed' type='void*' offset='8' vtype='TYPE_POINTER' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
 	</members>
-</struct>*/
+</struct>
+*/
 public class hknpShapeSignals {
-	public long shapeMutated;
-	public long shapeDestroyed;
-	public hknpShapeSignals(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+	public long	shapeMutated;
+	public long	shapeDestroyed;
 
-		//ByteBuffer stream = connector.data.setup(classOffset).slice().order(ByteOrder.LITTLE_ENDIAN);//use the position as the start
-		
+	public hknpShapeSignals(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		//<member name='shapeMutated' type='void*' offset='0' vtype='TYPE_POINTER' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
-		DataExternal de = connector.data2.readNext();
-		if (de.from == classOffset + 0) {
-			shapeMutated = de.to;
-		} else {
-			connector.data2.backtrack();
-		}
+		shapeMutated = HKXReader.getPointer(connector, classOffset + 0);
 		//<member name='shapeDestroyed' type='void*' offset='8' vtype='TYPE_POINTER' vsubtype='TYPE_VOID' arrsize='0' flags='SERIALIZE_IGNORED'/>
-		de = connector.data2.readNext();
-		if (de.from == classOffset + 8) {
-			shapeDestroyed = de.to;
-		} else {
-			connector.data2.backtrack();
-		}
+		shapeDestroyed = HKXReader.getPointer(connector, classOffset + 8);
 	}
 }
