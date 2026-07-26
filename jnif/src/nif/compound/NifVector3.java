@@ -7,6 +7,7 @@ import nif.ByteConvert;
 
 public class NifVector3
 {
+
 	/**
 	 <compound name="Vector3" niflibtype="Vector3" nifskopetype="vector3">
 
@@ -44,6 +45,14 @@ public class NifVector3
 
 	}
 
+	// useful for 0,0,0 or 1,1,1 creation
+	public NifVector3(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		if (o instanceof NifVector3)
@@ -54,6 +63,7 @@ public class NifVector3
 		return false;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "[NifVector3] " + x + " " + y + " " + z;

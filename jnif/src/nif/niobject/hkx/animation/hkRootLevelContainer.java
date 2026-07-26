@@ -50,7 +50,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 // NOTE it does NOT extend hkBaseObject but construction is easier if we pretend 
 // https://github.com/SARDONYX-sard/serde-hkx/tree/0.1.0/docs/handson_hex_dump/defaultmale  
 public class hkRootLevelContainer extends hkBaseObject {
-	hkRootLevelContainerNamedVariant[] NamedVariants;
+	public hkRootLevelContainerNamedVariant[] NamedVariants;
 
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)

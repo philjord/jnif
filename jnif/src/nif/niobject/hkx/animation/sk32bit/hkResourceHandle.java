@@ -1,20 +1,20 @@
-package nif.niobject.hkx.animation;
+package nif.niobject.hkx.animation.sk32bit;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nif.niobject.hkx.hkReferencedObject;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
 /**
-<class name='hkLocalFrame' version='0' signature='0xb5efa236' parent='hkReferencedObject'>
+<class name='hkResourceHandle' version='0' signature='0xadc280df' parent='hkResourceBase'>
 	<members>
 	</members>
 </class>
 */
-public class hkLocalFrame extends hkReferencedObject {
-	
+
+public class hkResourceHandle extends hkResourceBase {
+
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {

@@ -1,4 +1,4 @@
-package nif.niobject.hkx.animation.skyrim;
+package nif.niobject.hkx.animation.sk32bit;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

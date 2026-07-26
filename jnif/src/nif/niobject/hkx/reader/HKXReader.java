@@ -72,14 +72,10 @@ public class HKXReader {
 				throw new IOException("Illegal linked Classname position (" + currentClass.from + "//" + currentClass.to
 										+ "). Ignoring.");
 			} else {
-				String className = classObj.name;
-
-				//NOTE! it is very bad not loading things, as the fixup section doesn't get moved along like it should
-				if (className.equals("none") //
-				) {
-					System.out.println("skipped " + className);
-					continue;
-				}
+				String className = classObj.name;		
+				
+				//hkxContents hk_2014.1.0-r1 is64bit true meshes/actors/createabot/animations/assaultron/pairedkillassaultronraidertakedownstab_attackerlead.hkx
+				//class for objectType hkSimpleLocalFrame not found
 
 				//System.out.println("is64bit "+hkxContents.getHeaderData().is64bit);// if false only use the skyrim folder
 				hkBaseObject obj = constructHKXObject(className);

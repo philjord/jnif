@@ -7,6 +7,8 @@ import nif.ByteConvert;
 
 public class NifQuaternion
 {
+	public static final NifQuaternion Identity = new NifQuaternion(1f,0f,0f,0f);
+ 
 	/**
 	 <compound name="Quaternion" niflibtype="Quaternion" nifskopetype="quaternion">
 
@@ -42,6 +44,14 @@ public class NifQuaternion
 		z = stream.getFloat(offset + 12);
 	}
 
+	public NifQuaternion(float w, float x, float y, float z)  
+	{
+		this.w = w;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -57,5 +67,22 @@ public class NifQuaternion
 	public String toString()
 	{
 		return "NPQuaternion " + x + " " + y + " " + z + " " + w;
+	}
+
+	// for interpolation
+	//https://stackoverflow.com/questions/9027201/how-to-apply-a-scalar-multiplication-to-a-quaternion
+	public NifQuaternion mul(float f) {
+		this.w *= f;
+		this.x *= f;
+		this.y *= f;
+		this.z *= f;
+		return this;
+	}
+	public NifQuaternion add(NifQuaternion q) {
+		this.w += q.w;
+		this.x += q.x;
+		this.y += q.y;
+		this.z += q.z;
+		return this;
 	}
 }

@@ -1,10 +1,9 @@
-package nif.niobject.hkx.animation.skyrim;
+package nif.niobject.hkx.animation.sk32bit;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.hkBaseObject;
-import nif.niobject.hkx.hkReferencedObject;
 import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
@@ -50,6 +49,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 // NOTE it does NOT extend hkBaseObject but construction is easier if we pretend 
 // NOTE VERY VERY WELL!! this class appears to be 32bit system aligned on 4 byte boundaries, UNLIKE any other data
+// That's why it's in it's own package!!
 // https://github.com/SARDONYX-sard/serde-hkx/tree/0.1.0/docs/handson_hex_dump/defaultmale  
 public class hkRootLevelContainer extends hkBaseObject {
 	hkRootLevelContainerNamedVariant[] NamedVariants;
