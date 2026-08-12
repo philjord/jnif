@@ -32,14 +32,14 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </struct>*/
 
 public class hknpShapeInstance  {
-	public static final int size = 122;
-	public NifMatrix44 transform;		//FIXME! presumably 4x4 = 16 floats = 16x4 = 64bytes 
+	public static final int size = 128; // align to largest memerb being 64 bytes so 128
+	public NifMatrix44 transform;		// 4x4 = 16 floats = 16x4 = 64bytes 
 	public NifVector4 scale;
 	public long shape;
 	public int shapeTag;
 	public int destructionTag;
 	// not used so possibly don't bother
-	//public int[] padding = new int[30];// this might be to force the 16 align into a 64 align in the elemenets array
+	//public int[] padding = new int[30];// should be 36 anyway?
 	
 	public hknpShapeInstance(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{		

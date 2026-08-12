@@ -40,7 +40,7 @@ public class ClassnamesInterface {
 	public long compress(final ClassnamesData data) {
 		((Buffer) file).position((int) section.offset);
 		for (Entry<Long, Classname> classData : data.entrySet()) {
-			file.put(classData.getValue().uuid);
+			file.putInt(classData.getValue().uuid);
 			file.put((byte) 0x09);
 			file.put(classData.getValue().name.getBytes());
 			file.put((byte) 0x0);
@@ -76,7 +76,7 @@ public class ClassnamesInterface {
 			}
 			String name = ByteUtils.readString(file);
 			if (!name.isEmpty()) {
-				data.put(position - section.offset, name, idList);
+				data.put(position - section.offset, name, ByteUtils.getUInt(idList));
 			}
 		}
 		return data;

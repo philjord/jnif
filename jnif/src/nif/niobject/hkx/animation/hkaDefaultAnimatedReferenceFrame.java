@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.compound.NifVector4;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -32,21 +31,33 @@ public class hkaDefaultAnimatedReferenceFrame extends hkaAnimatedReferenceFrame 
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
 
-		up = new NifVector4(stream, classOffset + 32);
-		forward = new NifVector4(stream, classOffset + 48);
-		duration = stream.getFloat(classOffset + 64);
+		if (connector.header.is64bit) {
+			up = new NifVector4(stream, classOffset + 32);//some odd align thing, parent is only 17 bytes
+			forward = new NifVector4(stream, classOffset + 48);
+			duration = stream.getFloat(classOffset + 64);
 
-		ByteBuffer file = connector.data.setup(classOffset + 72);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 72;
-			referenceFrameSamples = new NifVector4[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				referenceFrameSamples[i] = new NifVector4(stream, (int)arrValue.to + (i * 16));
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 72));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 72;
+				referenceFrameSamples = new NifVector4[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referenceFrameSamples[i] = new NifVector4(stream, (int)arrValue.to + (i * 16));
+				}
+			}
+		} else {
+			up = new NifVector4(stream, classOffset + 12);//parent is 8+1 so align on 4 to 12?
+			forward = new NifVector4(stream, classOffset + 28);
+			duration = stream.getFloat(classOffset + 44);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 48));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 48;
+				referenceFrameSamples = new NifVector4[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referenceFrameSamples[i] = new NifVector4(stream, (int)arrValue.to + (i * 16));
+				}
 			}
 		}
 		return success;

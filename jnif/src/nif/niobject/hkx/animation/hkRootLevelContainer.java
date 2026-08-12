@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.hkBaseObject;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -56,30 +55,37 @@ public class hkRootLevelContainer extends hkBaseObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		
 
-		ByteBuffer file = connector.data.setup(classOffset + 0);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 0;
-			NamedVariants = new hkRootLevelContainerNamedVariant[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				NamedVariants[i] = new hkRootLevelContainerNamedVariant(connector, stream,
-						(int)arrValue.to + (i * hkRootLevelContainerNamedVariant.size));
+		if (connector.header.is64bit) {
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 0));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 0;
+				NamedVariants = new hkRootLevelContainerNamedVariant[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					NamedVariants[i] = new hkRootLevelContainerNamedVariant(connector, stream,
+							(int)arrValue.to + (i * hkRootLevelContainerNamedVariant.size));
+				}
+			}
+		} else {
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 0));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 0;
+				NamedVariants = new hkRootLevelContainerNamedVariant[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					NamedVariants[i] = new hkRootLevelContainerNamedVariant(connector, stream,
+							(int)arrValue.to + (i * hkRootLevelContainerNamedVariant.size32));
+				}
 			}
 		}
-		
-		
-		
+
 		return success;
 	}
 
 	public static class hkRootLevelContainerNamedVariant {
 		public static final int	size	= 16 + 8;
+		public static final int	size32	= 8 + 4;
 
 		public String			name;				// example  = "hkbProjectData"
 		public String			className;			// hkbProjectData in example
@@ -87,9 +93,15 @@ public class hkRootLevelContainer extends hkBaseObject {
 
 		public hkRootLevelContainerNamedVariant(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 				throws IOException, InvalidPositionException {
-			name = HKXReader.hkStringPtr(connector, classOffset);
-			className = HKXReader.hkStringPtr(connector, classOffset + 8);
-			variant = HKXReader.getPointer(connector, classOffset + 16);
+			if (connector.header.is64bit) {
+				name = HKXReader.hkStringPtr(connector, classOffset);
+				className = HKXReader.hkStringPtr(connector, classOffset + 8);
+				variant = HKXReader.getPointer(connector, classOffset + 16);
+			} else {
+				name = HKXReader.hkStringPtr(connector, classOffset);
+				className = HKXReader.hkStringPtr(connector, classOffset + 4);// not normal 4 not 8
+				variant = HKXReader.getPointer(connector, classOffset + 8);// not normal 4 not 8
+			}
 		}
 	}
 }

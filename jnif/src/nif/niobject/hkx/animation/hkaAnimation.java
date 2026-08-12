@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.hkReferencedObject;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -39,7 +38,6 @@ public class hkaAnimation extends hkReferencedObject {
 		HK_UNKNOWN_ANIMATION, HK_INTERLEAVED_ANIMATION, HK_MIRRORED_ANIMATION, HK_SPLINE_COMPRESSED_ANIMATION, HK_QUANTIZED_COMPRESSED_ANIMATION, HK_PREDICTIVE_COMPRESSED_ANIMATION, HK_REFERENCE_POSE_ANIMATION
 	};
 
-	public static final int		size	= 40 + 16;
 	public AnimationType		type;
 	public float				duration;
 	public int					numberOfTransformTracks;
@@ -51,25 +49,43 @@ public class hkaAnimation extends hkReferencedObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		int typev = stream.getInt(classOffset + 16);
 
-		duration = stream.getFloat(classOffset + 20);
-		numberOfTransformTracks = stream.getInt(classOffset + 24);
-		numberOfFloatTracks = stream.getInt(classOffset + 28);
-		extractedMotion = HKXReader.getPointer(connector, classOffset + 32);
+		if (connector.header.is64bit) {
+			int typev = stream.getInt(classOffset + 16);
 
-		ByteBuffer file = connector.data.setup(classOffset + 40);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 40;
-			annotationTracks = new hkaAnnotationTrack[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				annotationTracks[i] = new hkaAnnotationTrack(connector, stream,
-						(int)arrValue.to + (i * hkaAnnotationTrack.size));
+			duration = stream.getFloat(classOffset + 20);
+			numberOfTransformTracks = stream.getInt(classOffset + 24);
+			numberOfFloatTracks = stream.getInt(classOffset + 28);
+			extractedMotion = HKXReader.getPointer(connector, classOffset + 32);
+
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 40));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 40;
+				annotationTracks = new hkaAnnotationTrack[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					annotationTracks[i] = new hkaAnnotationTrack(connector, stream,
+							(int)arrValue.to + (i * hkaAnnotationTrack.size));
+				}
+			}
+
+		} else {
+			int typev = stream.getInt(classOffset + 8);
+
+			duration = stream.getFloat(classOffset + 12);
+			numberOfTransformTracks = stream.getInt(classOffset + 16);
+			numberOfFloatTracks = stream.getInt(classOffset + 20);
+			extractedMotion = HKXReader.getPointer(connector, classOffset + 24);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 28));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 28;
+				annotationTracks = new hkaAnnotationTrack[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					annotationTracks[i] = new hkaAnnotationTrack(connector, stream,
+							(int)arrValue.to + (i * hkaAnnotationTrack.size32));
+				}
 			}
 		}
 

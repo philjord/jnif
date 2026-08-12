@@ -11,8 +11,8 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	</members>
 </struct>*/
 public class hkcdDynamicTreeAnisotropicMetric {
-		
-	public hkcdDynamicTreeAnisotropicMetric(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+
+	public hkcdDynamicTreeAnisotropicMetric(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 	}
 }

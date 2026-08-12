@@ -17,14 +17,20 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 */
 public class hkMemoryResourceHandleExternalLink {
 	public static final int	size	= 8 + 8;
+	public static final int	size32	= 4 + 4;
 	public String			memberName;
 	public String			externalId;
 
 	public hkMemoryResourceHandleExternalLink(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		memberName = HKXReader.hkStringPtr(connector, classOffset + 0);
 
-		externalId = HKXReader.hkStringPtr(connector, classOffset + 8);
+		if (connector.header.is64bit) {
+			memberName = HKXReader.hkStringPtr(connector, classOffset + 0);
+			externalId = HKXReader.hkStringPtr(connector, classOffset + 8);
+		} else {
+			memberName = HKXReader.hkStringPtr(connector, classOffset + 0);
+			externalId = HKXReader.hkStringPtr(connector, classOffset + 4);
+		}
 	}
 
 }

@@ -34,12 +34,19 @@ public class hkaBoneAttachment extends hkReferencedObject {
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
 
-		originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 16);
-		boneFromAttachment = new NifMatrix44(stream, classOffset + 32);
-		attachment = HKXReader.getPointer(connector, classOffset + 96);
-		name = HKXReader.hkStringPtr(connector, classOffset + 104);
-		boneIndex = stream.getShort(classOffset + 112);
-
+		if (connector.header.is64bit) {
+			originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 16);
+			boneFromAttachment = new NifMatrix44(stream, classOffset + 32);
+			attachment = HKXReader.getPointer(connector, classOffset + 96);
+			name = HKXReader.hkStringPtr(connector, classOffset + 104);
+			boneIndex = stream.getShort(classOffset + 112);
+		} else {
+			originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 8);
+			boneFromAttachment = new NifMatrix44(stream, classOffset + 12);
+			attachment = HKXReader.getPointer(connector, classOffset + 76);
+			name = HKXReader.hkStringPtr(connector, classOffset + 80);
+			boneIndex = stream.getShort(classOffset + 84);
+		}
 		return success;
 	}
 

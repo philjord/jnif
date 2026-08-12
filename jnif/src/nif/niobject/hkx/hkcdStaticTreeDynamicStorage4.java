@@ -6,14 +6,16 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
-/**<struct name='hkcdStaticTreeDynamicStorage4' version='0' signature='0x5cc25f90' parent='hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis4'>
+/**
+ * <struct name='hkcdStaticTreeDynamicStorage4' version='0' signature='0x5cc25f90' parent='hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis4'>
 	<members>
 	</members>
-</struct>*/
+</struct>
+*/
 
 public class hkcdStaticTreeDynamicStorage4 extends hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis4 {
-	public hkcdStaticTreeDynamicStorage4(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
-		super(connector, stream, classOffset);		 
+	public hkcdStaticTreeDynamicStorage4(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
+		super(connector, stream, classOffset);
 	}
 }

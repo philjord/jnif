@@ -3,7 +3,6 @@ package nif.niobject.hkx.animation;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -30,35 +29,56 @@ public class hkMemoryResourceContainer extends hkResourceContainer {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		name = HKXReader.hkStringPtr(connector, classOffset + 16);
-		parent = HKXReader.getPointer(connector, classOffset + 24);
 
-		ByteBuffer file = connector.data.setup(classOffset + 32);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 32;
-			resourceHandles = new long[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
-				resourceHandles[i] = HKXReader.getPointer(connector, contentsPosition);
+		if (connector.header.is64bit) {
+			name = HKXReader.hkStringPtr(connector, classOffset + 16);
+			parent = HKXReader.getPointer(connector, classOffset + 24);
+
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 32));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 32;
+				resourceHandles = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
+					resourceHandles[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
 			}
-		}
 
-		file = connector.data.setup(classOffset + 48);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 48;
-			children = new long[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
-				children[i] = HKXReader.getPointer(connector, contentsPosition);
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 48));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 48;
+				children = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
+					children[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
+			}
+		} else {
+			name = HKXReader.hkStringPtr(connector, classOffset + 8);
+			parent = HKXReader.getPointer(connector, classOffset + 12);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 16));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 16;
+				resourceHandles = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x04);//size of pointers
+					resourceHandles[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 28));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 28;
+				children = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x04);//size of pointers
+					children[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
 			}
 		}
 

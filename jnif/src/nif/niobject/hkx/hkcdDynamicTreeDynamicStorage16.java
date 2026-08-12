@@ -11,9 +11,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	</members>
 </struct>*/
 public class hkcdDynamicTreeDynamicStorage16 extends hkcdDynamicTreeDefaultDynamicStoragehkcdDynamicTreeCodec32 {
-		
-	public hkcdDynamicTreeDynamicStorage16(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
-		super(connector, stream, classOffset);	
+
+	public hkcdDynamicTreeDynamicStorage16(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
+		super(connector, stream, classOffset);
 	}
 }

@@ -18,11 +18,13 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 */
 public class hkQsTransformf {
 	public static final int		size	= 16 + 16;
+	public static final int		size32	= 16 + 16;
 	public NifQuaternionXYZW	rotation;
 	public NifVector4			translation;
 
 	public hkQsTransformf(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
+		//64 and 32 the same
 		rotation = new NifQuaternionXYZW(stream, classOffset + 0);
 		translation = new NifVector4(stream, classOffset + 16);
 

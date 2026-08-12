@@ -3,13 +3,13 @@ package nif.niobject.hkx;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nif.niobject.hkx.reader.DataExternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 import nif.tools.FP16;
 
-/**<struct name='hknpMaterial' version='1' signature='0xb7c5f24e'>
+/**
+ * <struct name='hknpMaterial' version='1' signature='0xb7c5f24e'>
 	<enums>
 		<enum name='TriggerType' flags='00000000'>
 			<enumitem name='TRIGGER_TYPE_NONE' value='0'/>
@@ -52,7 +52,8 @@ import nif.tools.FP16;
 		<member name='userData' type='hkUint64' offset='64' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_8'/>
 		<member name='isShared' type='hkBool' offset='72' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 	</members>
-</struct>*/
+</struct>
+*/
 
 public class hknpMaterial {
 	enum TriggerType {
@@ -67,7 +68,7 @@ public class hknpMaterial {
 		MASS_CHANGER_IGNORE, MASS_CHANGER_DEBRIS, MASS_CHANGER_HEAVY
 	};
 
-	public static final int		size	= 72 + 1;										// or does align 16 want this to be 80?
+	public static final int		size	= 72 + 8;
 	public String				name;
 	public int					isExclusive;
 	public int					flags;
@@ -93,11 +94,8 @@ public class hknpMaterial {
 
 	public hknpMaterial(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		// <member name='name' type='hkStringPtr' offset='0' vtype='TYPE_STRINGPTR' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
 		name = HKXReader.hkStringPtr(connector, classOffset + 0);
-		// <member name='isExclusive' type='hkUint32' offset='8' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		isExclusive = stream.getInt(classOffset + 8);
-		// <member name='flags' type='hkInt32' offset='12' vtype='TYPE_INT32' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		flags = stream.getInt(classOffset + 12);
 		// <member name='triggerType' type='enum TriggerType' etype='TriggerType' offset='16' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int tt = stream.get(classOffset + 16); //Index 76 out of bounds for length 4
@@ -122,9 +120,7 @@ public class hknpMaterial {
 
 		// <member name='weldingTolerance' type='hkHalf' offset='26' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		weldingTolerance = FP16.toFloat(stream.getShort(classOffset + 26));
-		// <member name='maxContactImpulse' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxContactImpulse = stream.getFloat(classOffset + 28);
-		// <member name='fractionOfClippedImpulseToApply' type='hkReal' offset='32' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		fractionOfClippedImpulseToApply = stream.getFloat(classOffset + 32);
 		// <member name='massChangerCategory' type='enum MassChangerCategory' etype='MassChangerCategory' offset='36' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		int massChangerCategoryv = Byte.toUnsignedInt(stream.get(classOffset + 36));// seems to allow 255 as a value? odd
@@ -139,13 +135,10 @@ public class hknpMaterial {
 		// <member name='softContactSeperationVelocity' type='struct hkUFloat8' ctype='hkUFloat8' offset='44' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		softContactSeperationVelocity = stream.get(classOffset + 44);//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
 
-		// <member name='surfaceVelocity' type='struct hknpSurfaceVelocity*' ctype='hknpSurfaceVelocity' offset='48' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		surfaceVelocity = HKXReader.getPointer(connector, classOffset + 48);
 		// <member name='disablingCollisionsBetweenCvxCvxDynamicObjectsDistance' type='hkHalf' offset='56' vtype='TYPE_HALF' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = FP16.toFloat(stream.getShort(classOffset + 56));
-		// <member name='userData' type='hkUint64' offset='64' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_8'/>
 		userData = stream.getLong(classOffset + 64);
-		// <member name='isShared' type='hkBool' offset='72' vtype='TYPE_BOOL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		isShared = stream.get(classOffset + 72) != 0;
 
 	}

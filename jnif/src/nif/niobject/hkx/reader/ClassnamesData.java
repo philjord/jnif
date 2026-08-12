@@ -14,11 +14,11 @@ public class ClassnamesData extends LinkedHashMap<Long, Classname> {
 	 * @param position the position (in {@link bytes}) the classname whould be found
 	 *                 at.
 	 * @param name     the name of the classname to add.
-	 * @param uuid     the UUID of the classname to add.
+	 * @param i     the UUID of the classname to add.
 	 * @return the added {@link Classname} object.
 	 */
-	public Classname put(final long position, final String name, final byte[] uuid) {
-		return super.put(position, new Classname(name, uuid));
+	public Classname put(final long position, final String name, final int i) {
+		return super.put(position, new Classname(name, i));
 	}
 
 	/**

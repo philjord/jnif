@@ -33,11 +33,19 @@ public class hkbProjectData extends hkReferencedObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		worldUpWS = new NifVector4(stream, classOffset + 16);
-		stringData = HKXReader.getPointer(connector, classOffset + 32);
-		int defaultEventModev = Byte.toUnsignedInt(stream.get(classOffset + 40));// seems to allow 255 as a value? odd
-		//defaultEventMode = EventMode.values()[Byte.toUnsignedInt(stream.get(40))];
 
+		if (connector.header.is64bit) {
+			worldUpWS = new NifVector4(stream, classOffset + 16);
+			stringData = HKXReader.getPointer(connector, classOffset + 32);
+			int defaultEventModev = Byte.toUnsignedInt(stream.get(classOffset + 40));// seems to allow 255 as a value? odd
+			//defaultEventMode = EventMode.values()[Byte.toUnsignedInt(stream.get(40))];
+
+		} else {
+			worldUpWS = new NifVector4(stream, classOffset + 8);
+			stringData = HKXReader.getPointer(connector, classOffset + 24);
+			int defaultEventModev = Byte.toUnsignedInt(stream.get(classOffset + 28));// seems to allow 255 as a value? odd
+			//defaultEventMode = EventMode.values()[Byte.toUnsignedInt(stream.get(40))];
+		}
 		return success;
 	}
 }

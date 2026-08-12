@@ -11,16 +11,14 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 		<member name='aabb' type='struct hkAabb' ctype='hkAabb' offset='0' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 	</members>
 </struct>*/
-public class hkcdDynamicTreeCodec32 {	
+public class hkcdDynamicTreeCodec32 {
 
-	public static final int size = 32;
-	hkAabb aabb;
+	public static final int	size	= 32;
+	hkAabb					aabb;
 
-	public hkcdDynamicTreeCodec32(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {		
-		//<member name='aabb' type='struct hkAabb' ctype='hkAabb' offset='0' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
+	public hkcdDynamicTreeCodec32(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		aabb = new hkAabb(connector, stream, classOffset + 0);
-
-		
 	}
 
 }

@@ -17,17 +17,24 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </struct>
 */
 public class hkaSkeletonPartition {
-	public static final int	size	= 10 + 2;
+	public static final int	size	= 10 + 6;
+	public static final int	size32	= 6 + 2;
 	public String			name;
 	public int				startBoneIndex;
 	public int				numBones;
 
 	public hkaSkeletonPartition(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		
-		name = HKXReader.hkStringPtr(connector, classOffset + 0);
-		startBoneIndex = stream.getShort(classOffset + 8);
-		numBones = stream.getShort(classOffset + 10);
+
+		if (connector.header.is64bit) {
+			name = HKXReader.hkStringPtr(connector, classOffset + 0);
+			startBoneIndex = stream.getShort(classOffset + 8);
+			numBones = stream.getShort(classOffset + 10);
+		} else {
+			name = HKXReader.hkStringPtr(connector, classOffset + 0);
+			startBoneIndex = stream.getShort(classOffset + 4);
+			numBones = stream.getShort(classOffset + 6);
+		}
 	}
 
 }

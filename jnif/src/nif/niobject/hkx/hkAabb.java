@@ -14,12 +14,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	</members>
 </struct>*/
 public class hkAabb {
-	public NifVector4 min;
-	public NifVector4 max;
-	public hkAabb(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{		//<member name='min' type='hkVector4' offset='0' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
+	public NifVector4	min;
+	public NifVector4	max;
+
+	public hkAabb(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		min = new NifVector4(stream, classOffset + 0);
-		//<member name='max' type='hkVector4' offset='16' vtype='TYPE_VECTOR4' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
-		max = new NifVector4(stream, classOffset + 16);		 
+		max = new NifVector4(stream, classOffset + 16);
 	}
 }

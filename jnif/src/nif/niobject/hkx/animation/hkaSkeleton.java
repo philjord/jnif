@@ -2,10 +2,8 @@ package nif.niobject.hkx.animation;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.niobject.hkx.hkReferencedObject;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -29,8 +27,9 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 public class hkaSkeleton extends hkReferencedObject {
 
 	public static final int					size	= 120 + 16;
+	public static final int					size32	= 84 + 12;
 	public String							name;
-	public int[]							parentIndices;
+	public short[]							parentIndices;
 	public hkaBone[]						bones;
 	public hkQsTransform[]					referencePose;
 	public float[]							referenceFloats;
@@ -39,97 +38,151 @@ public class hkaSkeleton extends hkReferencedObject {
 	public hkaSkeletonPartition[]			partitions;
 
 	@Override
-	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		name = HKXReader.hkStringPtr(connector, classOffset + 16);
 
-		ByteBuffer file = connector.data.setup(classOffset + 24);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 24;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			parentIndices = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				parentIndices[i] = Short.toUnsignedInt(s2.getShort(i * 2));
+		if (connector.header.is64bit) {
+			name = HKXReader.hkStringPtr(connector, classOffset + 16);
+
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 24));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 24;
+				parentIndices = new short[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					parentIndices[i] = stream.getShort((int)arrValue.to + (i * 2));
+				}
 			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 40));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 40;
+				bones = new hkaBone[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					bones[i] = new hkaBone(connector, stream, (int)arrValue.to + (i * hkaBone.size));
+				}
+			}
+						
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 56));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 56;
+				referencePose = new hkQsTransform[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referencePose[i] = new hkQsTransform(connector, stream,
+							(int)arrValue.to + (i * hkQsTransform.size));
+				}
+			}
+			
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 72));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 72;
+				referenceFloats = new float[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referenceFloats[i] = stream.getFloat((int)arrValue.to + (i * 4));
+				}
+			}
+
+			floatSlots = HKXReader.hkStringArray(connector, classOffset + 88);
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 104));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 104;
+				localFrames = new hkaSkeletonLocalFrameOnBone[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					localFrames[i] = new hkaSkeletonLocalFrameOnBone(connector, stream,
+							(int)arrValue.to + (i * hkaSkeletonLocalFrameOnBone.size));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 120));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 120;
+				partitions = new hkaSkeletonPartition[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					partitions[i] = new hkaSkeletonPartition(connector, stream,
+							(int)arrValue.to + (i * hkaSkeletonPartition.size));
+				}
+			}
+
+		} else {
+			//https://github.com/nitaigao/engine-showcase/blob/master/etc/vendor/havok/Source/Animation/Animation/Rig/hkaSkeleton.h
+			name = HKXReader.hkStringPtr(connector, classOffset + 8);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 12));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 12;
+				parentIndices = new short[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					parentIndices[i] = stream.getShort((int)arrValue.to + (i * 2));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 24));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 24;
+				bones = new hkaBone[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					bones[i] = new hkaBone(connector, stream, (int)arrValue.to + (i * hkaBone.size32));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 36));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 36;
+				referencePose = new hkQsTransform[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referencePose[i] = new hkQsTransform(connector, stream,
+							(int)arrValue.to + (i * hkQsTransform.size32));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 48));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 48;
+				referenceFloats = new float[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					referenceFloats[i] = stream.getFloat((int)arrValue.to + (i * 4));
+				}
+			}
+
+			floatSlots = HKXReader.hkStringArray32(connector, classOffset + 60);
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 72));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 72;
+				localFrames = new hkaSkeletonLocalFrameOnBone[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					localFrames[i] = new hkaSkeletonLocalFrameOnBone(connector, stream,
+							(int)arrValue.to + (i * hkaSkeletonLocalFrameOnBone.size32));
+				}
+			}
+
+			//looks like partitions is not part of 32bit format
+			/*
+						arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 84));
+						if (arrSize > 0) {
+							DataInternal arrValue = connector.data1.readNext();
+							assert arrValue.from == classOffset + 84;
+							partitions = new hkaSkeletonPartition[arrSize];
+							for (int i = 0; i < arrSize; i++) {
+								partitions[i] = new hkaSkeletonPartition(connector, stream,
+										(int)arrValue.to + (i * hkaSkeletonPartition.size32));
+							}
+						}*/
 		}
 
-		file = connector.data.setup(classOffset + 40);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 40;
-			bones = new hkaBone[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				bones[i] = new hkaBone(connector, stream, (int)arrValue.to + (i * hkaBone.size));
-			}
-		}
-
-		file = connector.data.setup(classOffset + 56);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 56;
-			referencePose = new hkQsTransform[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				referencePose[i] = new hkQsTransform(connector, stream, (int)arrValue.to + (i * hkQsTransform.size));
-			}
-		}
-
-		file = connector.data.setup(classOffset + 72);
-		baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 72;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			referenceFloats = new float[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				referenceFloats[i] = s2.getFloat(i * 4);
-			}
-		}
-
-		floatSlots = HKXReader.hkStringArray(connector, classOffset + 88);
-
-		file = connector.data.setup(classOffset + 104);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 104;
-			localFrames = new hkaSkeletonLocalFrameOnBone[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				localFrames[i] = new hkaSkeletonLocalFrameOnBone(connector, stream,
-						(int)arrValue.to + (i * hkaSkeletonLocalFrameOnBone.size));
-			}
-		}
-
-		file = connector.data.setup(classOffset + 120);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 120;
-			partitions = new hkaSkeletonPartition[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				partitions[i] = new hkaSkeletonPartition(connector, stream,
-						(int)arrValue.to + (i * hkaSkeletonPartition.size));
-			}
-		}
-		
 		return success;
 	}
 

@@ -2,9 +2,7 @@ package nif.niobject.hkx.animation;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -19,22 +17,31 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 */
 public class hkaMeshBindingMapping {
 	public static final int	size	= 0 + 16;
+	public static final int	size32	= 0 + 12;
 	public int[]			mapping;
 
 	public hkaMeshBindingMapping(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		ByteBuffer file = connector.data.setup(classOffset + 0);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 0;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			mapping = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				mapping[i] = Short.toUnsignedInt(s2.getShort(i * 2));
+
+		if (connector.header.is64bit) {
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 0));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 0;
+				mapping = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					mapping[i] = Short.toUnsignedInt(stream.getShort((int)arrValue.to + (i * 2)));
+				}
+			}
+		} else {
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 0));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 0;
+				mapping = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					mapping[i] = Short.toUnsignedInt(stream.getShort((int)arrValue.to + (i * 2)));
+				}
 			}
 		}
 	}

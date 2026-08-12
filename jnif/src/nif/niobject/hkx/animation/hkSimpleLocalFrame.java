@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 
 import nif.compound.NifMatrix44;
 import nif.niobject.hkx.hkReferencedObject;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -35,26 +34,41 @@ public class hkSimpleLocalFrame extends hkReferencedObject {
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
 
-		transform = new NifMatrix44(stream, classOffset + 16);
+		if (connector.header.is64bit) {
+			transform = new NifMatrix44(stream, classOffset + 16);
 
-		ByteBuffer file = connector.data.setup(classOffset + 80);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 16;
-			children = new long[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
-				children[i] = HKXReader.getPointer(connector, contentsPosition);
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 80));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 80;
+				children = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x08);//size of pointers
+					children[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
 			}
-		}
 
-		parentFrame = HKXReader.getPointer(connector, classOffset + 96);
-		group = HKXReader.getPointer(connector, classOffset + 104);
-		name = HKXReader.hkStringPtr(connector, classOffset + 112);
+			parentFrame = HKXReader.getPointer(connector, classOffset + 96);
+			group = HKXReader.getPointer(connector, classOffset + 104);
+			name = HKXReader.hkStringPtr(connector, classOffset + 112);
+		} else {
+			transform = new NifMatrix44(stream, classOffset + 8);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 72));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 72;
+				children = new long[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					long contentsPosition = arrValue.to + (i * 0x04);//size of pointers
+					children[i] = HKXReader.getPointer(connector, contentsPosition);
+				}
+			}
+
+			parentFrame = HKXReader.getPointer(connector, classOffset + 84);
+			group = HKXReader.getPointer(connector, classOffset + 88);
+			name = HKXReader.hkStringPtr(connector, classOffset + 92);
+		}
 
 		return success;
 	}

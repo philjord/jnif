@@ -17,13 +17,20 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 */
 public class hkaAnnotationTrackAnnotation {
 	public static final int	size	= 8 + 8;
+	public static final int	size32	= 4 + 4;
 	public float			time;
 	public String			text;
 
 	public hkaAnnotationTrackAnnotation(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		time = stream.getFloat(classOffset + 0); // 8 bytes diff suggest a double?
-		text = HKXReader.hkStringPtr(connector, classOffset + 8);
+
+		if (connector.header.is64bit) {
+			time = stream.getFloat(classOffset + 0); // 8 bytes is just because of alignment, ptr below is 16 and max is the dictator
+			text = HKXReader.hkStringPtr(connector, classOffset + 8);
+		} else {
+			time = stream.getFloat(classOffset + 0);
+			text = HKXReader.hkStringPtr(connector, classOffset + 4);
+		}
 	}
 
 }

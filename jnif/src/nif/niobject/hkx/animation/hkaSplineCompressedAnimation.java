@@ -8,7 +8,6 @@ import java.util.List;
 
 import nif.compound.NifQuaternion;
 import nif.compound.NifVector3;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -40,104 +39,158 @@ https://github.com/aerisarn/hkxlib/blob/master/src/main/java/org/tes/hkx/lib/ext
 */
 public class hkaSplineCompressedAnimation extends hkaAnimation {
 
-	public int		numFrames;
-	public int		numBlocks;
-	public int		maxFramesPerBlock;
-	public int		maskAndQuantizationSize;
-	public float	blockDuration;
-	public float	blockInverseDuration;
-	public float	frameDuration;
-	public int[]	blockOffsets;
-	public int[]	floatBlockOffsets;
-	public int[]	transformOffsets;
-	public int[]	floatOffsets;
-	public byte[]	data;
-	public int		endian;
+	public int						numFrames;				// frames are knots, so max knots inside a track but each track differs, each track is a bone
+	public int						numBlocks;				// more than 1 if numFrame greater than 256 (last one is modulo 256 frames)
+	public int						maxFramesPerBlock;		// always 256
+	public int						maskAndQuantizationSize;
+	public float					blockDuration;			// max duration of a block, but last block can be less based on frame count
+	public float					blockInverseDuration;
+	public float					frameDuration;			// how long 1 frame is so duration/numFrames
+	public int[]					blockOffsets;			// where is block is in the data
+	public int[]					floatBlockOffsets;		// where scalar data is in a given block in the data
+	public int[]					transformOffsets;		// where rotation data is in the data
+	public int[]					floatOffsets;			// float tracks are for non boned things, pure lists of floats for animation of other things
+	public byte[]					data;
+	public int						endian;
+
+	public boolean					is64bit	= true;
+	public List<TransformTrack[]>	blockTransformTracks;
 
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
 
-		numFrames = stream.getInt(classOffset + 56);
-		numBlocks = stream.getInt(classOffset + 60);
-		maxFramesPerBlock = stream.getInt(classOffset + 64);
-		maskAndQuantizationSize = stream.getInt(classOffset + 68);
-		blockDuration = stream.getFloat(classOffset + 72);
-		blockInverseDuration = stream.getFloat(classOffset + 76);
-		frameDuration = stream.getFloat(classOffset + 80);
+		if (connector.header.is64bit) {
+			numFrames = stream.getInt(classOffset + 56);
+			numBlocks = stream.getInt(classOffset + 60);
+			maxFramesPerBlock = stream.getInt(classOffset + 64);
+			maskAndQuantizationSize = stream.getInt(classOffset + 68);
+			blockDuration = stream.getFloat(classOffset + 72);
+			blockInverseDuration = stream.getFloat(classOffset + 76);
+			frameDuration = stream.getFloat(classOffset + 80);
 
-		ByteBuffer file = connector.data.setup(classOffset + 88);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 88;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			blockOffsets = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				blockOffsets[i] = s2.getInt(i * 4);
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 88));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 88;
+				blockOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					blockOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
 			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 104));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 104;
+				floatBlockOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					floatBlockOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 120));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 120;
+				transformOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					transformOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 136));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 136;
+				floatOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					floatOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 152));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 152;
+				ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
+				data = new byte[arrSize];
+				s2.get(data);
+
+			}
+			endian = stream.getInt(classOffset + 168);
+
+		} else {
+			this.is64bit = false;
+
+			numFrames = stream.getInt(classOffset + 40);
+			numBlocks = stream.getInt(classOffset + 44);
+			maxFramesPerBlock = stream.getInt(classOffset + 48);
+			maskAndQuantizationSize = stream.getInt(classOffset + 52);
+			blockDuration = stream.getFloat(classOffset + 56);
+			blockInverseDuration = stream.getFloat(classOffset + 60);
+			frameDuration = stream.getFloat(classOffset + 64);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 68));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 68;
+				blockOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					blockOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 80));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 80;
+				floatBlockOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					floatBlockOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 92));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 92;
+				transformOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					transformOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 104));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 104;
+				floatOffsets = new int[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					floatOffsets[i] = stream.getInt((int)arrValue.to + (i * 4));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 116));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 116;
+				ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
+				data = new byte[arrSize];
+				s2.get(data);
+			}
+			endian = stream.getInt(classOffset + 128);
 		}
 
-		file = connector.data.setup(classOffset + 104);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 104;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			floatBlockOffsets = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				floatBlockOffsets[i] = s2.getInt(i * 4);
-			}
-		}
-		file = connector.data.setup(classOffset + 120);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 120;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			transformOffsets = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				transformOffsets[i] = s2.getInt(i * 4);
-			}
-		}
-		file = connector.data.setup(classOffset + 136);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 136;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			floatOffsets = new int[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				floatOffsets[i] = s2.getInt(i * 4);
-			}
-		}
+		blockTransformTracks = hkaSplineCompressedAnimation.ReadSplineCompressedAnimByteBlock(data,
+				numberOfTransformTracks, numBlocks, is64bit);
 
-		file = connector.data.setup(classOffset + 152);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 152;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			data = new byte[arrSize];
-			s2.get(data);
+		System.out.println("decodedData " + blockTransformTracks.size());
 
-			//List<TransformTrack[]> decodedData = ReadSplineCompressedAnimByteBlock(data, numberOfTransformTracks,
-			//		numBlocks);
-			//decodeData(data);// less complete decode algo
-		}
-		endian = stream.getInt(classOffset + 168);
+		// now I dump the data? it's decoded now
+		data = null;
+
 		return success;
 	}
 
@@ -442,9 +495,8 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		if (((cVal >> 38) & 1) > 0)
 			retval[resultShift] *= -1;
 
-		var finalQuat = new NifQuaternion(retval[0], retval[1], retval[2], retval[3]);
-
-		return finalQuat;
+		//TODO: check if is wxyz or xyzw, presumably wxyz
+		return new NifQuaternion(retval[0], retval[1], retval[2], retval[3]);
 
 	}
 
@@ -734,7 +786,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 		public boolean					HasStaticRotation;
 
-		public NifVector3				StaticPosition	= new NifVector3(0, 0, 0);;
+		public NifVector3				StaticPosition	= new NifVector3(0, 0, 0);
 		public NifQuaternion			StaticRotation	= NifQuaternion.Identity;
 		public NifVector3				StaticScale		= new NifVector3(1f, 1f, 1f);
 		public SplineTrackVector3		SplinePosition	= null;
@@ -744,7 +796,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 	//https://github.com/Meowmaritus/MVDX2/blob/master/MVDX2/Havok/SplineCompressedAnimation.cs
 	public static List<TransformTrack[]> ReadSplineCompressedAnimByteBlock(	byte[] animationData, int numTransformTracks,
-																			int numBlocks) {
+																			int numBlocks, boolean is64bit) {
 		List<TransformTrack[]> blocks = new ArrayList<TransformTrack[]>();
 
 		ByteBuffer br = ByteBuffer.wrap(animationData).order(ByteOrder.LITTLE_ENDIAN);
@@ -754,17 +806,18 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 			for (int i = 0; i < numTransformTracks; i++) {
 				TransformTracks[i] = new TransformTrack();
-			}
-
-			for (int i = 0; i < numTransformTracks; i++) {
 				TransformTracks[i].Mask = new TransformMask(br);
 			}
 
-			Align(4, br);
+			// this is not true ata ll but let's see where we get to, I have a 3,3,3,3 after my masks
+			if (is64bit)
+				Align(4, br);
+			else
+				Align(8, br);
 
 			for (int i = 0; i < numTransformTracks; i++) {
-				TransformMask m = TransformTracks[i].Mask;
 				TransformTrack track = TransformTracks[i];
+				TransformMask m = track.Mask;
 
 				track.HasSplinePosition = m.PositionTypes.contains(FlagOffset.SplineX)
 											|| m.PositionTypes.contains(FlagOffset.SplineY)
@@ -832,6 +885,15 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 				Align(4, br);
 			}
+
+			// 32bit has 4 floats of 1.0 
+			if (!is64bit) {
+				br.getFloat();
+				br.getFloat();
+				br.getFloat();
+				br.getFloat();
+			}
+
 			Align(16, br);
 
 			blocks.add(TransformTracks);

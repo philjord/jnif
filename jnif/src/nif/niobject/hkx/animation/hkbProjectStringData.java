@@ -40,16 +40,30 @@ public class hkbProjectStringData extends hkReferencedObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		animationFilenames = HKXReader.hkStringArray(connector, classOffset + 16);
-		behaviorFilenames = HKXReader.hkStringArray(connector, classOffset + 32);
-		characterFilenames = HKXReader.hkStringArray(connector, classOffset + 48);
-		eventNames = HKXReader.hkStringArray(connector, classOffset + 64);
-		animationPath = HKXReader.hkStringPtr(connector, classOffset + 80);
-		behaviorPath = HKXReader.hkStringPtr(connector, classOffset + 88);
-		characterPath = HKXReader.hkStringPtr(connector, classOffset + 96);
-		scriptsPath = HKXReader.hkStringPtr(connector, classOffset + 104);
-		fullPathToSource = HKXReader.hkStringPtr(connector, classOffset + 112);
-		rootPath = HKXReader.hkStringPtr(connector, classOffset + 120);
+
+		if (connector.header.is64bit) {
+			animationFilenames = HKXReader.hkStringArray(connector, classOffset + 16);
+			behaviorFilenames = HKXReader.hkStringArray(connector, classOffset + 32);
+			characterFilenames = HKXReader.hkStringArray(connector, classOffset + 48);
+			eventNames = HKXReader.hkStringArray(connector, classOffset + 64);
+			animationPath = HKXReader.hkStringPtr(connector, classOffset + 80);
+			behaviorPath = HKXReader.hkStringPtr(connector, classOffset + 88);
+			characterPath = HKXReader.hkStringPtr(connector, classOffset + 96);
+			scriptsPath = HKXReader.hkStringPtr(connector, classOffset + 104);
+			fullPathToSource = HKXReader.hkStringPtr(connector, classOffset + 112);
+			rootPath = HKXReader.hkStringPtr(connector, classOffset + 120);
+		} else {
+			animationFilenames = HKXReader.hkStringArray32(connector, classOffset + 8);
+			behaviorFilenames = HKXReader.hkStringArray32(connector, classOffset + 20);
+			characterFilenames = HKXReader.hkStringArray32(connector, classOffset + 32);
+			eventNames = HKXReader.hkStringArray32(connector, classOffset + 44);
+			animationPath = HKXReader.hkStringPtr(connector, classOffset + 56);
+			behaviorPath = HKXReader.hkStringPtr(connector, classOffset + 60);
+			characterPath = HKXReader.hkStringPtr(connector, classOffset + 64);
+			scriptsPath = HKXReader.hkStringPtr(connector, classOffset + 68);
+			fullPathToSource = HKXReader.hkStringPtr(connector, classOffset + 72);
+			rootPath = HKXReader.hkStringPtr(connector, classOffset + 76);
+		}
 		return success;
 	}
 

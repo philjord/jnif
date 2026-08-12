@@ -21,6 +21,7 @@ import nif.niobject.hkx.reader.InvalidPositionException;
     hkUint16 referenceCount;
     
     // 64bit: 8 + 2 + 2 = 12 -> need 4bytes for 8bytes align hence the 16 bit start after this
+    // 32bit: 4 + 2 + 2 = 8 -> align to 4 so no change needed
     
 */
 public class hkReferencedObject extends hkBaseObject {

@@ -18,15 +18,18 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkLocalFrameGroup extends hkReferencedObject {
 
-	public String		name;	
+	public String name;
 
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
+		if (connector.header.is64bit) {
+			name = HKXReader.hkStringPtr(connector, classOffset + 16);
+		} else {
+			name = HKXReader.hkStringPtr(connector, classOffset + 8);
+		}
 
-		name = HKXReader.hkStringPtr(connector, classOffset + 16);
-		
 		return success;
 	}
 

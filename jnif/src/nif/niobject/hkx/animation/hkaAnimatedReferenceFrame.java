@@ -33,8 +33,11 @@ public class hkaAnimatedReferenceFrame extends hkReferencedObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-
-		int frameTypev = stream.get(classOffset + 16);
+		if (connector.header.is64bit) {
+			int frameTypev = stream.get(classOffset + 16);
+		} else {
+			int frameTypev = stream.get(classOffset + 8);
+		}
 		return success;
 	}
 

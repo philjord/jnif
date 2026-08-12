@@ -6,7 +6,8 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
-/**<struct name='hkcdStaticMeshTreeBasePrimitive' version='0' signature='0x56da2f7c'>
+/**
+ * <struct name='hkcdStaticMeshTreeBasePrimitive' version='0' signature='0x56da2f7c'>
 	<enums>
 		<enum name='Type' flags='00000000'>
 			<enumitem name='INVALID' value='0'/>
@@ -19,18 +20,18 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 	<members>
 		<member name='indices' type='hkUint8[4]' offset='0' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='4' flags='FLAGS_NONE'/>
 	</members>
-</struct>*/
+</struct>
+*/
 
 public class hkcdStaticMeshTreeBasePrimitive {
-	public static final int size = 4;
-	public int[] indices = new int[4];
-	public hkcdStaticMeshTreeBasePrimitive(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{		
-		//<member name='indices' type='hkUint8[4]' offset='0' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='4' flags='FLAGS_NONE'/>		
+	public static final int	size	= 4;
+	public int[]			indices	= new int[4];
+
+	public hkcdStaticMeshTreeBasePrimitive(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
+			throws IOException, InvalidPositionException {
 		indices[0] = Byte.toUnsignedInt(stream.get(classOffset + 0));
 		indices[1] = Byte.toUnsignedInt(stream.get(classOffset + 1));
 		indices[2] = Byte.toUnsignedInt(stream.get(classOffset + 2));
-		indices[3] = Byte.toUnsignedInt(stream.get(classOffset + 3));		
-		
+		indices[3] = Byte.toUnsignedInt(stream.get(classOffset + 3));
 	}
 }

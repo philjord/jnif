@@ -16,11 +16,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 public class hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5 extends hkcdStaticTreeDynamicStorage5 {
 	public hkAabb domain;
-	public hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
-	{
+
+	public hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5(	HKXReaderConnector connector, ByteBuffer stream,
+															int classOffset)
+			throws IOException, InvalidPositionException {
 		super(connector, stream, classOffset);
-		
-		//<member name='domain' type='struct hkAabb' ctype='hkAabb' offset='16' vtype='TYPE_STRUCT' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
+
 		domain = new hkAabb(connector, stream, classOffset + 16);
 	}
 }

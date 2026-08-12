@@ -2,11 +2,9 @@ package nif.niobject.hkx.animation;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import nif.compound.NifMatrix44;
 import nif.niobject.hkx.hkReferencedObject;
-import nif.niobject.hkx.reader.Data1Interface;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
@@ -38,37 +36,57 @@ public class hkaMeshBinding extends hkReferencedObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
+		if (connector.header.is64bit) {
+			mesh = HKXReader.getPointer(connector, classOffset + 16);
+			originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 24);
+			name = HKXReader.hkStringPtr(connector, classOffset + 32);
+			skeleton = HKXReader.getPointer(connector, classOffset + 40);
 
-		mesh = HKXReader.getPointer(connector, classOffset + 16);
-		originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 24);
-		name = HKXReader.hkStringPtr(connector, classOffset + 32);
-		skeleton = HKXReader.getPointer(connector, classOffset + 40);
-
-		ByteBuffer file = connector.data.setup(classOffset + 48);
-		byte[] baseArrayBytes = new byte[0X10];
-		file.get(baseArrayBytes);
-		int arrSize = HKXReader.getSizeComponent(baseArrayBytes);		 
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 48;
-			mappings = new hkaMeshBindingMapping[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				mappings[i] = new hkaMeshBindingMapping(connector, stream, (int)arrValue.to + (i * hkaMeshBindingMapping.size));
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 48));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 48;
+				mappings = new hkaMeshBindingMapping[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					mappings[i] = new hkaMeshBindingMapping(connector, stream,
+							(int)arrValue.to + (i * hkaMeshBindingMapping.size));
+				}
 			}
-		}		
-		
-		file = connector.data.setup(classOffset + 64);
-		file.get(baseArrayBytes);
-		arrSize = HKXReader.getSizeComponent(baseArrayBytes);		 
-		if (arrSize > 0) {
-			Data1Interface data1 = connector.data1;
-			DataInternal arrValue = data1.readNext();
-			assert arrValue.from == classOffset + 64;
-			ByteBuffer s2 = connector.data.setup((int)arrValue.to).slice().order(ByteOrder.LITTLE_ENDIAN);
-			boneFromSkinMeshTransforms = new NifMatrix44[arrSize];
-			for (int i = 0; i < arrSize; i++) {
-				boneFromSkinMeshTransforms[i] = new NifMatrix44(s2, i * 64);
+
+			arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 64));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 64;
+				boneFromSkinMeshTransforms = new NifMatrix44[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					boneFromSkinMeshTransforms[i] = new NifMatrix44(stream, (int)arrValue.to + (i * 64));
+				}
+			}
+		} else {
+			mesh = HKXReader.getPointer(connector, classOffset + 8);
+			originalSkeletonName = HKXReader.hkStringPtr(connector, classOffset + 12);
+			name = HKXReader.hkStringPtr(connector, classOffset + 16);
+			skeleton = HKXReader.getPointer(connector, classOffset + 20);
+
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 24));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 24;
+				mappings = new hkaMeshBindingMapping[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					mappings[i] = new hkaMeshBindingMapping(connector, stream,
+							(int)arrValue.to + (i * hkaMeshBindingMapping.size32));
+				}
+			}
+
+			arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset + 36));
+			if (arrSize > 0) {
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset + 36;
+				boneFromSkinMeshTransforms = new NifMatrix44[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					boneFromSkinMeshTransforms[i] = new NifMatrix44(stream, (int)arrValue.to + (i * 64));
+				}
 			}
 		}
 

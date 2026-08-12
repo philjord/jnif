@@ -72,18 +72,25 @@ public class HKXReader {
 				throw new IOException("Illegal linked Classname position (" + currentClass.from + "//" + currentClass.to
 										+ "). Ignoring.");
 			} else {
-				String className = classObj.name;		
+				String className = classObj.name;
+
+				hkBaseObject obj = constructHKXObject(className, header.is64bit);				
 				
-				//hkxContents hk_2014.1.0-r1 is64bit true meshes/actors/createabot/animations/assaultron/pairedkillassaultronraidertakedownstab_attackerlead.hkx
-				//class for objectType hkSimpleLocalFrame not found
-
-				//System.out.println("is64bit "+hkxContents.getHeaderData().is64bit);// if false only use the skyrim folder
-				hkBaseObject obj = constructHKXObject(className);
-
+				// the following skyrim hkp objects don't have xml to decode, they only appear in skeleton.hkx
+				// I only need the bones mappings from a skeleton.hkx so I'm going to hope to ignore them
+				// these look like the bhk versions found in nif files
+				
+				//hkpRigidBody hkpPhysicsSystem hkpPhysicsData hkpShapeInfo hkpCapsuleShape
+				
 				// Check for an unknown block type
 				if (obj == null) {
 					System.out.println("Unknown object type encountered during file read:  " + className);
-					continue;
+					
+					// when we skip a load we also need to skip whatever the data1 pointer thingies are 
+					// up to one that's from is on or after the next object					
+					// but cos it is hard I'm going to just stop loading and pretend it's fine
+					
+					break;
 				}
 
 				//String objectName = generator.get(currentClass.from);				
@@ -105,7 +112,7 @@ public class HKXReader {
 
 	private static Object[]							noArgs		= new Object[] {};
 
-	private static hkBaseObject constructHKXObject(String objectType) {
+	private static hkBaseObject constructHKXObject(String objectType, boolean is64Bit) {
 		if (objectType == null || objectType.length() == 0) {
 			System.out.println("Bad objectType [" + objectType + "]");
 			return null;
@@ -158,47 +165,47 @@ public class HKXReader {
 					System.out.println("");
 				}
 			}
+
 		}
 		System.out.println("unknown block type " + objectType);
 		return null;
 	}
 
 	/**
-	 * Note this takes an input array, gets the 4 bytes at indexes 8,9,10,11 and reads them as an int
+	 * Note this takes an input ByteBuffer, gets the 4 bytes at indexes 8,9,10,11 and reads them as an int
 	 * It does this all on the stack so no speed issues
 	 * @param arrayBaseBytes
 	 * @return
 	 */
-	public static int getSizeComponent(final byte[] arrayBaseBytes) {
+	public static int getSizeComponent(ByteBuffer file) {
 		// was in efficient 
 		//byte[] sizeSpecificBytes = new byte[] {arrayBaseBytes[8], arrayBaseBytes[9], arrayBaseBytes[10],
 		//	arrayBaseBytes[11]};
 		//return ByteUtils.getUInt(sizeSpecificBytes);
 
 		//see ULongByteUtils.getLong (notice 4 and +8 inserted)
+
+		byte[] baseArrayBytes = new byte[0X10];
+		file.get(baseArrayBytes);
 		final int len = 4;
 		int accu = 1;
 		int res = 0;
 		for (int i = 0; i < len; i++) {
-			res += (arrayBaseBytes[i + 8] & 0xFF) * accu;
+			res += (baseArrayBytes[i + 8] & 0xFF) * accu;
 			accu *= 256;
 		}
 		return res;
 
 	}
 
-	// util for array size getting
-	// offset should be classOffset+something
-	protected static int getArraySize(HKXReaderConnector connector, int offset) throws InvalidPositionException {
-		ByteBuffer stream = connector.data.setup(offset);
-		byte[] sizeSpecificBytes = new byte[4];
-		for (int i = 0; i < sizeSpecificBytes.length; i++)
-			sizeSpecificBytes[i] = stream.get(offset + 8 + i);//8,9,10,11 are an uint of array size		 
-		return ByteUtils.getUInt(sizeSpecificBytes);
-		// SEE return HKXReader.getSizeComponent(baseArrayBytes);
-	}
+	/**
+	 *  helper for string pointers
+	 *  64bit has long pointer at 8bits and 32bit has dword pointers at 4 bits
+	 * @param connector
+	 * @param classOffset
+	 * @return
+	 */
 
-	// helper for string pointers
 	public static String hkStringPtr(HKXReaderConnector connector, int classOffset) {
 		String ret = "";
 		try {
@@ -216,28 +223,28 @@ public class HKXReader {
 		return ret;
 	}
 
-	// helper for array of string pointers
+	/**
+	 *  helper for array of string pointers
+	 * @param connector
+	 * @param classOffset
+	 * @return
+	 */
 	public static String[] hkStringArray(HKXReaderConnector connector, int classOffset) {
 		try {
-			ByteBuffer file = connector.data.setup(classOffset);
-			byte[] baseArrayBytes = new byte[0X10];
-			file.get(baseArrayBytes);
-			int arrSize = HKXReader.getSizeComponent(baseArrayBytes);
-			if (arrSize > 0) {
-				Data1Interface data1 = connector.data1;
-				DataInternal arrValue = data1.readNext();
+			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset));
+			if (arrSize > 0) {	
+				DataInternal arrValue = connector.data1.readNext();
 				assert arrValue.from == classOffset;
 				String[] ret = new String[arrSize];
 				for (int i = 0; i < arrSize; i++) {
 					try {
+						arrValue = connector.data1.readNext();
+						//assert arrValue.from == classOffset; this can match at like +4 on the first .to
 						ByteBuffer file2 = connector.data.setup(arrValue.to);
-						ret[i] = ByteUtils.readString(file2);
+						ret[i] = ByteUtils.readString(file2);						 
 					} catch (InvalidPositionException e) {
-						// NO OP. Met when the last item of the HKX file is a String and is empty.
-						ret[i] = "";
+						// NO OP. Met when the last item of the HKX file is a String and is empty.					
 					}
-					// example of this working is:
-					//ret[i] = new String(connector, stream, (int)arrValue.to + (i*hknpMaterial.size));
 				}
 				return ret;
 			}
@@ -247,6 +254,13 @@ public class HKXReader {
 		return null;
 	}
 
+	/**
+	 * 64bit has long pointer at 8bits and 32bit has dword pointers at 4 bits
+	 * @param connector
+	 * @param classOffset
+	 * @return
+	 * @throws InvalidPositionException
+	 */
 	public static long getPointer(HKXReaderConnector connector, long classOffset) throws InvalidPositionException {
 		DataExternal data = connector.data2.readNext();
 		if (data.from == classOffset) {
@@ -255,5 +269,57 @@ public class HKXReader {
 			connector.data2.backtrack();
 		}
 		return -1;
+	}
+
+	/**
+	 * Note this takes an input array, gets the 4 bytes at indexes 4,5,6,7 and reads them as an int
+	 * It does this all on the stack so no speed issues
+	 * @param arrayBaseBytes
+	 * @return
+	 */
+	public static int getSizeComponent32(ByteBuffer bb) {
+		byte[] arrayBaseBytes = new byte[12];
+		bb.get(arrayBaseBytes);
+
+		//see ULongByteUtils.getLong (notice 4 and + 4 inserted)
+		final int len = 4;
+		int accu = 1;
+		int res = 0;
+		for (int i = 0; i < len; i++) {
+			res += (arrayBaseBytes[i + 4] & 0xFF) * accu;// not normal 4 not 8
+			accu *= 256;
+		}
+		return res;
+	}
+
+	/**
+	 *  helper for array of string pointers
+	 * @param connector
+	 * @param classOffset
+	 * @return
+	 */
+	public static String[] hkStringArray32(HKXReaderConnector connector, int classOffset) {
+		try {
+			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset));
+			if (arrSize > 0) {	
+				DataInternal arrValue = connector.data1.readNext();
+				assert arrValue.from == classOffset;
+				String[] ret = new String[arrSize];
+				for (int i = 0; i < arrSize; i++) {
+					try {
+						arrValue = connector.data1.readNext();
+						//assert arrValue.from == classOffset; this can match at like +4 on the first .to
+						ByteBuffer file2 = connector.data.setup(arrValue.to);
+						ret[i] = ByteUtils.readString(file2);						 
+					} catch (InvalidPositionException e) {
+						// NO OP. Met when the last item of the HKX file is a String and is empty.					
+					}
+				}
+				return ret;
+			}
+		} catch (InvalidPositionException e) {
+			// not sure if possible
+		}
+		return null;
 	}
 }

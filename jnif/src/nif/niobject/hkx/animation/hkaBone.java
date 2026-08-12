@@ -16,15 +16,21 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 </struct>
 */
 public class hkaBone {
-	public static final int	size	= 8 + 1;
+	public static final int	size	= 8 + 8;
+	public static final int	size32	= 4 + 4;
 	public String			name;
 
 	public boolean			lockTranslation;
 
 	public hkaBone(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		name = HKXReader.hkStringPtr(connector, classOffset + 0);
-		lockTranslation = stream.get(classOffset + 8) != 0;
+		if (connector.header.is64bit) {
+			name = HKXReader.hkStringPtr(connector, classOffset + 0);
+			lockTranslation = stream.get(classOffset + 8) != 0;
+		} else {
+			name = HKXReader.hkStringPtr(connector, classOffset + 0);
+			lockTranslation = stream.get(classOffset + 4) != 0;
+		}
 	}
 
 }

@@ -6,7 +6,8 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
 
-/**<struct name='hknpMotionProperties' version='3' signature='0x5dee8641'>
+/**
+ * <struct name='hknpMotionProperties' version='3' signature='0x5dee8641'>
 	<enums>
 		<enum name='FlagsEnum' flags='00000000'>
 			<enumitem name='NEVER_REBUILD_MASS_PROPERTIES' value='2'/>
@@ -50,11 +51,12 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 		<member name='spikingVelocityScaleThresholdSquared' type='hkUint8' offset='59' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		<member name='minimumSpikingVelocityScaleSquared' type='hkUint8' offset='60' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 	</members>
-</struct>*/
+</struct>
+*/
 
 public class hknpMotionProperties {
 
-	public static final int	size	= 60 + 1;						// or does align 16 want this to be 64?
+	public static final int	size	= 60 + 4;
 	int						isExclusive;
 	int						flags;
 	float					gravityFactor;
@@ -78,45 +80,25 @@ public class hknpMotionProperties {
 
 	public hknpMotionProperties(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
-		//<member name='isExclusive' type='hkUint32' offset='0' vtype='TYPE_UINT32' vsubtype='TYPE_VOID' arrsize='0' flags='ALIGN_16'/>
 		isExclusive = stream.getInt(classOffset + 0);
-		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='4' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT32' arrsize='0' flags='FLAGS_NONE'/>
 		flags = stream.getInt(classOffset + 4);
-		//<member name='gravityFactor' type='hkReal' offset='8' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='1.000000'/>
 		gravityFactor = stream.getFloat(classOffset + 8);
-		//<member name='timeFactor' type='hkReal' offset='12' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='1.000000'/>
 		timeFactor = stream.getFloat(classOffset + 12);
-		//<member name='maxLinearSpeed' type='hkReal' offset='16' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxLinearSpeed = stream.getFloat(classOffset + 16);
-		//<member name='maxAngularSpeed' type='hkReal' offset='20' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxAngularSpeed = stream.getFloat(classOffset + 20);
-		//<member name='linearDamping' type='hkReal' offset='24' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0.000000'/>
 		linearDamping = stream.getFloat(classOffset + 24);
-		//<member name='angularDamping' type='hkReal' offset='28' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0.000000'/>
 		angularDamping = stream.getFloat(classOffset + 28);
-		//<member name='solverStabilizationSpeedThreshold' type='hkReal' offset='32' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='1.000000'/>
 		solverStabilizationSpeedThreshold = stream.getFloat(classOffset + 32);
-		//<member name='solverStabilizationSpeedReduction' type='hkReal' offset='36' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE' default='0.000000'/>
 		solverStabilizationSpeedReduction = stream.getFloat(classOffset + 36);
-		//<member name='maxDistSqrd' type='hkReal' offset='40' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxDistSqrd = stream.getFloat(classOffset + 40);
-		//<member name='maxRotSqrd' type='hkReal' offset='44' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		maxRotSqrd = stream.getFloat(classOffset + 44);
-		//<member name='invBlockSize' type='hkReal' offset='48' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		invBlockSize = stream.getFloat(classOffset + 48);
-		//<member name='pathingUpperThreshold' type='hkInt16' offset='52' vtype='TYPE_INT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		pathingUpperThreshold = stream.getShort(classOffset + 52);
-		//<member name='pathingLowerThreshold' type='hkInt16' offset='54' vtype='TYPE_INT16' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		pathingLowerThreshold = stream.getShort(classOffset + 54);
-		//<member name='numDeactivationFrequencyPasses' type='hkUint8' offset='56' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		numDeactivationFrequencyPasses = Byte.toUnsignedInt(stream.get(classOffset + 56));
-		//<member name='deactivationVelocityScaleSquare' type='hkUint8' offset='57' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		deactivationVelocityScaleSquare = Byte.toUnsignedInt(stream.get(classOffset + 57));
-		//<member name='minimumPathingVelocityScaleSquare' type='hkUint8' offset='58' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		minimumPathingVelocityScaleSquare = Byte.toUnsignedInt(stream.get(classOffset + 58));
-		//<member name='spikingVelocityScaleThresholdSquared' type='hkUint8' offset='59' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		spikingVelocityScaleThresholdSquared = Byte.toUnsignedInt(stream.get(classOffset + 59));
-		//<member name='minimumSpikingVelocityScaleSquared' type='hkUint8' offset='60' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		minimumSpikingVelocityScaleSquared = Byte.toUnsignedInt(stream.get(classOffset + 60));
 	}
 }
