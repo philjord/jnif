@@ -6,7 +6,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import nif.compound.NifQuaternion;
+import nif.compound.NifQuaternionXYZW;
 import nif.compound.NifVector3;
 import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
@@ -328,7 +328,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		return Float.intBitsToFloat(src);
 	}
 
-	static NifQuaternion ReadQuatPOLAR32(ByteBuffer br) {
+	static NifQuaternionXYZW ReadQuatPOLAR32(ByteBuffer br) {
 		long rMask = (1 << 10) - 1;
 		float rFrac = 1.0f / rMask;
 		float fPI = 3.14159265f;
@@ -353,7 +353,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 		float magnitude = (float)Math.sqrt(1.0f - R * R);
 
-		NifQuaternion retVal = new NifQuaternion(R, //
+		NifQuaternionXYZW retVal = new NifQuaternionXYZW(R, //
 				(float)(Math.sin(phi) * Math.cos(theta) * magnitude), //
 				(float)(Math.sin(phi) * Math.sin(theta) * magnitude), //
 				(float)(Math.cos(phi) * magnitude));
@@ -373,7 +373,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		return retVal;
 	}
 
-	static NifQuaternion ReadQuatTHREECOMP48(ByteBuffer br) {
+	static NifQuaternionXYZW ReadQuatTHREECOMP48(ByteBuffer br) {
 		long mask = (1 << 15) - 1;
 		float fractal = 0.000043161f;
 
@@ -415,7 +415,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		if (rSign)
 			retval[resultShift] *= -1;
 
-		return new NifQuaternion(retval[0], retval[1], retval[2], retval[3]);
+		return new NifQuaternionXYZW(retval[0], retval[1], retval[2], retval[3]);
 	}
 
 	static long Read40BitValue(ByteBuffer br) {
@@ -431,30 +431,28 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			throw new RuntimeException("no good at all");
 		}
 
-		// but for variable len
-		/*    long l = ((buf[0] & 0xFFL) << 56) |
-		         ((buf[1] & 0xFFL) << 48) |
-		         ((buf[2] & 0xFFL) << 40) |
-		         ((buf[3] & 0xFFL) << 32) |
-		         ((buf[4] & 0xFFL) << 24) |
-		         ((buf[5] & 0xFFL) << 16) |
-		         ((buf[6] & 0xFFL) <<  8) |
-		         ((buf[7] & 0xFFL) <<  0) ;*/
+		// Empirically confirmed
+		long ret = ((buf[4] & 0xFFL) << 32) | //
+					((buf[3] & 0xFFL) << 24) | //
+					((buf[2] & 0xFFL) << 16) | //
+					((buf[1] & 0xFFL) << 8) | //
+					((buf[0] & 0xFFL) << 0);
 
-		int shift = 0;
-		long ret = 0;
-		int start = Math.min(buf.length - 1, 7);
-		//assumes a less than 8 byte long loses the higher values, it would be crazy otherwise
-		// java primitives are always big enddian
-		for (int i = start; i >= 0; i--) {
-			ret = ret | ((buf[i] & 0xFFL) << shift);
-			shift += 8;
-		}
+		// I'd like this to work on any len but n'ermind
+
+		// the below might be right now, I've fixed it to mathc the above
+		/*		int shift = 0;
+				long ret = 0;
+				int end = Math.min(buf.length , 8);
+				for (int i = 0; i < end; i++) {
+					ret = ret | ((buf[i] & 0xFFL) << shift);
+					shift += 8;
+				}*/
 
 		return ret;
 	}
 
-	static NifQuaternion ReadQuatTHREECOMP40(ByteBuffer br) {
+	static NifQuaternionXYZW ReadQuatTHREECOMP40(ByteBuffer br) {
 		long mask = (1 << 12) - 1;
 		long positiveMask = mask >> 1;
 		float fractal = 0.000345436f;
@@ -495,12 +493,14 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		if (((cVal >> 38) & 1) > 0)
 			retval[resultShift] *= -1;
 
-		//TODO: check if is wxyz or xyzw, presumably wxyz
-		return new NifQuaternion(retval[0], retval[1], retval[2], retval[3]);
+		//https://github.com/Meowmaritus/MVDX2/blob/master/MVDX2/Havok/SplineCompressedAnimation.cs#L210
+		//https://learn.microsoft.com/en-us/previous-versions/windows/silverlight/dotnet-windows-silverlight/bb195806(v=xnagamestudio.35)
+		//suggests xyzw (and so does NifQuaternionXYZW)
+		return new NifQuaternionXYZW(retval[0], retval[1], retval[2], retval[3]);
 
 	}
 
-	static NifQuaternion ReadQuantizedQuaternion(ByteBuffer br, RotationQuantizationType type) {
+	static NifQuaternionXYZW ReadQuantizedQuaternion(ByteBuffer br, RotationQuantizationType type) {
 		switch (type) {
 			case POLAR32:
 				return ReadQuatPOLAR32(br);
@@ -513,9 +513,9 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				System.err.println("Wrong rotation quantization");
 				return null;
 			case UNCOMPRESSED:
-				return new NifQuaternion(br.getFloat(), br.getFloat(), br.getFloat(), br.getFloat());
+				return new NifQuaternionXYZW(br.getFloat(), br.getFloat(), br.getFloat(), br.getFloat());
 			default:
-				return NifQuaternion.Identity;
+				return NifQuaternionXYZW.Identity;
 		}
 	}
 
@@ -540,64 +540,15 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		return mid;
 	}
 
-	//Basis_ITS1, GetPoint_NR1, TIME-EFFICIENT NURBS CURVE EVALUATION ALGORITHMS, pages 64 & 65
-	static float GetSinglePoint(int knotSpanIndex, int degree, float frame, short[] knots, Float[] cPoints) {
-		float[] N = {1, 0, 0, 0, 0};
-
-		for (int i = 1; i <= degree; i++)
-			for (int j = i - 1; j >= 0; j--) {
-
-				float A = (frame - knots[knotSpanIndex - j])
-							/ (knots[knotSpanIndex + i - j] - knots[knotSpanIndex - j]);
-				// without multiplying A, model jitters slightly
-				float tmp = N[j] * A;
-				// without subtracting tmp, model flies away then resets to origin every few frames
-				N[j + 1] += N[j] - tmp;
-				// without setting to tmp, model either is moved from origin or grows very long limbs
-				// depending on the animation
-				N[j] = tmp;
-			}
-
-		float retVal = 0.0f;
-
-		for (int i = 0; i <= degree; i++)
-			retVal += cPoints[knotSpanIndex - i] * N[i];
-
-		return retVal;
-	}
-
-	//Basis_ITS1, GetPoint_NR1, TIME-EFFICIENT NURBS CURVE EVALUATION ALGORITHMS, pages 64 & 65
-	static NifQuaternion GetSinglePoint(int knotSpanIndex, int degree, float frame, short[] knots,
-										NifQuaternion[] cPoints) {
-		float[] N = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
-		for (int i = 1; i <= degree; i++)
-			for (int j = i - 1; j >= 0; j--) {
-				float A = (frame - knots[knotSpanIndex - j])
-							/ (knots[knotSpanIndex + i - j] - knots[knotSpanIndex - j]);
-				float tmp = N[j] * A;
-				N[j + 1] += N[j] - tmp;
-				N[j] = tmp;
-			}
-
-		NifQuaternion retVal = new NifQuaternion(0.0f, 0.0f, 0.0f, 0.0f);
-
-		// looks like an interpolation of several weights of quat 
-		for (int i = 0; i <= degree; i++)
-			retVal.add(cPoints[knotSpanIndex - i].mul(N[i]));
-
-		return retVal;
-	}
-
-	public static class SplineChannel<T> {
-		public boolean	IsDynamic	= true;
-		public T[]		Values;				//FIXME, this can be 1 length arrays, and it's now Float not float that is primitive wrapper
+	public static class SplineChannelQuaternion {
+		public boolean				IsDynamic	= true;
+		public NifQuaternionXYZW[]	Values;
 	}
 
 	public static class SplineTrackQuaternion {
-		public SplineChannel<NifQuaternion>	Channel;
-		public short[]						Knots;
-		public byte							Degree;
+		public SplineChannelQuaternion	Channel;
+		public short[]					Knots;
+		public byte						Degree;
 
 		SplineTrackQuaternion(ByteBuffer br, RotationQuantizationType quantizationType) {
 			short numItems = br.getShort();
@@ -607,26 +558,72 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			for (int i = 0; i < knotCount; i++) {
 				Knots[i] = (short)(br.get() & 0xff);
 			}
+			
+			//TODO: buffer under flowAnimation file: meshes/actors/chaurus/animations/idle_lookright.hkx
 
 			Align(GetRotationAlign(quantizationType), br);
 
-			Channel = new SplineChannel<NifQuaternion>();
-			Channel.Values = new NifQuaternion[numItems + 1];
+			Channel = new SplineChannelQuaternion();
+			Channel.Values = new NifQuaternionXYZW[numItems + 1];
 			for (int i = 0; i < numItems + 1; i++) {
 				Channel.Values[i] = ReadQuantizedQuaternion(br, quantizationType);
 			}
 		}
 
-		public NifQuaternion GetValue(float frame) {
+		public NifQuaternionXYZW GetValue(float frame) {
 			int knotspan = FindKnotSpan(Degree, frame, Channel.Values.length, Knots);
 			return GetSinglePoint(knotspan, Degree, frame, Knots, Channel.Values);
 		}
+
+		
+		
+		//deburner think about threads!
+		NifQuaternionXYZW retVal = new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);
+		NifQuaternionXYZW temp = new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);// so we don't alter the channels quats
+		
+		//Basis_ITS1, GetPoint_NR1, TIME-EFFICIENT NURBS CURVE EVALUATION ALGORITHMS, pages 64 & 65
+		NifQuaternionXYZW GetSinglePoint(	int knotSpanIndex, int degree, float frame, short[] knots,
+											NifQuaternionXYZW[] cPoints) {
+			float[] N = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
+			for (int i = 1; i <= degree; i++)
+				for (int j = i - 1; j >= 0; j--) {
+					float A = (frame - knots[knotSpanIndex - j])
+								/ (knots[knotSpanIndex + i - j] - knots[knotSpanIndex - j]);
+					float tmp = N[j] * A;
+					N[j + 1] += N[j] - tmp;
+					N[j] = tmp;
+				}
+
+			//reset deburners
+			retVal.set(0f,0f,0f,0f);
+			temp.set(0f,0f,0f,0f);
+			
+			// this is the overloaded * on a xna quat and a scalar, the source!
+			//https://learn.microsoft.com/en-us/previous-versions/windows/silverlight/dotnet-windows-silverlight/bb198126(v=xnagamestudio.35)
+			//xna is old and dead now, but here is an open source re-implementation
+			//https://github.com/FNA-XNA/FNA/blob/a3b3abd913086d960a00e83f0610b38f78225568/src/Quaternion.cs#L831
+			// which says just multiply!
+
+			// an interpolation of several weights of quat spread out over the degree range
+			for (int i = 0; i <= degree; i++) {
+				temp.set(cPoints[knotSpanIndex - i]);
+				temp.mul(N[i]);
+				retVal.add(temp);
+			}
+			return retVal;
+		}
+	}
+
+	public static class SplineChannelFloat {
+		public boolean	IsDynamic	= true;
+		public float[]	Values;
 	}
 
 	public static class SplineTrackVector3 {
-		public SplineChannel<Float>	ChannelX;
-		public SplineChannel<Float>	ChannelY;
-		public SplineChannel<Float>	ChannelZ;
+		public SplineChannelFloat	ChannelX;
+		public SplineChannelFloat	ChannelY;
+		public SplineChannelFloat	ChannelZ;
 		public short[]				Knots;
 		public int					Degree;
 
@@ -651,15 +648,15 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			float BoundsZMin = 0;
 			float BoundsZMax = 0;
 
-			ChannelX = new SplineChannel<Float>();
-			ChannelY = new SplineChannel<Float>();
-			ChannelZ = new SplineChannel<Float>();
+			ChannelX = new SplineChannelFloat();
+			ChannelY = new SplineChannelFloat();
+			ChannelZ = new SplineChannelFloat();
 
 			if (channelTypes.contains(FlagOffset.SplineX)) {
 				BoundsXMin = br.getFloat();
 				BoundsXMax = br.getFloat();
 			} else if (channelTypes.contains(FlagOffset.StaticX)) {
-				ChannelX.Values = new Float[] {br.getFloat()};
+				ChannelX.Values = new float[] {br.getFloat()};
 				ChannelX.IsDynamic = false;
 			} else {
 				ChannelX = null;
@@ -669,7 +666,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				BoundsYMin = br.getFloat();
 				BoundsYMax = br.getFloat();
 			} else if (channelTypes.contains(FlagOffset.StaticY)) {
-				ChannelY.Values = new Float[] {br.getFloat()};
+				ChannelY.Values = new float[] {br.getFloat()};
 				ChannelY.IsDynamic = false;
 			} else {
 				ChannelY = null;
@@ -679,18 +676,18 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				BoundsZMin = br.getFloat();
 				BoundsZMax = br.getFloat();
 			} else if (channelTypes.contains(FlagOffset.StaticZ)) {
-				ChannelZ.Values = new Float[] {br.getFloat()};
+				ChannelZ.Values = new float[] {br.getFloat()};
 				ChannelZ.IsDynamic = false;
 			} else {
 				ChannelZ = null;
 			}
 
 			if (channelTypes.contains(FlagOffset.SplineX))
-				ChannelX.Values = new Float[numItems + 1];
+				ChannelX.Values = new float[numItems + 1];
 			if (channelTypes.contains(FlagOffset.SplineY))
-				ChannelY.Values = new Float[numItems + 1];
+				ChannelY.Values = new float[numItems + 1];
 			if (channelTypes.contains(FlagOffset.SplineZ))
-				ChannelZ.Values = new Float[numItems + 1];
+				ChannelZ.Values = new float[numItems + 1];
 
 			for (int i = 0; i < numItems + 1; i++) {
 				if (channelTypes.contains(FlagOffset.SplineX)) {
@@ -707,9 +704,35 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			}
 		}
 
-		public Float GetValueX(float frame) {
+		//Basis_ITS1, GetPoint_NR1, TIME-EFFICIENT NURBS CURVE EVALUATION ALGORITHMS, pages 64 & 65
+		float GetSinglePoint(int knotSpanIndex, int degree, float frame, short[] knots, float[] cPoints) {
+			float[] N = {1, 0, 0, 0, 0};
+
+			for (int i = 1; i <= degree; i++)
+				for (int j = i - 1; j >= 0; j--) {
+
+					float A = (frame - knots[knotSpanIndex - j])
+								/ (knots[knotSpanIndex + i - j] - knots[knotSpanIndex - j]);
+					// without multiplying A, model jitters slightly
+					float tmp = N[j] * A;
+					// without subtracting tmp, model flies away then resets to origin every few frames
+					N[j + 1] += N[j] - tmp;
+					// without setting to tmp, model either is moved from origin or grows very long limbs
+					// depending on the animation
+					N[j] = tmp;
+				}
+
+			float retVal = 0.0f;
+
+			for (int i = 0; i <= degree; i++)
+				retVal += cPoints[knotSpanIndex - i] * N[i];
+
+			return retVal;
+		}
+
+		public float GetValueX(float frame) {
 			if (ChannelX == null)
-				return null;
+				return Float.NaN;
 
 			if (ChannelX.Values.length == 1)
 				return ChannelX.Values[0];
@@ -717,9 +740,9 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelX.Values);
 		}
 
-		public Float GetValueY(float frame) {
+		public float GetValueY(float frame) {
 			if (ChannelY == null)
-				return null;
+				return Float.NaN;
 
 			if (ChannelY.Values.length == 1)
 				return ChannelY.Values[0];
@@ -727,9 +750,9 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelY.Values);
 		}
 
-		public Float GetValueZ(float frame) {
+		public float GetValueZ(float frame) {
 			if (ChannelZ == null)
-				return null;
+				return Float.NaN;
 
 			if (ChannelZ.Values.length == 1)
 				return ChannelZ.Values[0];
@@ -787,7 +810,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		public boolean					HasStaticRotation;
 
 		public NifVector3				StaticPosition	= new NifVector3(0, 0, 0);
-		public NifQuaternion			StaticRotation	= NifQuaternion.Identity;
+		public NifQuaternionXYZW		StaticRotation	= NifQuaternionXYZW.Identity;
 		public NifVector3				StaticScale		= new NifVector3(1f, 1f, 1f);
 		public SplineTrackVector3		SplinePosition	= null;
 		public SplineTrackQuaternion	SplineRotation	= null;
@@ -809,11 +832,11 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				TransformTracks[i].Mask = new TransformMask(br);
 			}
 
-			// this is not true ata ll but let's see where we get to, I have a 3,3,3,3 after my masks
-			if (is64bit)
-				Align(4, br);
-			else
-				Align(8, br);
+			Align(4, br);
+			// this is not based on facts but let's see where we get to, 32bit has a 3,3,3,3 after my masks
+			if (!is64bit) {
+				br.getInt();
+			}
 
 			for (int i = 0; i < numTransformTracks; i++) {
 				TransformTrack track = TransformTracks[i];
@@ -891,7 +914,11 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				br.getFloat();
 				br.getFloat();
 				br.getFloat();
-				br.getFloat();
+				
+				//Animation file: meshes/actors/character/animations/2hw_attackright.hkx
+				//java.nio.BufferUnderflowException on this line
+				br.getFloat();				
+				
 			}
 
 			Align(16, br);
