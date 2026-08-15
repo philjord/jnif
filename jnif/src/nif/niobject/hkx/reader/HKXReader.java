@@ -74,22 +74,28 @@ public class HKXReader {
 			} else {
 				String className = classObj.name;
 
-				hkBaseObject obj = constructHKXObject(className, header.is64bit);				
-				
 				// the following skyrim hkp objects don't have xml to decode, they only appear in skeleton.hkx
 				// I only need the bones mappings from a skeleton.hkx so I'm going to hope to ignore them
 				// these look like the bhk versions found in nif files
-				
+
 				//hkpRigidBody hkpPhysicsSystem hkpPhysicsData hkpShapeInfo hkpCapsuleShape
-				
+				if (className.equals("hkpRigidBody")	|| className.equals("hkpPhysicsSystem")
+					|| className.equals("hkpPhysicsData") || className.equals("hkpShapeInfo")
+					|| className.equals("hkpCapsuleShape")) {
+					// no notice cos it's too many filling up me damn console with nonsense
+					break;
+				}
+
+				hkBaseObject obj = constructHKXObject(className, header.is64bit);
+
 				// Check for an unknown block type
 				if (obj == null) {
 					System.out.println("Unknown object type encountered during file read:  " + className);
-					
+
 					// when we skip a load we also need to skip whatever the data1 pointer thingies are 
 					// up to one that's from is on or after the next object					
 					// but cos it is hard I'm going to just stop loading and pretend it's fine
-					
+
 					break;
 				}
 
@@ -122,7 +128,6 @@ public class HKXReader {
 		objectType = objectType.replace("::", "$");
 
 		// let's see if we've got it already shall we?
-
 		Constructor<?> preCons = typeToClass.get(objectType);
 		if (preCons != null) {
 			try {
@@ -161,13 +166,11 @@ public class HKXReader {
 					System.out.println("class for objectType " + objectType + " not found");
 					System.out.print("Searched in these locations: ");
 					System.out.print("nif.niobject.hkx." + objectType + ", ");
-					System.out.print("nif.niobject.hkx.animation." + objectType + " ");
-					System.out.println("");
+					System.out.println("nif.niobject.hkx.animation." + objectType + " ");					
 				}
 			}
-
+			
 		}
-		System.out.println("unknown block type " + objectType);
 		return null;
 	}
 
@@ -232,7 +235,7 @@ public class HKXReader {
 	public static String[] hkStringArray(HKXReaderConnector connector, int classOffset) {
 		try {
 			int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset));
-			if (arrSize > 0) {	
+			if (arrSize > 0) {
 				DataInternal arrValue = connector.data1.readNext();
 				assert arrValue.from == classOffset;
 				String[] ret = new String[arrSize];
@@ -241,7 +244,7 @@ public class HKXReader {
 						arrValue = connector.data1.readNext();
 						//assert arrValue.from == classOffset; this can match at like +4 on the first .to
 						ByteBuffer file2 = connector.data.setup(arrValue.to);
-						ret[i] = ByteUtils.readString(file2);						 
+						ret[i] = ByteUtils.readString(file2);
 					} catch (InvalidPositionException e) {
 						// NO OP. Met when the last item of the HKX file is a String and is empty.					
 					}
@@ -301,7 +304,7 @@ public class HKXReader {
 	public static String[] hkStringArray32(HKXReaderConnector connector, int classOffset) {
 		try {
 			int arrSize = HKXReader.getSizeComponent32(connector.data.setup(classOffset));
-			if (arrSize > 0) {	
+			if (arrSize > 0) {
 				DataInternal arrValue = connector.data1.readNext();
 				assert arrValue.from == classOffset;
 				String[] ret = new String[arrSize];
@@ -310,7 +313,7 @@ public class HKXReader {
 						arrValue = connector.data1.readNext();
 						//assert arrValue.from == classOffset; this can match at like +4 on the first .to
 						ByteBuffer file2 = connector.data.setup(arrValue.to);
-						ret[i] = ByteUtils.readString(file2);						 
+						ret[i] = ByteUtils.readString(file2);
 					} catch (InvalidPositionException e) {
 						// NO OP. Met when the last item of the HKX file is a String and is empty.					
 					}

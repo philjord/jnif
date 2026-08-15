@@ -34,27 +34,26 @@ import nif.niobject.hkx.reader.InvalidPositionException;
 
 https://github.com/aerisarn/hkxlib/blob/master/src/main/java/org/tes/hkx/lib/ext/hkaSplineCompressedAnimation.java
 
-
-
 */
+
 public class hkaSplineCompressedAnimation extends hkaAnimation {
 
-	public int						numFrames;				// frames are knots, so max knots inside a track but each track differs, each track is a bone
-	public int						numBlocks;				// more than 1 if numFrame greater than 256 (last one is modulo 256 frames)
-	public int						maxFramesPerBlock;		// always 256
-	public int						maskAndQuantizationSize;
-	public float					blockDuration;			// max duration of a block, but last block can be less based on frame count
-	public float					blockInverseDuration;
-	public float					frameDuration;			// how long 1 frame is so duration/numFrames
-	public int[]					blockOffsets;			// where is block is in the data
-	public int[]					floatBlockOffsets;		// where scalar data is in a given block in the data
-	public int[]					transformOffsets;		// where rotation data is in the data
-	public int[]					floatOffsets;			// float tracks are for non boned things, pure lists of floats for animation of other things
-	public byte[]					data;
-	public int						endian;
+	public int				numFrames;				// frames are knots, so max knots inside a track but each track differs, each track is a bone
+	public int				numBlocks;				// more than 1 if numFrame greater than 256 (last one is modulo 256 frames)
+	public int				maxFramesPerBlock;		// always 256
+	public int				maskAndQuantizationSize;
+	public float			blockDuration;			// max duration of a block, but last block can be less based on frame count
+	public float			blockInverseDuration;
+	public float			frameDuration;			// how long 1 frame is so duration/numFrames
+	public int[]			blockOffsets;			// where is block is in the data
+	public int[]			floatBlockOffsets;		// where scalar data is in a given block in the data
+	public int[]			transformOffsets;		// where rotation data is in the data
+	public int[]			floatOffsets;			// float tracks are for non boned things, pure lists of floats for animation of other things
+	public byte[]			data;
+	public int				endian;
 
-	public boolean					is64bit	= true;
-	public List<TransformTrack[]>	blockTransformTracks;
+	public boolean			is64bit	= true;
+	public AnimationTracks	animationTracks;
 
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
@@ -183,10 +182,10 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			endian = stream.getInt(classOffset + 128);
 		}
 
-		blockTransformTracks = hkaSplineCompressedAnimation.ReadSplineCompressedAnimByteBlock(data,
-				numberOfTransformTracks, numBlocks, is64bit);
+		animationTracks = hkaSplineCompressedAnimation.ReadSplineCompressedAnimByteBlock(data, numberOfTransformTracks,
+				numBlocks, maskAndQuantizationSize, numberOfFloatTracks, is64bit);
 
-		System.out.println("decodedData " + blockTransformTracks.size());
+		//System.out.println("decodedData " + blockTransformTracks.size());
 
 		// now I dump the data? it's decoded now
 		data = null;
@@ -440,7 +439,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 		// I'd like this to work on any len but n'ermind
 
-		// the below might be right now, I've fixed it to mathc the above
+		// the below might be right now, I've fixed it to match the above
 		/*		int shift = 0;
 				long ret = 0;
 				int end = Math.min(buf.length , 8);
@@ -493,9 +492,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		if (((cVal >> 38) & 1) > 0)
 			retval[resultShift] *= -1;
 
-		//https://github.com/Meowmaritus/MVDX2/blob/master/MVDX2/Havok/SplineCompressedAnimation.cs#L210
-		//https://learn.microsoft.com/en-us/previous-versions/windows/silverlight/dotnet-windows-silverlight/bb195806(v=xnagamestudio.35)
-		//suggests xyzw (and so does NifQuaternionXYZW)
+		//havok is always XYZW
 		return new NifQuaternionXYZW(retval[0], retval[1], retval[2], retval[3]);
 
 	}
@@ -558,8 +555,6 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			for (int i = 0; i < knotCount; i++) {
 				Knots[i] = (short)(br.get() & 0xff);
 			}
-			
-			//TODO: buffer under flowAnimation file: meshes/actors/chaurus/animations/idle_lookright.hkx
 
 			Align(GetRotationAlign(quantizationType), br);
 
@@ -575,12 +570,10 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			return GetSinglePoint(knotspan, Degree, frame, Knots, Channel.Values);
 		}
 
-		
-		
 		//deburner think about threads!
-		NifQuaternionXYZW retVal = new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);
-		NifQuaternionXYZW temp = new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);// so we don't alter the channels quats
-		
+		NifQuaternionXYZW	retVal	= new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);
+		NifQuaternionXYZW	temp	= new NifQuaternionXYZW(0.0f, 0.0f, 0.0f, 0.0f);// so we don't alter the channels quats
+
 		//Basis_ITS1, GetPoint_NR1, TIME-EFFICIENT NURBS CURVE EVALUATION ALGORITHMS, pages 64 & 65
 		NifQuaternionXYZW GetSinglePoint(	int knotSpanIndex, int degree, float frame, short[] knots,
 											NifQuaternionXYZW[] cPoints) {
@@ -596,9 +589,9 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				}
 
 			//reset deburners
-			retVal.set(0f,0f,0f,0f);
-			temp.set(0f,0f,0f,0f);
-			
+			retVal.set(0f, 0f, 0f, 0f);
+			temp.set(0f, 0f, 0f, 0f);
+
 			// this is the overloaded * on a xna quat and a scalar, the source!
 			//https://learn.microsoft.com/en-us/previous-versions/windows/silverlight/dotnet-windows-silverlight/bb198126(v=xnagamestudio.35)
 			//xna is old and dead now, but here is an open source re-implementation
@@ -800,6 +793,25 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		}
 	}
 
+	public static class FloatTrack {
+		public FloatMask	Mask;
+		public float[]		floats;
+	}
+
+	public static class FloatMask {
+		int mask;
+
+		// I've seen a 3 which result in a 1 single float
+		FloatMask(ByteBuffer br) {
+			mask = br.get() & 0xff;
+		}
+	}
+
+	public static class AnimationTracks {
+		public List<TransformTrack[]>	transformBlocks;
+		public List<FloatTrack[]>		floatBlocks;
+	}
+
 	public static class TransformTrack {
 		public TransformMask			Mask;
 
@@ -818,9 +830,17 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 	}
 
 	//https://github.com/Meowmaritus/MVDX2/blob/master/MVDX2/Havok/SplineCompressedAnimation.cs
-	public static List<TransformTrack[]> ReadSplineCompressedAnimByteBlock(	byte[] animationData, int numTransformTracks,
-																			int numBlocks, boolean is64bit) {
-		List<TransformTrack[]> blocks = new ArrayList<TransformTrack[]>();
+	public static AnimationTracks ReadSplineCompressedAnimByteBlock(byte[] animationData, int numTransformTracks,
+																	int numBlocks, int maskAndQuantizationSize,
+																	int numberOfFloatTracks, boolean is64bit) {
+		// debug helper
+		/*	for (int i = 0; i < animationData.length; i++) {
+				System.out.print("" + (animationData[i] & 0xff) + " ");
+			}
+			System.out.println("");*/
+		AnimationTracks animationTracks = new AnimationTracks();
+		animationTracks.transformBlocks = new ArrayList<TransformTrack[]>();
+		animationTracks.floatBlocks = new ArrayList<FloatTrack[]>();
 
 		ByteBuffer br = ByteBuffer.wrap(animationData).order(ByteOrder.LITTLE_ENDIAN);
 
@@ -832,11 +852,15 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				TransformTracks[i].Mask = new TransformMask(br);
 			}
 
-			Align(4, br);
-			// this is not based on facts but let's see where we get to, 32bit has a 3,3,3,3 after my masks
-			if (!is64bit) {
-				br.getInt();
+			FloatTrack[] floatTracks = new FloatTrack[numberOfFloatTracks];
+			//FIXME: I should record the float tracks  but it's not the same count as the transformtracks
+			// so it needs it's own one
+			for (int i = 0; i < numberOfFloatTracks; i++) {
+				floatTracks[i] = new FloatTrack();
+				floatTracks[i].Mask = new FloatMask(br);
 			}
+
+			Align(4, br);
 
 			for (int i = 0; i < numTransformTracks; i++) {
 				TransformTrack track = TransformTracks[i];
@@ -884,7 +908,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				} else {
 					if (track.HasStaticRotation) {
 						Align(GetRotationAlign(m.rotationQuantizationType), br);
-						track.StaticRotation = ReadQuantizedQuaternion(br, m.rotationQuantizationType); //br.ReadBytes(GetRotationByteCount(m.RotationQuantizationType));
+						track.StaticRotation = ReadQuantizedQuaternion(br, m.rotationQuantizationType);
 					}
 				}
 
@@ -909,449 +933,23 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				Align(4, br);
 			}
 
-			// 32bit has 4 floats of 1.0 
-			if (!is64bit) {
-				br.getFloat();
-				br.getFloat();
-				br.getFloat();
-				
-				//Animation file: meshes/actors/character/animations/2hw_attackright.hkx
-				//java.nio.BufferUnderflowException on this line
-				br.getFloat();				
-				
+			for (int i = 0; i < numberOfFloatTracks; i++) {
+				FloatTrack track = floatTracks[i];
+				FloatMask m = track.Mask;
+				if (m.mask != 3) {
+					System.err.println("float mask not the number 3 " + m.mask);
+				} else {
+					track.floats = new float[1];
+					track.floats[0] = br.getFloat(); // I've seen 1.0 for 4 float tracks
+				}
 			}
 
 			Align(16, br);
 
-			blocks.add(TransformTracks);
+			animationTracks.transformBlocks.add(TransformTracks);
+			animationTracks.floatBlocks.add(floatTracks);
 		}
 
-		return blocks;
+		return animationTracks;
 	}
-	/*
-		//https://github.com/CucFlavius/Zee-010-Templates/blob/4a8975338ae7cd6df6c52aaff1d33de05462d57f/HKSplineCompressedAnimation.bt#L333
-		private void decodeData(byte[] data) {
-	
-			ByteBuffer bb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
-	
-			System.out.println("getting TransformMask " + numberOfTransformTracks);
-	
-			TransformMask2[] masks = new TransformMask2[numberOfTransformTracks];
-			for (int i = 0; i < numberOfTransformTracks; i++) {
-				masks[i] = new TransformMask2(bb.get(), bb.get(), bb.get(), bb.get());
-			}
-			System.out.println("got TransformMasks");
-	
-			System.out.println("getting tracks " + numberOfTransformTracks);
-	
-			SplineDynamicTrackVector[] positions = new SplineDynamicTrackVector[numberOfTransformTracks];
-			float[] positionFs = new float[numberOfTransformTracks * 3];
-	
-			SplineDynamicTrackQuat[] rotations = new SplineDynamicTrackQuat[numberOfTransformTracks];
-			Quat[] rotationsQ = new Quat[numberOfTransformTracks];
-	
-			SplineDynamicTrackVector[] scales = new SplineDynamicTrackVector[numberOfTransformTracks];
-			float[] scaleFs = new float[numberOfTransformTracks * 3];
-	
-			for (int i = 0; i < numberOfTransformTracks; i++) {
-				if ((masks[i].positionTypes & 0x10) != 0	|| (masks[i].positionTypes & 0x20) != 0
-					|| (masks[i].positionTypes & 0x40) != 0) {
-					positions[i] = new SplineDynamicTrackVector(masks[i], true, bb);
-					Align(4, bb);
-				} else if ((masks[i].positionTypes & 0x1) != 0	|| (masks[i].positionTypes & 0x2) != 0
-							|| (masks[i].positionTypes & 0x4) != 0) {
-					if ((masks[i].positionTypes & 0x1) != 0) {
-						positionFs[i * 3 + 0] = bb.getFloat();
-					}
-					if ((masks[i].positionTypes & 0x2) != 0) {
-						positionFs[i * 3 + 1] = bb.getFloat();
-					}
-					if ((masks[i].positionTypes & 0x4) != 0) {
-						positionFs[i * 3 + 2] = bb.getFloat();
-					}
-					Align(4, bb);
-				}
-	
-				if ((masks[i].rotationTypes & 0xf0) != 0) {
-					rotations[i] = new SplineDynamicTrackQuat(masks[i].rotQuantizationType, bb);
-					Align(4, bb);
-				} else if ((masks[i].rotationTypes & 0x0f) != 0) {
-					rotationsQ[i] = Quat(masks[i].rotQuantizationType, bb);
-					Align(4, bb);
-				}
-	
-				if ((masks[i].scaleTypes & 0x10) != 0	|| (masks[i].scaleTypes & 0x20) != 0
-					|| (masks[i].scaleTypes & 0x40) != 0) {
-					scales[i] = new SplineDynamicTrackVector(masks[i], false, bb);
-					Align(4, bb);
-				} else if ((masks[i].scaleTypes & 0x1) != 0 || (masks[i].scaleTypes & 0x2) != 0
-							|| (masks[i].scaleTypes & 0x4) != 0) {
-					if ((masks[i].scaleTypes & 0x1) != 0)
-						scaleFs[i * 3 + 0] = bb.getFloat();
-					if ((masks[i].scaleTypes & 0x2) != 0)
-						scaleFs[i * 3 + 1] = bb.getFloat();
-					if ((masks[i].scaleTypes & 0x4) != 0)
-						scaleFs[i * 3 + 2] = bb.getFloat();
-					Align(4, bb);
-				}
-	
-			}
-	
-			System.out.println("hkaSplineCompressedAnimation decode with " + bb.remaining() + " remaining");
-		}
-	
-		enum QuantizationType {
-			QT_8bit, QT_16bit, QT_32bit, QT_40bit, QT_48bit,
-		};
-	
-		enum FlagOffset2 {
-			staticX, staticY, staticZ, staticW, splineX, splineY, splineZ, splineW
-		};
-	
-		enum SplineTrackType {
-			STT_DYNAMIC, STT_STATIC, STT_IDENTITY
-		};
-	
-		enum TransformType {
-			ttPosX, ttPosY, ttPosZ, ttRotation, ttScaleX, ttScaleY, ttScaleZ
-		};
-	
-		static class TransformMask2 {
-	
-			int					quantizationTypes;		//unsigned byte quantizationTypes;
-	
-			//example of use:
-			// if (masks[i].positionTypes & 0x10 || masks[i].positionTypes & 0x20 || masks[i].positionTypes & 0x40)
-			//if (mask.positionTypes & 0x10) TrackBBOX boxX; else if (mask.positionTypes & 0x1) float staticX;
-			int					positionTypes;			//FlagOffset positionTypes;
-	
-			int					rotationTypes;			//unsigned byte rotationTypes;
-			int					scaleTypes;				//FlagOffset scaleTypes;
-	
-			QuantizationType	posQuantizationType;
-			QuantizationType	rotQuantizationType;
-			QuantizationType	scaleQuantizationType;
-	
-			public TransformMask2(byte b1, byte b2, byte b3, byte b4) {
-				quantizationTypes = b1 & 0xff;
-				positionTypes = b2 & 0xff;
-				rotationTypes = b3 & 0xff;
-				scaleTypes = b4 & 0xff; //bit mask of flags
-	
-				posQuantizationType = QuantizationType.values()[(quantizationTypes) & 3];
-				rotQuantizationType = QuantizationType.values()[((quantizationTypes >> 2) & 0xf) + 2];
-				scaleQuantizationType = QuantizationType.values()[(quantizationTypes >> 6) & 3];
-	
-			}
-	
-		};
-	
-		static class TrackBBOX {
-			float	min;
-			float	max;
-	
-			public TrackBBOX(ByteBuffer bb) {
-				min = bb.getFloat();
-				max = bb.getFloat();
-			}
-		};
-	
-		public static float POINT8(ByteBuffer bb) {
-			int val = bb.get() & 0xff;
-	
-			float fractal = 1.0f / 255.0f;
-			float dVar = val * fractal;
-			// extremes[id].min + (extremes[id].max - extremes[id].min) * dVar;
-			return dVar;
-		}
-	
-		static class Point8XYZ {
-			float	x;
-			float	y;
-			float	z;
-	
-			//getPos means  get positions otherwise get scales
-			public Point8XYZ(TransformMask2 mask, boolean getPos, ByteBuffer bb) {
-	
-				if (getPos) {
-					if ((mask.positionTypes & 0x10) != 0)
-						x = POINT8(bb);
-	
-					if ((mask.positionTypes & 0x20) != 0)
-						y = POINT8(bb);
-	
-					if ((mask.positionTypes & 0x40) != 0)
-						z = POINT8(bb);
-				} else {
-					if ((mask.scaleTypes & 0x10) != 0)
-						x = POINT8(bb);
-	
-					if ((mask.scaleTypes & 0x20) != 0)
-						y = POINT8(bb);
-	
-					if ((mask.scaleTypes & 0x40) != 0)
-						z = POINT8(bb);
-				}
-			}
-		};
-	
-		public static float POINT16(ByteBuffer bb) {
-	
-			float fractal = 1.0f / 0xffff;
-			int val = bb.getShort() & 0xff;
-			float dVar = val * fractal;
-			// extremes[id].min + (extremes[id].max - extremes[id].min) * dVar;
-			return dVar;
-		}
-	
-		static class Point16XYZ {
-			float	x;
-			float	y;
-			float	z;
-	
-			//getPos means  get positions otherwise get scales
-			public Point16XYZ(TransformMask2 mask, boolean getPos, ByteBuffer bb) {
-				if (getPos) {
-					if ((mask.positionTypes & 0x10) != 0)
-						x = POINT16(bb);
-	
-					if ((mask.positionTypes & 0x20) != 0)
-						y = POINT16(bb);
-	
-					if ((mask.positionTypes & 0x40) != 0)
-						z = POINT16(bb);
-				} else {
-					if ((mask.scaleTypes & 0x10) != 0)
-						x = POINT16(bb);
-	
-					if ((mask.scaleTypes & 0x20) != 0)
-						y = POINT16(bb);
-	
-					if ((mask.scaleTypes & 0x40) != 0)
-						z = POINT16(bb);
-				}
-			}
-		};
-	
-		static class SplineDynamicTrackVector {
-			int				numItems;
-			byte			degree;
-			int[]			knots;
-			TrackBBOX		boxX;
-			float			staticX;
-			TrackBBOX		boxY;
-			float			staticY;
-			TrackBBOX		boxZ;
-			float			staticZ;
-	
-			Point8XYZ[]		points;		 
-			Point16XYZ[]	points2;
-	
-			public SplineDynamicTrackVector(TransformMask2 mask, boolean getPos, ByteBuffer bb) {
-				// Spline
-				numItems = bb.getShort();
-				degree = bb.get();
-				int knotCount = numItems + degree + 2;
-				knots = new int[knotCount];
-				for (int i = 0; i < knotCount; i++) {
-					knots[i] = bb.get() & 0xff;
-				}
-				Align(4, bb);
-	
-				if (getPos) {
-					if ((mask.positionTypes & 0x10) != 0)
-						boxX = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x1) != 0)
-						staticX = bb.getFloat();
-	
-					if ((mask.positionTypes & 0x20) != 0)
-						boxY = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x2) != 0)
-						staticY = bb.getFloat();
-	
-					if ((mask.positionTypes & 0x40) != 0)
-						boxZ = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x4) != 0)
-						staticZ = bb.getFloat();
-	
-					if (mask.posQuantizationType == QuantizationType.QT_8bit) {
-						points = new Point8XYZ[numItems + 1];
-						for (int i = 0; i < numItems + 1; i++)
-							points[i] = new Point8XYZ(mask, getPos, bb);
-					} else {
-						points2 = new Point16XYZ[numItems + 1];
-						for (int i = 0; i < numItems + 1; i++)
-							points2[i] = new Point16XYZ(mask, getPos, bb);
-					}
-				} else {
-					if ((mask.scaleTypes & 0x10) != 0)
-						boxX = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x1) != 0)
-						staticX = FP16.toFloat(bb.getShort());
-	
-					if ((mask.scaleTypes & 0x20) != 0)
-						boxY = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x2) != 0)
-						staticY = FP16.toFloat(bb.getShort());
-	
-					if ((mask.scaleTypes & 0x40) != 0)
-						boxZ = new TrackBBOX(bb);
-					else if ((mask.positionTypes & 0x4) != 0)
-						staticZ = FP16.toFloat(bb.getShort());
-	
-					if (mask.scaleQuantizationType == QuantizationType.QT_8bit) {
-						points = new Point8XYZ[numItems + 1];
-						for (int i = 0; i < numItems + 1; i++)
-							points[i] = new Point8XYZ(mask, getPos, bb);
-					} else {
-						points2 = new Point16XYZ[numItems + 1];
-						for (int i = 0; i < numItems + 1; i++)
-							points2[i] = new Point16XYZ(mask, getPos, bb);
-					}
-				}
-			}
-	
-		};
-	
-		public static class Quat32 extends Quat {
-			byte[] compressed = new byte[4];
-	
-			public Quat32(ByteBuffer bb) {
-	
-				compressed[0] = bb.get();
-				compressed[1] = bb.get();
-				compressed[2] = bb.get();
-				compressed[3] = bb.get();
-				// Too lazy to write dequantization code here
-			}
-		};
-	
-		public static class Quat40 extends Quat {
-			byte[] compressed = new byte[5];
-	
-			public Quat40(ByteBuffer bb) {
-				compressed[0] = bb.get();
-				compressed[1] = bb.get();
-				compressed[2] = bb.get();
-				compressed[3] = bb.get();
-				compressed[4] = bb.get();
-	
-				// Too lazy to write dequantization code here
-				//byte compressed[5];
-				/*
-				local float fractal = 0.000345436f;
-				unsigned long cVal0;
-				FSkip(-3);
-				
-				local uint cVal1 = (uint)(cVal0 >> 24);
-				
-				local ushort x = (ushort)((cVal0 * (1 << 20)) >> 20);
-				local ushort y = (ushort)((cVal0 * (1 << 8)) >> 20);
-				local ushort z = (ushort)((cVal1 * (1 << 20)) >> 20);
-				
-				local short x1 = (short)(x - (1 << 11) - 1);
-				local short y1 = (short)(y - (1 << 11) - 1);
-				local short z1 = (short)(z - (1 << 11) - 1);
-				
-				//BitConverter.ToSingle(BitConverter.GetBytes(x1), 0)
-				
-				local float x2 = (float)(x1 * fractal);
-				local float y2 = (float)(y1 * fractal);
-				local float z2 = (float)(z1 * fractal);
-				
-				if(x2 * x2 + y2 * y2 + z2 * z2 > 1)
-				    local float w2 = 0;
-				else
-				    local float w2 = Sqrt(1 - (x2 * x2 + y2 * y2 + z2 * z2));
-				
-				//if ((cVal0 >> 38) & 1)
-				//    w2 = -w2;
-				*/
-	//local ulong resultShift = (cVal0 >> 36) & 3;
-	/*
-	Quaternion retVal = new Quaternion(x2, y2, z2, w2);
-	
-	switch (resultShift)
-	{
-	    case 0:
-	        return new Quaternion(retVal[2], retVal[1], retVal[0], retVal[3]);
-	    case 1:
-	        return new Quaternion(retVal[2], retVal[1], retVal[3], retVal[0]);
-	    case 2:
-	        return new Quaternion(retVal[2], retVal[3], retVal[1], retVal[0]);
-	    default:
-	        return retVal;
-	}
-	
-	
-	}
-	}
-	
-	public static class Quat48 extends Quat {
-	
-	byte[] compressed = new byte[6];
-	
-	public Quat48(ByteBuffer bb) {
-	compressed[0] = bb.get();
-	compressed[1] = bb.get();
-	compressed[2] = bb.get();
-	compressed[3] = bb.get();
-	compressed[4] = bb.get();
-	compressed[5] = bb.get();
-	
-	// Too lazy to write dequantization code here
-	}
-	};
-	
-	public static class Quat {
-	
-	}
-	
-	public static Quat Quat(QuantizationType quantization, ByteBuffer bb) {
-	Quat rotation = null;
-	switch (quantization) {
-	case QT_32bit:
-		rotation = new Quat32(bb);
-		break;
-	case QT_40bit:
-		rotation = new Quat40(bb);
-		break;
-	case QT_48bit:
-		rotation = new Quat48(bb);
-		break;
-	default:
-		System.err.println("Wrong rotation quantization");
-		break;
-	}
-	return rotation;
-	};
-	
-	public static class SplineDynamicTrackQuat {
-	int		numItems;
-	byte	degree;
-	int[]	knots;
-	Quat[]	quaternions;
-	
-	public SplineDynamicTrackQuat(QuantizationType quantization, ByteBuffer bb) {
-	numItems = bb.getShort();
-	degree = bb.get();
-	int knotCount = numItems + degree + 2;
-	knots = new int[knotCount];
-	for (int i = 0; i < knotCount; i++) {
-		knots[i] = bb.get() & 0xff;
-		//System.out.print(" knot " +knots[i] );
-	}
-	
-	if (quantization == QuantizationType.QT_48bit)
-		Align(2, bb);
-	else if (quantization == QuantizationType.QT_32bit)
-		Align(4, bb);
-	
-	quaternions = new Quat[numItems + 1];
-	for (int i = 0; i < numItems + 1; i++) {
-		quaternions[i] = Quat(quantization, bb);
-		//System.out.print(" quaternions " +quaternions[i] );
-	}
-	}
-	};*/
 }
