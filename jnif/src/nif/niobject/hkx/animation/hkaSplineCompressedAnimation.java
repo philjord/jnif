@@ -187,7 +187,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 		//System.out.println("decodedData " + blockTransformTracks.size());
 
-		// now I dump the data? it's decoded now
+		// now I dump the data. it's decoded now
 		data = null;
 
 		return success;
@@ -425,7 +425,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 	}
 
 	// Converts an array of bytes into a long.  
-	public static long toLong(byte[] buf) {
+	static long toLong(byte[] buf) {
 		if (buf == null) {
 			throw new RuntimeException("no good at all");
 		}
@@ -751,6 +751,37 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 				return ChannelZ.Values[0];
 			int knotspan = FindKnotSpan(Degree, frame, ChannelZ.Values.length, Knots);
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelZ.Values);
+		}
+		
+		public void GetValueXYZ(float frame, NifVector3 out) {
+			int knotspan = FindKnotSpan(Degree, frame, ChannelX.Values.length, Knots);
+
+			if (ChannelX == null) {
+				out.x = Float.NaN;
+			} else {
+				if (ChannelX.Values.length == 1)
+					out.x = ChannelX.Values[0];
+				else
+					out.x = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelX.Values);
+			}
+
+			if (ChannelY == null) {
+				out.y = Float.NaN;
+			} else {
+				if (ChannelY.Values.length == 1)
+					out.y = ChannelY.Values[0];
+				else
+					out.y = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelY.Values);
+			}
+
+			if (ChannelZ == null) {
+				out.z = Float.NaN;
+			} else {
+				if (ChannelZ.Values.length == 1)
+					out.z = ChannelZ.Values[0];
+				else
+					out.z = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelZ.Values);
+			}
 		}
 	}
 
