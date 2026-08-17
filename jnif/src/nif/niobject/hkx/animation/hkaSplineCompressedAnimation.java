@@ -579,7 +579,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 											NifQuaternionXYZW[] cPoints) {
 			float[] N = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
-			for (int i = 1; i <= degree; i++)
+			for (int i = 1; i <= degree; i++) {
 				for (int j = i - 1; j >= 0; j--) {
 					float A = (frame - knots[knotSpanIndex - j])
 								/ (knots[knotSpanIndex + i - j] - knots[knotSpanIndex - j]);
@@ -587,6 +587,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 					N[j + 1] += N[j] - tmp;
 					N[j] = tmp;
 				}
+			}
 
 			//reset deburners
 			retVal.set(0f, 0f, 0f, 0f);
@@ -701,7 +702,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 		float GetSinglePoint(int knotSpanIndex, int degree, float frame, short[] knots, float[] cPoints) {
 			float[] N = {1, 0, 0, 0, 0};
 
-			for (int i = 1; i <= degree; i++)
+			for (int i = 1; i <= degree; i++) {
 				for (int j = i - 1; j >= 0; j--) {
 
 					float A = (frame - knots[knotSpanIndex - j])
@@ -714,6 +715,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 					// depending on the animation
 					N[j] = tmp;
 				}
+			}
 
 			float retVal = 0.0f;
 
@@ -729,6 +731,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 			if (ChannelX.Values.length == 1)
 				return ChannelX.Values[0];
+
 			int knotspan = FindKnotSpan(Degree, frame, ChannelX.Values.length, Knots);
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelX.Values);
 		}
@@ -739,6 +742,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 			if (ChannelY.Values.length == 1)
 				return ChannelY.Values[0];
+
 			int knotspan = FindKnotSpan(Degree, frame, ChannelY.Values.length, Knots);
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelY.Values);
 		}
@@ -749,38 +753,44 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 
 			if (ChannelZ.Values.length == 1)
 				return ChannelZ.Values[0];
+
 			int knotspan = FindKnotSpan(Degree, frame, ChannelZ.Values.length, Knots);
 			return GetSinglePoint(knotspan, Degree, frame, Knots, ChannelZ.Values);
 		}
-		
+
 		public void GetValueXYZ(float frame, NifVector3 out) {
-			int knotspan = FindKnotSpan(Degree, frame, ChannelX.Values.length, Knots);
 
 			if (ChannelX == null) {
 				out.x = Float.NaN;
 			} else {
-				if (ChannelX.Values.length == 1)
+				if (ChannelX.Values.length == 1) {
 					out.x = ChannelX.Values[0];
-				else
+				} else {
+					int knotspan = FindKnotSpan(Degree, frame, ChannelX.Values.length, Knots);
 					out.x = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelX.Values);
+				}
 			}
 
 			if (ChannelY == null) {
 				out.y = Float.NaN;
 			} else {
-				if (ChannelY.Values.length == 1)
+				if (ChannelY.Values.length == 1) {
 					out.y = ChannelY.Values[0];
-				else
+				} else {
+					int knotspan = FindKnotSpan(Degree, frame, ChannelY.Values.length, Knots);
 					out.y = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelY.Values);
+				}
 			}
 
 			if (ChannelZ == null) {
 				out.z = Float.NaN;
 			} else {
-				if (ChannelZ.Values.length == 1)
+				if (ChannelZ.Values.length == 1) {
 					out.z = ChannelZ.Values[0];
-				else
+				} else {
+					int knotspan = FindKnotSpan(Degree, frame, ChannelZ.Values.length, Knots);
 					out.z = GetSinglePoint(knotspan, Degree, frame, Knots, ChannelZ.Values);
+				}
 			}
 		}
 	}
@@ -884,8 +894,7 @@ public class hkaSplineCompressedAnimation extends hkaAnimation {
 			}
 
 			FloatTrack[] floatTracks = new FloatTrack[numberOfFloatTracks];
-			//FIXME: I should record the float tracks  but it's not the same count as the transformtracks
-			// so it needs it's own one
+			//FIXME: I shouldn't hang onto the mask, once loaded we are loaded
 			for (int i = 0; i < numberOfFloatTracks; i++) {
 				floatTracks[i] = new FloatTrack();
 				floatTracks[i].Mask = new FloatMask(br);

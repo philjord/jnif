@@ -72,8 +72,9 @@ public class BSTriShape extends NiTriBasedGeom
 	public FloatBuffer colorsOptBuf;
 	public FloatBuffer uVSetOptBuf;
 
-	public float[] BoneWeights;
-	public int[] BoneIndices;
+	// per vertex, 4 floats and 4 ints
+	public float[][] BoneWeights;
+	public int[][] BoneIndices;
 
 	//OPTIMISATION
 	//public NifTriangle[] triangles;
@@ -162,6 +163,9 @@ public class BSTriShape extends NiTriBasedGeom
 
 					interleavedBuffer = ByteBuffer.allocateDirect(numVertices * interleavedStride);
 					interleavedBuffer.order(ByteOrder.nativeOrder());
+					
+					BoneWeights = new float[numVertices][];
+					BoneIndices = new int[numVertices][];
 
 					for (int i = 0; i < numVertices; i++)
 					{
@@ -264,12 +268,12 @@ public class BSTriShape extends NiTriBasedGeom
 
 						if (vertexFormat.isSet(VertexFormat.VF_Skinned))
 						{
-							BoneWeights = new float[4];
+							BoneWeights[i] = new float[4];
 							for (int b = 0; b < 4; b++)
-								BoneWeights[b] = FP16.toFloat(ByteConvert.readShort(stream));
-							BoneIndices = new int[4];
+								BoneWeights[i][b] = FP16.toFloat(ByteConvert.readShort(stream));
+							BoneIndices[i] = new int[4];
 							for (int b = 0; b < 4; b++)
-								BoneIndices[b] = ByteConvert.readUnsignedByte(stream);
+								BoneIndices[i][b] = ByteConvert.readUnsignedByte(stream);
 						}
 
 						if (vertexFormat.isSet(VertexFormat.VF_Male_Eyes))
@@ -304,6 +308,8 @@ public class BSTriShape extends NiTriBasedGeom
 						colorsOptBuf = createFB(numVertices * 4);
 					}
 
+					BoneWeights = new float[numVertices][];
+					BoneIndices = new int[numVertices][];
 					for (int i = 0; i < numVertices; i++)
 					{
 						if (vertexFormat.isSet(VertexFormat.VF_Vertex))
@@ -377,12 +383,12 @@ public class BSTriShape extends NiTriBasedGeom
 
 						if (vertexFormat.isSet(VertexFormat.VF_Skinned))
 						{
-							BoneWeights = new float[4];
+							BoneWeights[i] = new float[4];
 							for (int b = 0; b < 4; b++)
-								BoneWeights[b] = FP16.toFloat(ByteConvert.readShort(stream));
-							BoneIndices = new int[4];
+								BoneWeights[i][b] = FP16.toFloat(ByteConvert.readShort(stream));
+							BoneIndices[i] = new int[4];
 							for (int b = 0; b < 4; b++)
-								BoneIndices[b] = ByteConvert.readUnsignedByte(stream);
+								BoneIndices[i][b] = ByteConvert.readUnsignedByte(stream);
 						}
 
 						if (vertexFormat.isSet(VertexFormat.VF_Male_Eyes))
