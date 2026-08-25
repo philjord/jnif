@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 import nif.niobject.hkx.reader.byteutils.ByteUtils;
@@ -103,8 +104,7 @@ public class hknpConvexPolytopeShape extends hknpConvexShape {
 			indices[i] = value.listObjectArray.get(i).i_value;
 		}
 
-		value = value0.listObjectClass.get(memberIdx++);
-		connectivity = value.attachement.offset;
+		connectivity = TAG0Reader.getRefPtr(value0.listObjectClass.get(memberIdx++));
 
 		return memberIdx;
 	}

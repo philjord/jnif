@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
@@ -163,7 +164,7 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 		arrSize = value.listObjectArray.size();
 		referencedObjects = new long[arrSize];
 		for (int i = 0; i < arrSize; i++) {
-			referencedObjects[i] = value.listObjectArray.get(i).objectPointer.attachement.offset;
+			referencedObjects[i] = TAG0Reader.getRefPtr(value.listObjectArray.get(i));
 		}
 
 		name = value0.listObjectClass.get(memberIdx++).s_value;

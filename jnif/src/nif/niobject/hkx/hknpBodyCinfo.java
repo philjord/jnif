@@ -8,6 +8,7 @@ import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
@@ -103,7 +104,7 @@ public class hknpBodyCinfo {
 	
 		
 		int memberIdx = 0;			 
-		shape = item.listObjectClass.get(memberIdx++).objectPointer.attachement.offset;
+		shape = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 		flags = item.listObjectClass.get(memberIdx++).i_value;
 		collisionCntrl = item.listObjectClass.get(memberIdx++).i_value;
 		collisionFilterInfo  = item.listObjectClass.get(memberIdx++).i_value;
@@ -117,12 +118,12 @@ public class hknpBodyCinfo {
 		linearVelocity = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
 		angularVelocity = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
 		mass = item.listObjectClass.get(memberIdx++).f_value;
-		massDistribution= item.listObjectClass.get(memberIdx++).i_value;
+		massDistribution = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 		motionId = item.listObjectClass.get(memberIdx++).i_value;		//motionPropertiesId		
 		reservedBodyId = item.listObjectClass.get(memberIdx++).i_value;
 		reservedMotionId = item.listObjectClass.get(memberIdx++).i_value;		
 		collisionLookAheadDistance  = item.listObjectClass.get(memberIdx++).f_value;			 
-		localFrame  = item.listObjectClass.get(memberIdx++).i_value;		
+		localFrame  = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 	}
 
 }

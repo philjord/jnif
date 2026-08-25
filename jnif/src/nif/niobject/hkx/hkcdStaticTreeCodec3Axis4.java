@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdStaticTreeCodec3Axis4' version='0' signature='0xd168bc2f' parent='hkcdStaticTreeCodec3Axis'>
@@ -23,5 +24,12 @@ public class hkcdStaticTreeCodec3Axis4 extends hkcdStaticTreeCodec3Axis {
 		super(connector, stream, classOffset);
 
 		data = Byte.toUnsignedInt(stream.get(classOffset + 3));
+	}
+
+	public hkcdStaticTreeCodec3Axis4(Havok_TagObject item) {
+		super(item);
+		//item.outputOutline();
+		int memberIdx = 1;
+		data =  item.listObjectClass.get(memberIdx++).i_value;
 	}
 }

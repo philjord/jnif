@@ -37,8 +37,7 @@ public class hknpConstraintCinfo {
 		item.outputOutline();
 		int memberIdx = 2;
 
-		System.out.println("NOT DONE!");
-		constraintData = item.listObjectClass.get(memberIdx++).i_value;// needs to be an offset
+		constraintData = item.listObjectClass.get(memberIdx++).i_value;
 		bodyA = item.listObjectClass.get(memberIdx++).i_value;
 		bodyB = item.listObjectClass.get(memberIdx++).i_value;
 		flags = item.listObjectClass.get(memberIdx++).i_value;

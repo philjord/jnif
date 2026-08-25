@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**<struct name='hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsignedlonglong1121hknpCompressedMeshShapeTreeDataRun' version='0' signature='0x1da85e02' parent='hkcdStaticMeshTreeBase'>
 	<enums>
@@ -65,5 +66,42 @@ public class hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsigned
 						(int)arrValue.to + (i * hknpCompressedMeshShapeTreeDataRun.size));
 			}
 		}
+	}
+
+	/**
+	Outline for Havok_TagType hkcdStaticMeshTree
+	Havok_TagMember packedVertices of type hkArray
+	Havok_TagMember sharedVertices of type hkArray
+	Havok_TagMember primitiveDataRuns of type hkArray
+	*/
+
+	public hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsignedlonglong1121hknpCompressedMeshShapeTreeDataRun(Havok_TagObject item) {
+		super(item);
+		//item.outputOutline();
+
+		int memberIdx = 9;
+		//shape = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));		
+		
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+		int arrSize = value.listObjectArray.size();
+		packedVertices = new int[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			packedVertices[i] = value.listObjectArray.get(i).i_value;
+		}	
+		 		 
+		value = item.listObjectClass.get(memberIdx++);
+		arrSize = value.listObjectArray.size();
+		sharedVertices = new long[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			sharedVertices[i] = value.listObjectArray.get(i).i_value;
+		} 
+
+		value = item.listObjectClass.get(memberIdx++);
+		arrSize = value.listObjectArray.size();
+		primitiveDataRuns = new hknpCompressedMeshShapeTreeDataRun[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			primitiveDataRuns[i] = new hknpCompressedMeshShapeTreeDataRun(value.listObjectArray.get(i));
+		} 
+
 	}
 }

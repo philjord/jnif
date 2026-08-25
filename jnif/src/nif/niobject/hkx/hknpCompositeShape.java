@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
@@ -48,7 +49,7 @@ public class hknpCompositeShape extends hknpShape {
 		Havok_TagObject value0 = item.value.get(0);
 		edgeWeldingMap = new hknpSparseCompactMapunsignedshort(value0.listObjectClass.get(memberIdx++));		 
 		shapeTagCodecInfo = value0.listObjectClass.get(memberIdx++).i_value;
-		materialTable = value0.listObjectClass.get(memberIdx++).i_value;		
+		materialTable = TAG0Reader.getRefPtr(value0.listObjectClass.get(memberIdx++));	
 
 		return memberIdx;
 	}

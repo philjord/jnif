@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdStaticMeshTreeBase' version='0' signature='0xf885dcd0' parent='hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5'>
@@ -75,5 +76,50 @@ public class hkcdStaticMeshTreeBase extends hkcdStaticTreeTreehkcdStaticTreeDyna
 				sharedVerticesIndex[i] = Short.toUnsignedInt(stream.getShort((int)arrValue.to + (i * 2)));
 			}
 		}
+	}
+
+	/**
+	Outline for Havok_TagType hkcdStaticMeshTreeBase
+	Havok_TagMember numPrimitiveKeys of type int
+	Havok_TagMember bitsPerKey of type int
+	Havok_TagMember maxKeyValue of type hkUint32
+	Havok_TagMember primitiveStoresIsFlatConvex of type hkUint8
+	Havok_TagMember sections of type hkArray
+	Havok_TagMember primitives of type hkArray
+	Havok_TagMember sharedVerticesIndex of type hkArray
+	
+	*/
+	int primitiveStoresIsFlatConvex;
+	public hkcdStaticMeshTreeBase(Havok_TagObject item) {
+		super(item);
+		//item.outputOutline();
+
+		int memberIdx = 2;		
+		
+		numPrimitiveKeys = item.listObjectClass.get(memberIdx++).i_value;
+		bitsPerKey = item.listObjectClass.get(memberIdx++).i_value;
+		maxKeyValue = item.listObjectClass.get(memberIdx++).i_value;		
+		primitiveStoresIsFlatConvex = item.listObjectClass.get(memberIdx++).i_value;
+
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+		int arrSize = value.listObjectArray.size();
+		sections = new hkcdStaticMeshTreeBaseSection[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			sections[i] = new hkcdStaticMeshTreeBaseSection(value.listObjectArray.get(i));
+		}
+		
+		value = item.listObjectClass.get(memberIdx++);
+		arrSize = value.listObjectArray.size();
+		primitives = new hkcdStaticMeshTreeBasePrimitive[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			primitives[i] = new hkcdStaticMeshTreeBasePrimitive(value.listObjectArray.get(i));
+		} 
+
+		value = item.listObjectClass.get(memberIdx++);
+		arrSize = value.listObjectArray.size();
+		sharedVerticesIndex = new int[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			sharedVerticesIndex[i] = value.listObjectArray.get(i).i_value;
+		}		
 	}
 }

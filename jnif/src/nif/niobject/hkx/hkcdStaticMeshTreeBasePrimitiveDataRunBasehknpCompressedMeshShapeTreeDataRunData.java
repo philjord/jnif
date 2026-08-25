@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTreeDataRunData' version='0' signature='0xad836282'>
@@ -27,5 +28,20 @@ public class hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTr
 		value = new hknpCompressedMeshShapeTreeDataRunData(connector, stream, classOffset + 0);
 		index = Byte.toUnsignedInt(stream.get(classOffset + 2));
 		count = Byte.toUnsignedInt(stream.get(classOffset + 3));
+	}
+
+	/**
+	 Outline for Havok_TagType hkcdStaticMeshTreeBase::PrimitiveDataRunBase
+	Havok_TagMember value of type hknpCompressedMeshShapeTreeDataRunData
+	Havok_TagMember index of type hkUint8
+	Havok_TagMember count of type hkUint8
+	 */
+	public hkcdStaticMeshTreeBasePrimitiveDataRunBasehknpCompressedMeshShapeTreeDataRunData(Havok_TagObject item) {
+		//item.outputOutline();
+
+		int memberIdx = 0;	
+		value = new hknpCompressedMeshShapeTreeDataRunData(item.listObjectClass.get(memberIdx++));
+		index = item.listObjectClass.get(memberIdx++).i_value;
+		count = item.listObjectClass.get(memberIdx++).i_value;
 	}
 }

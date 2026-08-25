@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
 <struct name='hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5' version='0' signature='0x1cfe2fb6' parent='hkcdStaticTreeDynamicStorage5'>
@@ -23,5 +24,18 @@ public class hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5 extends hkcdStaticT
 		super(connector, stream, classOffset);
 
 		domain = new hkAabb(connector, stream, classOffset + 16);
+	}
+
+	/**
+	Outline for Havok_TagType hkcdStaticTree::Tree
+	Havok_TagMember domain of type hkAabb
+	*/
+	public hkcdStaticTreeTreehkcdStaticTreeDynamicStorage5(Havok_TagObject item) {
+
+		super(item);
+		//item.outputOutline();
+
+		int memberIdx = 1;
+		domain = new hkAabb(item.listObjectClass.get(memberIdx++));
 	}
 }

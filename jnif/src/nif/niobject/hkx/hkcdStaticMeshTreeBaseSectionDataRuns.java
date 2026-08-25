@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdStaticMeshTreeBaseSectionDataRuns' version='0' signature='0x2b62bb35'>
@@ -20,5 +21,11 @@ public class hkcdStaticMeshTreeBaseSectionDataRuns {
 	public hkcdStaticMeshTreeBaseSectionDataRuns(HKXReaderConnector connector, ByteBuffer stream, int classOffset)
 			throws IOException, InvalidPositionException {
 		data = stream.getInt(classOffset + 0);
+	}
+
+	public hkcdStaticMeshTreeBaseSectionDataRuns(Havok_TagObject item) {
+		//item.outputOutline();
+		int memberIdx = 0;
+		data = item.listObjectClass.get(memberIdx++).i_value;
 	}
 }

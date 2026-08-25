@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import nif.niobject.hkx.hkBaseObject;
+// https://github.com/blueskythlikesclouds/TagTools
+// https://github.com/Olganix/LibXenoverse2/blob/master/LibXenoverse/LibXenoverse/Havok.h
+// https://github.com/blueskythlikesclouds/TagTools/blob/70d05f892fe84083dc4cc360f5ca37bacb612327/TagTools.py#L1428
 
 public class TAG0Reader {
 
@@ -276,7 +279,9 @@ public class TAG0Reader {
 
 		public boolean						b_value;
 		public String						s_value;
+		public byte							byte_value;
 		public int							i_value;
+		public long							l_value;
 		public float						f_value;
 
 		public Havok_TagObject				objectPointer;
@@ -293,7 +298,9 @@ public class TAG0Reader {
 			this.type = type;
 			b_value = false;
 			s_value = "";
+			byte_value = 0;
 			i_value = 0;
+			l_value = 0;
 			f_value = 0.0f;
 			attachement = null;
 			objectPointer = null;
@@ -318,12 +325,23 @@ public class TAG0Reader {
 	}
 
 	enum TagSubType {
-		TST_Void(0x0), TST_Invalid(0x1), TST_Bool(0x2), //
-		TST_String(0x3), TST_Int(0x4), TST_Float(0x5), //
-		TST_Pointer(0x6), TST_Class(0x7), TST_Array(0x8), //
-		TST_Tuple(0x28), TST_TypeMask(0xff), TST_IsSigned(0x200), //
-		TST_Float32(0x1746), TST_Int8(0x2000), TST_Int16(0x4000), //
-		TST_Int32(0x8000), TST_Int64(0x10000);
+		TST_Void(0x0), //
+		TST_Invalid(0x1), //
+		TST_Bool(0x2), //
+		TST_String(0x3), //
+		TST_Int(0x4), //
+		TST_Float(0x5), //
+		TST_Pointer(0x6), //
+		TST_Class(0x7), //
+		TST_Array(0x8), //
+		TST_Tuple(0x28), //
+		TST_TypeMask(0xff), //
+		TST_IsSigned(0x200), //
+		TST_Float32(0x1746), //
+		TST_Int8(0x2000), //
+		TST_Int16(0x4000), //
+		TST_Int32(0x8000), //
+		TST_Int64(0x10000);
 
 		private int _val;
 
@@ -372,11 +390,7 @@ public class TAG0Reader {
 		HeaderData headerData = new HeaderData();
 		headerData.is64bit = true;
 		headerData.versionName = version_info.toString();
-		HKXContents content = new HKXContents(headerData);
-
-		// do I just create one per listItem, then sort out pointers a bit laterish?
-		// maybe the pointers in the code need to point um... to a ... umm thing?
-		//offset seems to emulate the the from hashy code
+		hkxContents = new HKXContents(headerData);
 
 		for (int i = 0; i < listItem.size(); i++) {
 			Havok_TagItem item = listItem.get(i);
@@ -386,7 +400,6 @@ public class TAG0Reader {
 				continue;
 
 			String className = item.type.name;
-
 
 			// the following skyrim hkp objects don't have xml to decode, they only appear in skeleton.hkx
 			// I only need the bones mappings from a skeleton.hkx so I'm going to hope to ignore them
@@ -399,33 +412,8 @@ public class TAG0Reader {
 				// no notice cos it's too many filling up me damn console with nonsense
 				break;
 			}
-			
-			// parent type names that appear to be duds some how, should be hknpSahe
-			// take a look at the TODO: below I've got bad strings being used, so I should look into that
-			if (className.equals("T*")	||	className.equals("hkArray")	) {
-				continue;
-			}
-			
-			
-			System.out.println("TAG0Reader: " + className);
-			
-			// some newer classes have moed around the older one, I'm going to rename and load 
-			// like it was
-	/*		if (className.equals("hknpCompositeShape"))
-				className = "hknpCompressedMeshShape";
-			else if (className.equals("hknpCompressedMeshShapeTree"))
-				className = "hknpCompressedMeshShapeTree2";
-			else if (className.equals("hkCompressedMassProperties"))
-				className = "hkCompressedMassProperties2";
-			else if (className.equals("hknpConvexShape"))
-				className = "hknpConvexPolytopeShape";*/
-			
-			
-			
-			//meshes\architecture\bonewall\bonewall.nif
-			//TAG0Reader: hknpConvexShape
-			//TAG0Reader: hkCompressedMassProperties
-			 
+
+			//System.out.println("TAG0Reader: " + className);
 
 			hkBaseObject obj = HKXReader.constructHKXObject(className, true);
 
@@ -438,19 +426,15 @@ public class TAG0Reader {
 			int fieldsRead = obj.readFromTAG0(item);
 
 			//-1 means bad news
-			if (fieldsRead<0) {
+			if (fieldsRead < 0) {
 				new Throwable("bum read").printStackTrace();
 			}
 
-			content.add(item.offset, obj);
-
+			//System.out.println("hkxContents.add(item.offset, obj); " + item.offset + " " + obj);
+			hkxContents.add(item.offset, obj);
 		}
-
 	}
 
-	//https://github.com/blueskythlikesclouds/TagTools
-	//https://github.com/Olganix/LibXenoverse2/blob/master/LibXenoverse/LibXenoverse/Havok.h
-	//https://github.com/blueskythlikesclouds/TagTools/blob/70d05f892fe84083dc4cc360f5ca37bacb612327/TagTools.py#L1428
 	public boolean load(ByteBuffer buf) {
 
 		String version; //only "2015.01.00" accepted
@@ -524,12 +508,12 @@ public class TAG0Reader {
 							byte[] char_ptr = new byte[l];
 							buf.position(offset + offset_tmp).get(char_ptr);
 							String str = new String(char_ptr);
-							
+
 							listTSTR.add(str);
 							offset_tmp += str.length() + 1;
 						}
 						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
-						
+
 						//debug
 						//for(int i=0;i< listTSTR.size();i++)  System.out.println("" + i + " "+listTSTR.get(i));	
 
@@ -543,12 +527,12 @@ public class TAG0Reader {
 
 						int offset_tmp = offset + nbBytes[0];
 						for (int i = 1; i < nbTypes; i++) {
-														
+
 							Havok_TagType tagType = listType.get(i);
 
 							int idx = readPacked(buf, offset_tmp, size - offset_tmp, nbBytes);
-							tagType.name = listTSTR.get(idx);							
-							
+							tagType.name = listTSTR.get(idx);
+
 							//System.out.println("i " + i + " " + tagType.name);
 
 							offset_tmp += nbBytes[0];
@@ -557,24 +541,23 @@ public class TAG0Reader {
 							offset_tmp += nbBytes[0];
 
 							for (int j = 0; j < nbNextValues; j++) {
-								
-								
+
 								int index = readPacked(buf, offset_tmp, size - offset_tmp, nbBytes);
 								offset_tmp += nbBytes[0];
 								String str = listTSTR.get(index);
-								
+
 								//if( str.startsWith("v"))
 								//System.out.println("template " + str   + " i " + i + " j " + j);								
 
 								if (str.equals("vINVALID_VALUE")) {
 									// lets pull some rubbish values off								 
-								
+
 									//ArchiveFile:SeventySix - Meshes.ba2/meshes/ammo/10mm/10mmammo.nif
 									//ArchiveFile:SeventySix - Meshes.ba2/meshes/architecture/airport/barricade/bosbarricadeaddon01.nif
 									//both  requires 5 bytes pulled off
 									offset_tmp += 5;
-									
-								} else 	{
+
+								} else {
 									Havok_TagTemplate template_tmp = new Havok_TagTemplate(str,
 											readPacked(buf, offset_tmp, size - offset_tmp, nbBytes));
 									offset_tmp += nbBytes[0];
@@ -686,7 +669,7 @@ public class TAG0Reader {
 
 									tagMember.type = listType
 											.get(readPacked(buf, offset + offset_tmp, size - offset_tmp, nbBytes));
-									offset_tmp += nbBytes[0];												
+									offset_tmp += nbBytes[0];
 
 									tagType.members.add(tagMember);
 								}
@@ -718,13 +701,12 @@ public class TAG0Reader {
 					} else if (type_subpart_hdr.signature.equals(Havok_TPAD_SIGNATURE)) {
 						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
 					} else {
-						
+
 						if (sop) {
-							System.out
-									.println("Warning : Type_subPartHeader signature unknow : " + type_subpart_hdr.signature
+							System.out.println(
+									"Warning : Type_subPartHeader signature unknow : "	+ type_subpart_hdr.signature
 												+ " at " + offset + " with size of " + type_subpart_hdr.size);
-							
-							
+
 							//https://reshax.com/topic/198-havok-middleware/ 
 							//THSH: Class signatures 
 							// I've seen 
@@ -789,14 +771,13 @@ public class TAG0Reader {
 						//3 0 0 0, 1 0 0 0, 16 0 0 0, 5 0 0 0, 1 0 0 0, 48 0 0 0, 7 0 0 0, 1 0 0 0, 80 0 0 0, 21 0 0 0 
 						//3 0 0 0, 128 1 0 0, 0 2 0 0, 144 2 0 0, 53 0 0 0, 1 0 0 0, 208 0 0 0, 74 0 0 0, 1 0 0 0, 184 1 0 0 81 0 0 0 1 0 0 0 120 2 0 0 89 0 0 0 1 0 0 0 16 3 0 0 92 0 0 0 2 0 0 0 8 2 0 0 32 3 0 0 99 0 0 0 1 0 0 0 88 3 0 0 105 0 0 0 1 0 0 0 48 3 0 0 106 0 0 0 1 0 0 0 64 3 0 0 113 0 0 0 1 0 0 0 240 2 0 0 114 0 0 0 1 0 0 0 0 3 0 0 128 0 0 0 1 0 0 0 176 2 0 0 140 0 0 0 2 0 0 0 176 3 0 0 16 4 0 0 143 0 0 0 1 0 0 0 8 14 0 0 
 
-						
 						//https://reshax.com/topic/198-havok-middleware/ PTCH: Index for pointer patches 
-						
+
 						if (sop) {
-							System.out.println(
-									"Warning : indexation PartHeader signature unknow : "	+ indexation_subpart_hdr.signature
-												+ " at " + offset + " with size of " + indexation_subpart_hdr.size);
-	
+							System.out.println("Warning : indexation PartHeader signature unknow : "
+												+ indexation_subpart_hdr.signature + " at " + offset + " with size of "
+												+ indexation_subpart_hdr.size);
+
 							byte[] bytes = new byte[indexation_subpart_hdr.size - sizeof_Havok_PartHeader];
 							buf.get(bytes);
 							for (int i = 0; i < bytes.length; i++) {
@@ -883,12 +864,35 @@ public class TAG0Reader {
 			obj.b_value = (readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str) > 0);
 			if (sop)
 				System.out.print(" of value " + obj.b_value);
-		} else if (type.subType() == TagSubType.TST_Int._val) {
-			if (sop)
-				System.out.print("-> Int at " + (offset[0] - 0x20));
-			obj.i_value = (int)readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
-			if (sop)
-				System.out.print(" of value " + obj.i_value);
+		} else if (type.subType() == TagSubType.TST_Int._val) {			
+		/*	if ((
+					//NOTICE all bytes this way, just design if needed
+					//(type.subTypeFlags & TagSubType.TST_IsSigned._val) != 0 && 
+					(type.subTypeFlags & TagSubType.TST_Int8._val) != 0)	) {
+				//signed byte into byte holder (unsigned in the int holder)
+				if (sop)
+					System.out.print("-> UInt/Long at " + (offset[0] - 0x20));
+				obj.byte_value = (byte)readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
+				if (sop)
+					System.out.print(" of value " + obj.byte_value);
+			} else if (
+				//	((type.subTypeFlags & TagSubType.TST_IsSigned._val) == 0
+				//	&& (type.subTypeFlags & TagSubType.TST_Int32._val) != 0)		||
+				//NOTICE using 2 variable is more difficult to debug, just de-sign when needed
+				(type.subTypeFlags & TagSubType.TST_Int64._val) != 0) {
+				//  long go into long holder
+				if (sop)
+					System.out.print("-> UInt/Long at " + (offset[0] - 0x20));
+				obj.l_value = readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
+				if (sop)
+					System.out.print(" of value " + obj.l_value);
+			} else {*/
+				if (sop)
+					System.out.print("-> Int at " + (offset[0] - 0x20));
+				obj.i_value = (int)readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
+				if (sop)
+					System.out.print(" of value " + obj.i_value);
+			//}		
 		} else if (type.subType() == TagSubType.TST_Float._val) {
 			if (sop)
 				System.out.print("-> Float at " + (offset[0] - 0x20));
@@ -923,7 +927,6 @@ public class TAG0Reader {
 				System.out.print(" Pointer of value " + obj.objectPointer);
 
 		} else if (type.subType() == TagSubType.TST_Class._val) {
-
 			ArrayList<Havok_TagMember> listMembers = type.allMembers();
 
 			int nbMember = listMembers.size();
@@ -941,13 +944,12 @@ public class TAG0Reader {
 			obj.listObjectArray = readItemPtr(buf, size, offset, listItem, listType);
 
 		} else if (type.subType() == TagSubType.TST_Tuple._val) {
-
 			if (sop)
 				System.out.println("-> Tuple at " + (offset[0] - 0x20));
 
 			int nbTuple = type.tupleSize();
 			int[] offset_tmp = new int[] {0};
-			for (int i = 0; i < nbTuple; i++) {
+			for (int i = 0; i < nbTuple; i++) {//HERE I have superTpes of things like unsigned char etc, so my read shoul be more sensible				
 				offset_tmp[0] = offset[0] + i * type.pointer.superType().byteSize;
 				obj.listObjectTuple
 						.add(readObject(i, buf, size, type.pointer, offset_tmp, listItem, listType, obj.attachement));
@@ -984,20 +986,23 @@ public class TAG0Reader {
 
 		if ((flags & TagSubType.TST_Int8._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("8");
-			return ((isSigned) ? (buf.get(offset + 0) & 0xFF) : buf.get(offset + 0));
+			return ((isSigned) ?  buf.get(offset + 0) :(buf.get(offset + 0) & 0xFF) );
 		} else if ((flags & TagSubType.TST_Int16._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("16");
-			int value = (isSigned ? (buf.getShort(offset + 0) & 0xFF) : buf.getShort(offset + 0));
+			int value = (isSigned ? buf.getShort(offset + 0) : (buf.getShort(offset + 0) & 0xFF));
 			//return (bigEndian) ? BE16(value) : value; 
 			return value;
 		} else if ((flags & TagSubType.TST_Int32._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("32");
-			int value = (isSigned ? (buf.getInt(offset + 0) & 0xFF) : buf.getInt(offset + 0)); //TODO: unsigned is for someone else to do
+			//FIXME: this this reversed!!! I need a good long system, 
+			//ArchiveFile:SeventySix - Meshes.ba2/meshes/architecture/airport/barricade/bosbarricadeaddon01.nif shows this issue
+			long value = (isSigned ? (buf.getInt(offset + 0) & 0xFFL): buf.getInt(offset + 0) ); //TODO: unsigned is for someone else to do
 			//return (bigEndian) ? BE32(value) : value;
 			return value;
 		} else if ((flags & TagSubType.TST_Int64._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("64");
-			long value = (isSigned ? (buf.getLong(offset + 0) & 0xFF) : buf.getLong(offset + 0)); //TODO: unsigned is for someone else to do
+			//FIXME I need a long and a byte system for goodness sake!
+			long value = (isSigned ? buf.getLong(offset + 0) : (buf.getLong(offset + 0) & 0xFF)); //TODO: unsigned is for someone else to do
 			//return (bigEndian) ? BE64(value) : value;
 			return value;
 		}
@@ -1071,5 +1076,13 @@ public class TAG0Reader {
 					& 0x1fffffff);
 
 		}
+	}
+
+	public static long getRefPtr(Havok_TagObject obj) {
+		if (obj.objectPointer == null)
+			return -1;
+		else
+			return obj.objectPointer.attachement.offset;
+
 	}
 }

@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
@@ -103,7 +104,7 @@ public class hkRefCountedProperties  extends hkReferencedObject {
 		public Entry(Havok_TagObject item) {
 			int memberIdx = 0;
 			//item.outputOutline();
-			object = item.listObjectClass.get(memberIdx++).i_value;
+			object = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 			key = item.listObjectClass.get(memberIdx++).i_value;
 			flags = item.listObjectClass.get(memberIdx++).i_value;
 		}

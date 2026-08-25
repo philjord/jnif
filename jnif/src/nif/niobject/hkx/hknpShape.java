@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
@@ -97,7 +98,7 @@ public class hknpShape extends hkReferencedObject {
 		dispatchType = value0.listObjectClass.get(memberIdx++).i_value;
 		convexRadius = value0.listObjectClass.get(memberIdx++).f_value;
 		userData = value0.listObjectClass.get(memberIdx++).i_value;
-		properties = value0.listObjectClass.get(memberIdx++).attachement.offset;
+		properties = TAG0Reader.getRefPtr(value0.listObjectClass.get(memberIdx++));
 
 		return memberIdx;
 	}

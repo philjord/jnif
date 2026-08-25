@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
 <struct name='hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5' version='0' signature='0x0926c0cf'>
@@ -33,5 +34,20 @@ public class hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5 {
 						(int)arrValue.to + (i * hkcdStaticTreeCodec3Axis5.size));
 			}
 		}
+	}
+
+	/**
+	Outline for Havok_TagType hkcdStaticTree::DynamicStorage
+	Havok_TagMember nodes of type hkArray
+	*/
+	public hkcdStaticTreeDynamicStoragehkcdStaticTreeCodec3Axis5(Havok_TagObject item) {
+		int memberIdx = 0;
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+		int arrSize = value.listObjectArray.size();
+		nodes = new hkcdStaticTreeCodec3Axis5[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			nodes[i] = new hkcdStaticTreeCodec3Axis5(value.listObjectArray.get(i));
+		}
+
 	}
 }

@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdStaticMeshTreeBaseSection' version='3' signature='0xfd01ccd8' parent='hkcdStaticTreeTreehkcdStaticTreeDynamicStorage4'>
@@ -69,5 +70,52 @@ public class hkcdStaticMeshTreeBaseSection extends hkcdStaticTreeTreehkcdStaticT
 		flags = Byte.toUnsignedInt(stream.get(classOffset + 93));
 		layerData = Byte.toUnsignedInt(stream.get(classOffset + 94));
 		unusedData = Byte.toUnsignedInt(stream.get(classOffset + 95));
+	}
+
+	/**
+	 Outline for Havok_TagType hkcdStaticMeshTreeBase::Section
+	Havok_TagMember codecParms of type T[N]
+	Havok_TagMember firstPackedVertex of type hkUint32
+	Havok_TagMember sharedVertices of type hkcdStaticMeshTreeBase::Section::SharedVertices
+	Havok_TagMember primitives of type hkcdStaticMeshTreeBase::Section::Primitives
+	Havok_TagMember dataRuns of type hkcdStaticMeshTreeBase::Section::DataRuns
+	Havok_TagMember numPackedVertices of type hkUint8
+	Havok_TagMember numSharedIndices of type hkUint8
+	Havok_TagMember leafIndex of type hkUint16
+	Havok_TagMember page of type hkUint8
+	Havok_TagMember flags of type hkUint8
+	Havok_TagMember layerData of type hkUint8
+	Havok_TagMember unusedData of type hkUint8
+	 */
+	public hkcdStaticMeshTreeBaseSection(Havok_TagObject item) {
+		super(item);
+		//item.outputOutline();
+
+		int memberIdx = 2;
+
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+		codecParms[0] = value.listObjectTuple.get(0).f_value;
+		codecParms[1] = value.listObjectTuple.get(1).f_value;
+		codecParms[2] = value.listObjectTuple.get(2).f_value;
+		codecParms[3] = value.listObjectTuple.get(3).f_value;
+		codecParms[4] = value.listObjectTuple.get(4).f_value;
+		codecParms[5] = value.listObjectTuple.get(5).f_value;
+
+		firstPackedVertex = item.listObjectClass.get(memberIdx++).i_value;
+
+		sharedVertices = new hkcdStaticMeshTreeBaseSectionSharedVertices(item.listObjectClass.get(memberIdx++));
+		primitives = new hkcdStaticMeshTreeBaseSectionPrimitives(item.listObjectClass.get(memberIdx++));
+		dataRuns = new hkcdStaticMeshTreeBaseSectionDataRuns(item.listObjectClass.get(memberIdx++));
+		
+		//FIXME  should be a byte that can be unsigned for a array alloc
+		// all longs and byte need their own type!
+		numPackedVertices = item.listObjectClass.get(memberIdx++).i_value;
+		numSharedIndices = item.listObjectClass.get(memberIdx++).i_value;
+		leafIndex = item.listObjectClass.get(memberIdx++).i_value;
+		page = item.listObjectClass.get(memberIdx++).i_value;
+		flags = item.listObjectClass.get(memberIdx++).i_value;
+		layerData = item.listObjectClass.get(memberIdx++).i_value;
+		unusedData = item.listObjectClass.get(memberIdx++).i_value;
+
 	}
 }
