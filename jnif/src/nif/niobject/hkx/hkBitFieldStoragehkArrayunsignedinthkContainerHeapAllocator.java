@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkBitFieldStoragehkArrayunsignedinthkContainerHeapAllocator' version='0' signature='0xda41bd9b'>
@@ -35,6 +36,26 @@ public class hkBitFieldStoragehkArrayunsignedinthkContainerHeapAllocator {
 		}
 
 		numBits = stream.getInt(classOffset + 16);
+	}
+
+	/**
+	 Outline for Havok_TagObject of type hkBitFieldStorage
+	Havok_TagType None
+	Havok_TagType hkBitFieldStorage
+	Havok_TagMember words of type hkArray
+	Havok_TagMember numBits of type int
+	 */
+	public hkBitFieldStoragehkArrayunsignedinthkContainerHeapAllocator(Havok_TagObject item) {
+		//item.outputOutline();
+		int memberIdx = 0;
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+		int arrSize = value.listObjectArray.size();
+		words = new int[arrSize];
+		for (int i = 0; i < arrSize; i++) {
+			words[i] = value.listObjectArray.get(i).i_value;
+		}
+
+		numBits = item.listObjectClass.get(memberIdx++).i_value;
 	}
 
 }

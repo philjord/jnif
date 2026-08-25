@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
 
 /**<class name='hkReferencedObject' version='0' signature='0xb70c7949' parent='hkBaseObject'>
 	<members>
@@ -29,10 +30,20 @@ public class hkReferencedObject extends hkBaseObject {
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException
 	{
 		boolean success = super.readFromStream(connector, stream, classOffset);
-
 		return success;
 	}
 	
 	
+	/**
+	Outline for Havok_TagType hkReferencedObject
+	Havok_TagMember memSizeAndFlags of type hkUint16
+	Havok_TagMember refCount of type hkUint16
+	*/
+	@Override
+	public int readFromTAG0(Havok_TagItem item) {
+		//don't call super cos that's catches unimplemented classes super.readFromTAG0(item);
+		// we don't actually bother as they are both 0 at this point ready for the engine to fill up
+		return 2;
+	}
 	
 }

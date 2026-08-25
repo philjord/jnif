@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagItem;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 
 /**<class name='hknpShape' version='2' signature='0xdb52aabb' parent='hkReferencedObject'>
@@ -57,25 +59,46 @@ public class hknpShape extends hkReferencedObject {
 	public int numShapeKeyBits;
 	public int dispatchType;
 	public float convexRadius;
-	public long userData;
-	
+	public long userData;	
 	public long properties;
 	
 	@Override
 	public boolean readFromStream(HKXReaderConnector connector, ByteBuffer stream, int classOffset) throws IOException, InvalidPositionException {
 		boolean success = super.readFromStream(connector, stream, classOffset);
-		//<member name='flags' type='flags FlagsEnum' etype='FlagsEnum' offset='16' vtype='TYPE_FLAGS' vsubtype='TYPE_UINT16' arrsize='0' flags='ALIGN_16'/>
 		flags = stream.getShort(classOffset + 16);
-		//<member name='numShapeKeyBits' type='hkUint8' offset='18' vtype='TYPE_UINT8' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		numShapeKeyBits = stream.get(classOffset + 18);
-		//<member name='dispatchType' type='enum Enum' etype='Enum' offset='19' vtype='TYPE_ENUM' vsubtype='TYPE_UINT8' arrsize='0' flags='FLAGS_NONE'/>
 		dispatchType = stream.get(classOffset + 19);//enum of what?
-		//<member name='convexRadius' type='hkReal' offset='20' vtype='TYPE_REAL' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		convexRadius = stream.getFloat(classOffset + 20);//enum of what?
-		//<member name='userData' type='hkUint64' offset='24' vtype='TYPE_UINT64' vsubtype='TYPE_VOID' arrsize='0' flags='FLAGS_NONE'/>
 		userData = stream.getLong(classOffset + 24);
-		//<member name='properties' type='struct hkRefCountedProperties*' ctype='hkRefCountedProperties' offset='32' vtype='TYPE_POINTER' vsubtype='TYPE_STRUCT' arrsize='0' flags='FLAGS_NONE'/>
 		properties = HKXReader.getPointer(connector, classOffset + 32);
 		return success;
+	}
+	
+	/**
+	Outline for Havok_TagType hknpShape
+	Havok_TagMember flags of type hkFlags
+	Havok_TagMember type of type hkEnum
+	Havok_TagMember numShapeKeyBits of type hkUint8
+	Havok_TagMember dispatchType of type hkEnum
+	Havok_TagMember convexRadius of type hkReal
+	Havok_TagMember userData of type hkUint64
+	Havok_TagMember properties of type hkRefPtr
+	*/	
+	
+	public int type;
+	@Override
+	public int readFromTAG0(Havok_TagItem item) {
+		int memberIdx = super.readFromTAG0(item);
+		//item.outputOutline();
+		Havok_TagObject value0 = item.value.get(0);
+		flags = value0.listObjectClass.get(memberIdx++).i_value;
+		type = value0.listObjectClass.get(memberIdx++).i_value;
+		numShapeKeyBits = value0.listObjectClass.get(memberIdx++).i_value;
+		dispatchType = value0.listObjectClass.get(memberIdx++).i_value;
+		convexRadius = value0.listObjectClass.get(memberIdx++).f_value;
+		userData = value0.listObjectClass.get(memberIdx++).i_value;
+		properties = value0.listObjectClass.get(memberIdx++).attachement.offset;
+
+		return memberIdx;
 	}
 }

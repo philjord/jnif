@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hknpMotionProperties' version='3' signature='0x5dee8641'>
@@ -100,5 +101,57 @@ public class hknpMotionProperties {
 		minimumPathingVelocityScaleSquare = Byte.toUnsignedInt(stream.get(classOffset + 58));
 		spikingVelocityScaleThresholdSquared = Byte.toUnsignedInt(stream.get(classOffset + 59));
 		minimumSpikingVelocityScaleSquared = Byte.toUnsignedInt(stream.get(classOffset + 60));
+	}
+
+	
+	
+	/**
+	 Outline for Havok_TagObject of type hknpMotionProperties
+	Havok_TagType None
+	Havok_TagType hknpMotionProperties
+	Havok_TagMember isExclusive of type hkUint32
+	Havok_TagMember flags of type unsigned int
+	Havok_TagMember gravityFactor of type hkReal
+	Havok_TagMember timeFactor of type hkReal
+	Havok_TagMember maxLinearSpeed of type hkReal
+	Havok_TagMember maxAngularSpeed of type hkReal
+	Havok_TagMember linearDamping of type hkReal
+	Havok_TagMember angularDamping of type hkReal
+	Havok_TagMember solverStabilizationSpeedThreshold of type hkReal
+	Havok_TagMember solverStabilizationSpeedReduction of type hkReal
+	Havok_TagMember maxDistSqrd of type hkReal
+	Havok_TagMember maxRotSqrd of type hkReal
+	Havok_TagMember invBlockSize of type hkReal
+	Havok_TagMember pathingUpperThreshold of type hkInt16
+	Havok_TagMember pathingLowerThreshold of type hkInt16
+	Havok_TagMember numDeactivationFrequencyPasses of type hkUint8
+	Havok_TagMember deactivationVelocityScaleSquare of type hkUint8
+	Havok_TagMember minimumPathingVelocityScaleSquare of type hkUint8
+	Havok_TagMember spikingVelocityScaleThresholdSquared of type hkUint8
+	Havok_TagMember minimumSpikingVelocityScaleSquared of type hkUint8
+	 */
+	public hknpMotionProperties(Havok_TagObject item) { 
+		//item.outputOutline();
+		int memberIdx = 0;		
+		isExclusive = item.listObjectClass.get(memberIdx++).i_value;
+		flags = item.listObjectClass.get(memberIdx++).i_value;
+		gravityFactor = item.listObjectClass.get(memberIdx++).f_value;
+		timeFactor = item.listObjectClass.get(memberIdx++).f_value;
+		maxLinearSpeed = item.listObjectClass.get(memberIdx++).f_value;
+		maxAngularSpeed = item.listObjectClass.get(memberIdx++).f_value;
+		linearDamping = item.listObjectClass.get(memberIdx++).f_value;
+		angularDamping = item.listObjectClass.get(memberIdx++).f_value;
+		solverStabilizationSpeedThreshold = item.listObjectClass.get(memberIdx++).f_value;
+		solverStabilizationSpeedReduction = item.listObjectClass.get(memberIdx++).f_value;
+		maxDistSqrd = item.listObjectClass.get(memberIdx++).f_value;
+		maxRotSqrd = item.listObjectClass.get(memberIdx++).f_value;
+		invBlockSize = item.listObjectClass.get(memberIdx++).f_value;
+		pathingUpperThreshold = item.listObjectClass.get(memberIdx++).i_value;
+		pathingLowerThreshold = item.listObjectClass.get(memberIdx++).i_value;
+		numDeactivationFrequencyPasses = item.listObjectClass.get(memberIdx++).i_value;
+		deactivationVelocityScaleSquare = item.listObjectClass.get(memberIdx++).i_value;
+		minimumPathingVelocityScaleSquare = item.listObjectClass.get(memberIdx++).i_value;
+		spikingVelocityScaleThresholdSquared = item.listObjectClass.get(memberIdx++).i_value;
+		minimumSpikingVelocityScaleSquared = item.listObjectClass.get(memberIdx++).i_value;
 	}
 }

@@ -2,8 +2,10 @@ package nif.compound;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import nif.ByteConvert;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 public class NifQuaternionXYZW {
 	public static final NifQuaternionXYZW	Identity	= new NifQuaternionXYZW(0f, 0f, 0f, 1f);
@@ -42,6 +44,13 @@ public class NifQuaternionXYZW {
 		w = stream.getFloat(offset + 12);
 	}
 
+	public NifQuaternionXYZW(ArrayList<Havok_TagObject> listObjectTuple) {
+		x = listObjectTuple.get(0).f_value;
+		y = listObjectTuple.get(1).f_value;
+		z = listObjectTuple.get(2).f_value;
+		w = listObjectTuple.get(3).f_value;
+	}
+	
 	public NifQuaternionXYZW(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;

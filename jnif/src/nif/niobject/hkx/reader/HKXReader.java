@@ -37,6 +37,19 @@ public class HKXReader {
 	 */
 	public HKXContents read() throws IOException, InvalidPositionException {
 
+		byte[] sigb = new byte[4];
+		hkxBB.position(4);
+		hkxBB.get(sigb);
+		String signature = new String(sigb);
+		if (signature.equals("TAG0")) {
+			TAG0Reader tag0reader = new TAG0Reader(hkxBB);
+			return tag0reader.hkxContents;  
+		} else if (signature.equals("TCM0")) {
+			//TagFileType.Compendium
+			return null; // FIXME: no support for now
+		}
+		
+		
 		// Connect the connector to the file.
 		HKXReaderConnector connector = new HKXReaderConnector(hkxBB);
 
@@ -118,7 +131,7 @@ public class HKXReader {
 
 	private static Object[]							noArgs		= new Object[] {};
 
-	private static hkBaseObject constructHKXObject(String objectType, boolean is64Bit) {
+	static hkBaseObject constructHKXObject(String objectType, boolean is64Bit) {
 		if (objectType == null || objectType.length() == 0) {
 			System.out.println("Bad objectType [" + objectType + "]");
 			return null;

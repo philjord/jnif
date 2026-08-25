@@ -2,8 +2,10 @@ package nif.compound;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import nif.ByteConvert;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 public class NifVector4
 {
@@ -60,6 +62,13 @@ public class NifVector4
 			z = 0;
 			w = 0;
 		}
+	}
+
+	public NifVector4(ArrayList<Havok_TagObject> listObjectTuple) {
+		x = listObjectTuple.get(0).f_value;
+		y = listObjectTuple.get(1).f_value;
+		z = listObjectTuple.get(2).f_value;
+		w = listObjectTuple.get(3).f_value;
 	}
 
 	@Override

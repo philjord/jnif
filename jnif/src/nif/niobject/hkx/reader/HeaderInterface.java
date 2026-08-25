@@ -10,8 +10,9 @@ import nif.niobject.hkx.reader.byteutils.ByteUtils;
  * contents.
  */
 public class HeaderInterface {
-	private static final long ONE_LINE_PADDING = 0x10;
-	private transient ByteBuffer file;
+	private static final long		ONE_LINE_PADDING	= 0x10;
+
+	private transient ByteBuffer	file;
 
 	/**
 	 * Connect to a {@link ByteBuffer}
@@ -32,10 +33,10 @@ public class HeaderInterface {
 	public void compress(final HeaderData data) throws UnsupportedVersionError {
 		if (data.version == HeaderDescriptor_v11.VERSION_11) {
 			HeaderDescriptor_v11 descriptor = new HeaderDescriptor_v11();
-			((Buffer) file).position(0);
+			((Buffer)file).position(0);
 			file.put(descriptor.fileID);
 			file.put(descriptor.version);
-			file.put(descriptor.extras);			
+			file.put(descriptor.extras);
 			file.put(descriptor.constants);
 			file.put(descriptor.verName);
 			file.put(descriptor.constants2);
@@ -44,7 +45,7 @@ public class HeaderInterface {
 				file.put(descriptor.padding11);
 				file.put(descriptor.padding);
 			} else {
-				file.put(new byte[] { 0, 0 });
+				file.put(new byte[] {0, 0});
 			}
 		} else {
 			throw new UnsupportedVersionError(data.versionName);
@@ -57,36 +58,31 @@ public class HeaderInterface {
 	 * @return the extracted {@link HeaderData}
 	 */
 	public HeaderData extract() {
-		//https://github.com/blueskythlikesclouds/TagTools
-		//https://github.com/Olganix/LibXenoverse2/blob/master/LibXenoverse/LibXenoverse/Havok.h
+
 		//let's check for havok 2015 or later
 		/*  f.seek( 4 )
-          
-          signature = f.read( 4 )
-          if ( signature == "TAG0" ):
-              return TagFileType.Object
-          elif ( signature == "TCM0" ):
-              return TagFileType.Compendium
-          else:
-              return TagFileType.Invalid*/
+		  
+		  signature = f.read( 4 )
+		  if ( signature == "TAG0" ):
+		      return TagFileType.Object
+		  elif ( signature == "TCM0" ):
+		      return TagFileType.Compendium
+		  else:
+		      return TagFileType.Invalid*/
 		byte[] sigb = new byte[4];
 		file.position(4);
 		file.get(sigb);
 		String signature = new String(sigb);
-		if (signature.equals("TAG0") ) {
-             //TagFileType.Object
-			return null; // FIXME: no support for now
-		} else if (signature.equals("TCM0") ) {
-             //TagFileType.Compendium
+		if (signature.equals("TAG0")) {
+			System.err.println("HeaderInterface shouldn't get here use TAG0Reader");
+			return null; 
+		} else if (signature.equals("TCM0")) {
+			//TagFileType.Compendium
 			return null; // FIXME: no support for now
 		}
 
-		 
-		
-		
-		
 		HeaderData data = new HeaderData();
-		((Buffer) file).position(0);
+		((Buffer)file).position(0);
 		file.get(data.descriptor.fileID);
 		file.get(data.descriptor.version);
 		file.get(data.descriptor.extras);
@@ -105,8 +101,7 @@ public class HeaderInterface {
 		} else {
 			data.paddingAfter = 0;
 		}
-		
- 
+
 		return data;
 	}
 
@@ -116,4 +111,5 @@ public class HeaderInterface {
 	public void close() {
 		// Deprecated
 	}
+
 }

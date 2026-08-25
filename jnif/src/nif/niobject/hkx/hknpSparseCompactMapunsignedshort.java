@@ -7,6 +7,7 @@ import nif.niobject.hkx.reader.DataInternal;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
 <struct name='hknpSparseCompactMapunsignedshort' version='0' signature='0x4558127c'>
@@ -51,4 +52,45 @@ public class hknpSparseCompactMapunsignedshort {
 
 	}
 
+	/**
+	 Outline for Havok_TagObject of type hknpSparseCompactMap
+	Havok_TagType None
+	Havok_TagType hknpSparseCompactMap
+	Havok_TagMember secondaryKeyMask of type hkUint32
+	Havok_TagMember sencondaryKeyBits of type hkUint32
+	Havok_TagMember primaryKeyToIndex of type hkArray
+	Havok_TagMember valueAndSecondaryKeys of type hkArray
+	 */
+	
+	public hknpSparseCompactMapunsignedshort(Havok_TagObject item) {
+		//item.outputOutline();
+	
+		
+		int memberIdx = 0;			 
+	//	shape = item.listObjectClass.get(memberIdx++).objectPointer.attachement.offset;
+		//FIXME: not done, a bit boringy
+		/*
+		  secondaryKeyMask = stream.getInt(classOffset + 0);
+		sencondaryKeyBits = stream.getInt(classOffset + 4);
+		int arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 8));
+		if (arrSize > 0) {
+			DataInternal arrValue = connector.data1.readNext();
+			assert arrValue.from == classOffset + 8;
+			primaryKeyToIndex = new int[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				primaryKeyToIndex[i] = Short.toUnsignedInt(stream.getShort((int)arrValue.to + (i * 2)));
+			}
+		}
+
+		arrSize = HKXReader.getSizeComponent(connector.data.setup(classOffset + 24));
+		if (arrSize > 0) {
+			DataInternal arrValue = connector.data1.readNext();
+			assert arrValue.from == classOffset + 24;
+			valueAndSecondaryKeys = new int[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				valueAndSecondaryKeys[i] = Short.toUnsignedInt(stream.getShort((int)arrValue.to + (i * 2)));
+			}
+		}
+		 */
+	}
 }
