@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdSimdTreeNode' version='0' signature='0xc4e406c7' parent='hkcdFourAabb'>
@@ -32,5 +33,22 @@ public class hkcdSimdTreeNode extends hkcdFourAabb {
 		data[1] = stream.getInt(classOffset + 100);
 		data[2] = stream.getInt(classOffset + 104);
 		data[3] = stream.getInt(classOffset + 108);
+	}
+
+	/**
+	 Outline for Havok_TagType hkcdSimdTree::Node
+	Havok_TagMember data of type T[N]
+	 */
+	public hkcdSimdTreeNode(Havok_TagObject item) {
+		super(item);
+		//item.outputOutline();
+		int memberIdx = 6;
+
+		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
+
+		data[0] = value.listObjectTuple.get(0).i_value;
+		data[1] = value.listObjectTuple.get(1).i_value;
+		data[2] = value.listObjectTuple.get(2).i_value;
+		data[3] = value.listObjectTuple.get(3).i_value;
 	}
 }

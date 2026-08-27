@@ -29,9 +29,9 @@ public class TAG0Reader {
 	private static final String	Havok_TPAD_SIGNATURE	= "TPAD";
 	private static final String	Havok_INDX_SIGNATURE	= "INDX";
 	private static final String	Havok_ITEM_SIGNATURE	= "ITEM";
-	private static final String	Havok_TPTR_SIGNATURE	= "TPTR";	// not decoded
-	private static final String	Havok_THSH_SIGNATURE	= "THSH";	// not decoded
-	private static final String	Havok_PTCH_SIGNATURE	= "PTCH";	// not decoded
+	private static final String	Havok_TPTR_SIGNATURE	= "TPTR";
+	private static final String	Havok_THSH_SIGNATURE	= "THSH";
+	private static final String	Havok_PTCH_SIGNATURE	= "PTCH";
 
 	public static class Havok_PartHeader {
 		public int		size;		// 0	// not considered the 2 left bits. Size considered the header included.
@@ -700,26 +700,27 @@ public class TAG0Reader {
 
 					} else if (type_subpart_hdr.signature.equals(Havok_TPAD_SIGNATURE)) {
 						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
+					} else if (type_subpart_hdr.signature.equals(Havok_TPTR_SIGNATURE)) {
+						//TPTR at 3696 with size of 1176, but just 0 in every byte						
+						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
+					} else if (type_subpart_hdr.signature.equals(Havok_THSH_SIGNATURE)) {
+						//https://reshax.com/topic/198-havok-middleware/ 
+						//THSH: Class signatures 
+						//THSH at 11444 with size of 192
+						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
 					} else {
 
-						if (sop) {
-							System.out.println(
-									"Warning : Type_subPartHeader signature unknow : "	+ type_subpart_hdr.signature
-												+ " at " + offset + " with size of " + type_subpart_hdr.size);
+						System.out
+								.println("Warning : Type_subPartHeader signature unknow : " + type_subpart_hdr.signature
+											+ " at " + offset + " with size of " + type_subpart_hdr.size);
 
-							//https://reshax.com/topic/198-havok-middleware/ 
-							//THSH: Class signatures 
-							// I've seen 
-							//TPTR at 3696 with size of 1176, but just 0 in every byte
-							//THSH at 11444 with size of 192
-							byte[] bytes = new byte[type_subpart_hdr.size - sizeof_Havok_PartHeader];
-							buf.get(bytes);
-							for (int i = 0; i < bytes.length; i++) {
-								System.out.print("" + (bytes[i] & 0xff) + " ");
-							}
-							System.out.println("");
-							System.out.println("" + new String(bytes));
+						byte[] bytes = new byte[type_subpart_hdr.size - sizeof_Havok_PartHeader];
+						buf.get(bytes);
+						for (int i = 0; i < bytes.length; i++) {
+							System.out.print("" + (bytes[i] & 0xff) + " ");
 						}
+						System.out.println("");
+						System.out.println("" + new String(bytes));
 
 						offset += type_subpart_hdr.size - sizeof_Havok_PartHeader;
 					}
@@ -735,7 +736,7 @@ public class TAG0Reader {
 
 					if (indexation_subpart_hdr.signature.equals(Havok_ITEM_SIGNATURE)) {
 						int startoffset_itemList = offset - sizeof_Havok_PartHeader;
-						int nbBytes = 0;
+						//int nbBytes = 0;
 						buf.order(ByteOrder.LITTLE_ENDIAN);
 						while (offset < startoffset_itemList + indexation_subpart_hdr.size) {
 							int[] values = new int[3];
@@ -756,36 +757,30 @@ public class TAG0Reader {
 							item.count = values[2];
 
 							hashItem.put(item.offset, item);
-
-							//System.out.println("Havok_TagItem with " + values[0] + " "+values[1] +" "+values[2]);
-							//System.out.println("Havok_TagItem bin " + Integer.toBinaryString(values[0])
-							//+ " "+Integer.toBinaryString(values[1]) +" "+Integer.toBinaryString(values[2]));
 						}
 						buf.order(ByteOrder.BIG_ENDIAN);
 
-					} else {
-
-						//I've seen
-						//Warning : indexation PartHeader signature unknow : PTCH at 11924 with size of 228
-						// looks like a lot of ints perhaps?
+					} else if (indexation_subpart_hdr.signature.equals(Havok_PTCH_SIGNATURE)) {
+						//PTCH at 11924 with size of 228
+						// looks like a lot of ints pair of from/to
 						//3 0 0 0, 1 0 0 0, 16 0 0 0, 5 0 0 0, 1 0 0 0, 48 0 0 0, 7 0 0 0, 1 0 0 0, 80 0 0 0, 21 0 0 0 
 						//3 0 0 0, 128 1 0 0, 0 2 0 0, 144 2 0 0, 53 0 0 0, 1 0 0 0, 208 0 0 0, 74 0 0 0, 1 0 0 0, 184 1 0 0 81 0 0 0 1 0 0 0 120 2 0 0 89 0 0 0 1 0 0 0 16 3 0 0 92 0 0 0 2 0 0 0 8 2 0 0 32 3 0 0 99 0 0 0 1 0 0 0 88 3 0 0 105 0 0 0 1 0 0 0 48 3 0 0 106 0 0 0 1 0 0 0 64 3 0 0 113 0 0 0 1 0 0 0 240 2 0 0 114 0 0 0 1 0 0 0 0 3 0 0 128 0 0 0 1 0 0 0 176 2 0 0 140 0 0 0 2 0 0 0 176 3 0 0 16 4 0 0 143 0 0 0 1 0 0 0 8 14 0 0 
 
 						//https://reshax.com/topic/198-havok-middleware/ PTCH: Index for pointer patches 
+						offset += indexation_subpart_hdr.size - sizeof_Havok_PartHeader;
+					} else {
 
-						if (sop) {
-							System.out.println("Warning : indexation PartHeader signature unknow : "
-												+ indexation_subpart_hdr.signature + " at " + offset + " with size of "
-												+ indexation_subpart_hdr.size);
+						System.out.println(
+								"Warning : indexation PartHeader signature unknow : "	+ indexation_subpart_hdr.signature
+											+ " at " + offset + " with size of " + indexation_subpart_hdr.size);
 
-							byte[] bytes = new byte[indexation_subpart_hdr.size - sizeof_Havok_PartHeader];
-							buf.get(bytes);
-							for (int i = 0; i < bytes.length; i++) {
-								System.out.print("" + (bytes[i] & 0xff) + " ");
-							}
-							System.out.println("");
-							System.out.println("" + new String(bytes));
+						byte[] bytes = new byte[indexation_subpart_hdr.size - sizeof_Havok_PartHeader];
+						buf.get(bytes);
+						for (int i = 0; i < bytes.length; i++) {
+							System.out.print("" + (bytes[i] & 0xff) + " ");
 						}
+						System.out.println("");
+						System.out.println("" + new String(bytes));
 
 						offset += indexation_subpart_hdr.size - sizeof_Havok_PartHeader;
 					}
@@ -803,7 +798,6 @@ public class TAG0Reader {
 		if ((offsetData != (4) - 1) && (listItem.size() != 0)) {
 			int[] offset2 = new int[] {offsetData};
 
-			int nbElements = 0;
 			int nbItem = listItem.size();
 			// note the break statement below
 			for (int i = 0; i < nbItem; i++) {
@@ -813,13 +807,13 @@ public class TAG0Reader {
 					continue;
 
 				Havok_TagType type = item.type;
-
+				//int nbElements = 0;
 				for (int j = 0; j < item.count; j++) {
 					offset2[0] = item.offset + j * type.superType().byteSize;
 					item.value.add(readObject(j, buf, size, type, offset2, listItem, listType, item));
 
 					if (rootObject == null)
-						rootObject = (Havok_TagObject)item.value.get(item.value.size() - 1);
+						rootObject = item.value.get(item.value.size() - 1);
 				}
 
 				break; //normally the first element is enough because of recursivity
@@ -864,35 +858,20 @@ public class TAG0Reader {
 			obj.b_value = (readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str) > 0);
 			if (sop)
 				System.out.print(" of value " + obj.b_value);
-		} else if (type.subType() == TagSubType.TST_Int._val) {			
-		/*	if ((
-					//NOTICE all bytes this way, just design if needed
-					//(type.subTypeFlags & TagSubType.TST_IsSigned._val) != 0 && 
-					(type.subTypeFlags & TagSubType.TST_Int8._val) != 0)	) {
-				//signed byte into byte holder (unsigned in the int holder)
-				if (sop)
-					System.out.print("-> UInt/Long at " + (offset[0] - 0x20));
-				obj.byte_value = (byte)readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
-				if (sop)
-					System.out.print(" of value " + obj.byte_value);
-			} else if (
-				//	((type.subTypeFlags & TagSubType.TST_IsSigned._val) == 0
-				//	&& (type.subTypeFlags & TagSubType.TST_Int32._val) != 0)		||
-				//NOTICE using 2 variable is more difficult to debug, just de-sign when needed
-				(type.subTypeFlags & TagSubType.TST_Int64._val) != 0) {
-				//  long go into long holder
+		} else if (type.subType() == TagSubType.TST_Int._val) {
+			if ((type.subTypeFlags & TagSubType.TST_Int64._val) != 0) {
+				//long go into long holder
 				if (sop)
 					System.out.print("-> UInt/Long at " + (offset[0] - 0x20));
 				obj.l_value = readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
-				if (sop)
-					System.out.print(" of value " + obj.l_value);
-			} else {*/
+			} else {
+				// all other go to int holder for now, but direct reads should optomises
 				if (sop)
 					System.out.print("-> Int at " + (offset[0] - 0x20));
 				obj.i_value = (int)readFormat(buf, offset[0], size - offset[0], type.subTypeFlags, type_str);
 				if (sop)
 					System.out.print(" of value " + obj.i_value);
-			//}		
+			}
 		} else if (type.subType() == TagSubType.TST_Float._val) {
 			if (sop)
 				System.out.print("-> Float at " + (offset[0] - 0x20));
@@ -918,8 +897,8 @@ public class TAG0Reader {
 			if (listObj.size() == 1) {
 				obj.objectPointer = listObj.get(0);
 			} else {
-				int nbObj = listObj.size();
-				// this looks like throwing away the pointers to everythign in the arraylist, so just skip?
+				// this looks like throwing away the pointers to everythign in the arraylist, so just skip?				
+				//int nbObj = listObj.size();
 				//for (int i = 0; i < nbObj; i++)
 				//	delete( listObj.get(i));//TODO: what?
 			}
@@ -935,8 +914,8 @@ public class TAG0Reader {
 				offset_tmp[0] = offset[0] + listMembers.get(i).byteOffset;
 				if (sop)
 					System.out.println("-> Member " + listMembers.get(i).name + " at " + (offset_tmp[0] - 0x20));
-				obj.listObjectClass.add(readObject(i, buf, size, (Havok_TagType)listMembers.get(i).type, offset_tmp,
-						listItem, listType, obj.attachement));
+				obj.listObjectClass.add(readObject(i, buf, size, listMembers.get(i).type, offset_tmp, listItem,
+						listType, obj.attachement));
 			}
 		} else if (type.subType() == TagSubType.TST_Array._val) {
 			if (sop)
@@ -986,7 +965,7 @@ public class TAG0Reader {
 
 		if ((flags & TagSubType.TST_Int8._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("8");
-			return ((isSigned) ?  buf.get(offset + 0) :(buf.get(offset + 0) & 0xFF) );
+			return ((isSigned) ? buf.get(offset + 0) : (buf.get(offset + 0) & 0xFF));
 		} else if ((flags & TagSubType.TST_Int16._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("16");
 			int value = (isSigned ? buf.getShort(offset + 0) : (buf.getShort(offset + 0) & 0xFF));
@@ -994,15 +973,12 @@ public class TAG0Reader {
 			return value;
 		} else if ((flags & TagSubType.TST_Int32._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("32");
-			//FIXME: this this reversed!!! I need a good long system, 
-			//ArchiveFile:SeventySix - Meshes.ba2/meshes/architecture/airport/barricade/bosbarricadeaddon01.nif shows this issue
-			long value = (isSigned ? (buf.getInt(offset + 0) & 0xFFL): buf.getInt(offset + 0) ); //TODO: unsigned is for someone else to do
+			int value = (isSigned ? (buf.getInt(offset + 0)) : buf.getInt(offset + 0)); //TODO: unsigned is for someone else to do
 			//return (bigEndian) ? BE32(value) : value;
 			return value;
 		} else if ((flags & TagSubType.TST_Int64._val) != 0) {
 			type_str[0] = (isSigned ? "i" : "u") + ("64");
-			//FIXME I need a long and a byte system for goodness sake!
-			long value = (isSigned ? buf.getLong(offset + 0) : (buf.getLong(offset + 0) & 0xFF)); //TODO: unsigned is for someone else to do
+			long value = (isSigned ? buf.getLong(offset + 0) : (buf.getLong(offset + 0))); //TODO: unsigned is for someone else to do
 			//return (bigEndian) ? BE64(value) : value;
 			return value;
 		}

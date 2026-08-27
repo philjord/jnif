@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import nif.compound.NifVector4;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**
  * <struct name='hkcdFourAabb' version='0' signature='0xad9bb6f1'>
@@ -46,5 +47,27 @@ public class hkcdFourAabb {
 		hy = new NifVector4(stream, classOffset + 48);
 		lz = new NifVector4(stream, classOffset + 64);
 		hz = new NifVector4(stream, classOffset + 80);
+	}
+
+	/**
+	 Outline for Havok_TagType hkcdFourAabb
+		Havok_TagMember lx of type hkVector4
+		Havok_TagMember hx of type hkVector4
+		Havok_TagMember ly of type hkVector4
+		Havok_TagMember hy of type hkVector4
+		Havok_TagMember lz of type hkVector4
+		Havok_TagMember hz of type hkVector4
+ 
+	 */
+	public hkcdFourAabb(Havok_TagObject item) {
+		//item.outputOutline();
+		int memberIdx = 0;
+
+		lx = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
+		hx = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
+		ly = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
+		hy = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
+		lz = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
+		hz = new NifVector4(item.listObjectClass.get(memberIdx++).listObjectTuple);
 	}
 }

@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 import nif.tools.FP16;
 
@@ -198,9 +199,9 @@ public class hknpMaterial {
 		softContactDampFactor = item.listObjectClass.get(memberIdx++).f_value;
 		softContactSeperationVelocity = (byte)item.listObjectClass.get(memberIdx++).i_value;//FIXME!!!! 8 bit float/ like a half half float? https://en.wikipedia.org/wiki/Minifloat
 
-		surfaceVelocity = item.listObjectClass.get(memberIdx++).i_value;
+		surfaceVelocity = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 		disablingCollisionsBetweenCvxCvxDynamicObjectsDistance = item.listObjectClass.get(memberIdx++).f_value;
-		userData = item.listObjectClass.get(memberIdx++).i_value;
+		userData = item.listObjectClass.get(memberIdx++).l_value;
 		isShared = item.listObjectClass.get(memberIdx++).i_value != 0;
 		 
 	}

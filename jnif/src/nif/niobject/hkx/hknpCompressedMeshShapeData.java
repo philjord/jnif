@@ -49,7 +49,7 @@ public class hknpCompressedMeshShapeData extends hkReferencedObject {
 		Havok_TagObject value0 = item.value.get(0);
 
 		meshTree = new hknpCompressedMeshShapeTree(value0.listObjectClass.get(memberIdx++));
-//FIXME:		simdTree = new hkcdSimdTree(value0.listObjectClass.get(memberIdx++));
+		simdTree = new hkcdSimdTree(value0.listObjectClass.get(memberIdx++));
 		return memberIdx;
 	}
 }

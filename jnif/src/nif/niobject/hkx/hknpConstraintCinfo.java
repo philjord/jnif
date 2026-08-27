@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import nif.niobject.hkx.reader.HKXReader;
 import nif.niobject.hkx.reader.HKXReaderConnector;
 import nif.niobject.hkx.reader.InvalidPositionException;
+import nif.niobject.hkx.reader.TAG0Reader;
 import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 /**<struct name='hknpConstraintCinfo' version='2' signature='0x67ea986d'>
@@ -37,7 +38,7 @@ public class hknpConstraintCinfo {
 		item.outputOutline();
 		int memberIdx = 2;
 
-		constraintData = item.listObjectClass.get(memberIdx++).i_value;
+		constraintData = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 		bodyA = item.listObjectClass.get(memberIdx++).i_value;
 		bodyB = item.listObjectClass.get(memberIdx++).i_value;
 		flags = item.listObjectClass.get(memberIdx++).i_value;

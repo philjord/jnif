@@ -93,7 +93,7 @@ public class hkcdStaticMeshTreehkcdStaticMeshTreeCommonConfigunsignedintunsigned
 		arrSize = value.listObjectArray.size();
 		sharedVertices = new long[arrSize];
 		for (int i = 0; i < arrSize; i++) {
-			sharedVertices[i] = value.listObjectArray.get(i).i_value;
+			sharedVertices[i] = value.listObjectArray.get(i).l_value;
 		} 
 
 		value = item.listObjectClass.get(memberIdx++);
