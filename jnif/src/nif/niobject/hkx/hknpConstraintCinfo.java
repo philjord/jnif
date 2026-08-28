@@ -33,14 +33,25 @@ public class hknpConstraintCinfo {
 		bodyB = stream.getInt(classOffset + 12);
 		flags = Byte.toUnsignedInt(stream.get(classOffset + 16));
 	}
-
+	/**
+	Outline for Havok_TagObject of type hknpConstraintCinfo
+	Havok_TagType None
+	Havok_TagType hknpConstraintCinfo
+	Havok_TagMember constraintData of type hkRefPtr
+	Havok_TagMember bodyA of type hknpBodyId
+	Havok_TagMember bodyB of type hknpBodyId
+	Havok_TagMember flags of type hkFlags
+	Havok_TagMember name of type hkStringPtr
+	Havok_TagMember desiredConstraintId of type hknpConstraintId
+	*/
 	public hknpConstraintCinfo(Havok_TagObject item) {
-		item.outputOutline();
+		//item.outputOutline();
 		int memberIdx = 2;
 
 		constraintData = TAG0Reader.getRefPtr(item.listObjectClass.get(memberIdx++));
 		bodyA = item.listObjectClass.get(memberIdx++).i_value;
 		bodyB = item.listObjectClass.get(memberIdx++).i_value;
 		flags = item.listObjectClass.get(memberIdx++).i_value;
+		//FIXME: 2 new variables not loaded
 	}
 }

@@ -449,14 +449,14 @@ public class TAG0Reader {
 
 		Havok_PartHeader hdr = new Havok_PartHeader(buf, offset, true); // so grab the bits of the hdr out of the buf
 		if (size < sizeof_Havok_PartHeader || (!hdr.signature.equals(Havok_TAG0_SIGNATURE)) || (size < hdr.size)) {
-			System.out.println("error: havok's version request : " + Havok_TAG0_SIGNATURE);
+			System.out.println("error: havok's version " + hdr.signature + " != " + Havok_TAG0_SIGNATURE);
 			return false;
 		}
 		offset += sizeof_Havok_PartHeader;
 
 		version_hdr = new Havok_PartHeader(buf, offset, true);
 		if (!version_hdr.signature.equals(Havok_SDKV_SIGNATURE)) {
-			System.out.println("error: havok's version request : " + Havok_SDKV_SIGNATURE);
+			System.out.println("error: havok's version " + version_hdr.signature + " != " + Havok_SDKV_SIGNATURE);
 			return false;
 		}
 		offset += sizeof_Havok_PartHeader;
@@ -464,8 +464,15 @@ public class TAG0Reader {
 		version_info = new Havok_Version(buf, offset, true);
 		if ((!version_info.year.equals(Havok_v2015_SIGNATURE))	|| (!version_info.major.equals(Havok_major01_SIGNATURE))
 			|| (!version_info.minor.equals(Havok_minor00_SIGNATURE))) {
-			System.out.println("error: havok's version request : "	+ Havok_v2015_SIGNATURE + "."
-								+ Havok_major01_SIGNATURE + "." + Havok_minor00_SIGNATURE);
+			System.out.println("error: havok's version request "	+ " " //
+								+ version_info.year + "." + version_info.major + "." + version_info.minor //
+								+ " != " + Havok_v2015_SIGNATURE + "." + Havok_major01_SIGNATURE + "."
+								+ Havok_minor00_SIGNATURE);
+			//FIXME: STARFIELD HAS 2019.02.00 it has
+			//TST1 at 15168 with size of 2484
+			//TNA1 at 17652 with size of 596
+			//FST1 at 18248 with size of 2120
+			// feels like TNAM is missing
 			return false;
 		}
 		offset += sizeof_Havok_Version;
