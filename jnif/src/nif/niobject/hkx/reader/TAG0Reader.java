@@ -773,6 +773,11 @@ public class TAG0Reader {
 						//3 0 0 0, 1 0 0 0, 16 0 0 0, 5 0 0 0, 1 0 0 0, 48 0 0 0, 7 0 0 0, 1 0 0 0, 80 0 0 0, 21 0 0 0 
 						//3 0 0 0, 128 1 0 0, 0 2 0 0, 144 2 0 0, 53 0 0 0, 1 0 0 0, 208 0 0 0, 74 0 0 0, 1 0 0 0, 184 1 0 0 81 0 0 0 1 0 0 0 120 2 0 0 89 0 0 0 1 0 0 0 16 3 0 0 92 0 0 0 2 0 0 0 8 2 0 0 32 3 0 0 99 0 0 0 1 0 0 0 88 3 0 0 105 0 0 0 1 0 0 0 48 3 0 0 106 0 0 0 1 0 0 0 64 3 0 0 113 0 0 0 1 0 0 0 240 2 0 0 114 0 0 0 1 0 0 0 0 3 0 0 128 0 0 0 1 0 0 0 176 2 0 0 140 0 0 0 2 0 0 0 176 3 0 0 16 4 0 0 143 0 0 0 1 0 0 0 8 14 0 0 
 
+						//Look into me
+						// FO76 meshes\setdressing\fatmancrate\fatmancrate.nif has a hknpCompoundShape 
+						// where the elements all point at the same shape, but in FO4 they were 3 different shapes
+						// I assume patch fixes up thing like this?
+
 						//https://reshax.com/topic/198-havok-middleware/ PTCH: Index for pointer patches 
 						offset += indexation_subpart_hdr.size - sizeof_Havok_PartHeader;
 					} else {
@@ -850,13 +855,15 @@ public class TAG0Reader {
 		obj.type = typeOrigin;
 		obj.attachement = parentAttachement;
 
-		int nbItem = listItem.size();
-		for (int i = 0; i < nbItem; i++) {
-			if (listItem.get(i).type.id == typeOrigin.id) {
-				obj.attachement = listItem.get(i);
-				break;
-			}
-		}
+		//not sure what this was, the parentAttachement was right, this simple searched for the first listItem
+		//with the same type, which is nonsense
+		/*	int nbItem = listItem.size();
+				for (int i = 0; i < nbItem; i++) {
+				if (listItem.get(i).type.id == typeOrigin.id) {
+					obj.attachement = listItem.get(i);
+					break;
+				}
+			}*/
 
 		String[] type_str = new String[] {""};
 		if (type.subType() == TagSubType.TST_Bool._val) {
@@ -1017,6 +1024,8 @@ public class TAG0Reader {
 			return ret;
 		}
 
+		if (sop)
+			System.out.println("---- readItemPtr() at " + (offset[0] - 0x20) + " index " + index);
 		Havok_TagItem item = listItem.get(index);
 		if (item.value.size() == 0) {
 			int[] offset_tmp = new int[] {0};
@@ -1027,7 +1036,7 @@ public class TAG0Reader {
 		}
 
 		if (sop)
-			System.out.println("---- ");
+			System.out.println("---- index " + index + " item.offset=" + item.offset);
 
 		return item.value;
 	}

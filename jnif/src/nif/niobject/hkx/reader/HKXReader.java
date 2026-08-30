@@ -99,6 +99,7 @@ public class HKXReader {
 					break;
 				}
 
+				//hknpBreakableConstraintData
 				hkBaseObject obj = constructHKXObject(className, header.is64bit);
 
 				// Check for an unknown block type

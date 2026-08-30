@@ -2,8 +2,10 @@ package nif.compound;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import nif.ByteConvert;
+import nif.niobject.hkx.reader.TAG0Reader.Havok_TagObject;
 
 //NOT sub classed from Matrix3, the maths is NOT the same!!
 public class NifMatrix44
@@ -102,6 +104,28 @@ public class NifMatrix44
 		m34 = stream.getFloat(offset + 56);
 		m44 = stream.getFloat(offset + 60);
 	}
+	
+	public NifMatrix44(ArrayList<Havok_TagObject> listObjectTuple) {
+		int memberIdx = 0;
+		m11 =  listObjectTuple.get(memberIdx++).f_value;
+		m21 =  listObjectTuple.get(memberIdx++).f_value;
+		m31 =  listObjectTuple.get(memberIdx++).f_value;
+		m41 =  listObjectTuple.get(memberIdx++).f_value;
+		m12 =  listObjectTuple.get(memberIdx++).f_value;
+		m22 =  listObjectTuple.get(memberIdx++).f_value;
+		m32 =  listObjectTuple.get(memberIdx++).f_value;
+		m42 =  listObjectTuple.get(memberIdx++).f_value;
+		m13 =  listObjectTuple.get(memberIdx++).f_value;
+		m23 =  listObjectTuple.get(memberIdx++).f_value;
+		m33 =  listObjectTuple.get(memberIdx++).f_value;
+		m44 =  listObjectTuple.get(memberIdx++).f_value;
+		m14 =  listObjectTuple.get(memberIdx++).f_value;
+		m24 =  listObjectTuple.get(memberIdx++).f_value;
+		m34 =  listObjectTuple.get(memberIdx++).f_value;
+		m44 =  listObjectTuple.get(memberIdx++).f_value;
+	}
+	
+	
 	public float[] data()
 	{
 		return new float[] { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 };
