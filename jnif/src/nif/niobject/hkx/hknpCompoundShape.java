@@ -51,7 +51,7 @@ public class hknpCompoundShape extends hknpCompositeShape {
 	 */
 	//hknpCompoundShapeBase is not in the hierarchy not loaded here
 	public int	estimatedNumShapeKeys;
-	public long	boundingVolumeData;
+	public long	boundingVolumeData2;// both sub classes load a boundingVolumeData but of 2 different types
 
 	@Override
 	public int readFromTAG0(Havok_TagItem item) {
@@ -64,7 +64,7 @@ public class hknpCompoundShape extends hknpCompositeShape {
 		isMutable = value0.listObjectClass.get(memberIdx++).i_value != 0;
 		estimatedNumShapeKeys = value0.listObjectClass.get(memberIdx++).i_value;
 		mutationSignals = new hknpShapeSignals(value0.listObjectClass.get(memberIdx++));
-		boundingVolumeData = TAG0Reader.getRefPtr(value0.listObjectClass.get(memberIdx++));
+		boundingVolumeData2 = TAG0Reader.getRefPtr(value0.listObjectClass.get(memberIdx++));
 		return memberIdx;
 	}
 
