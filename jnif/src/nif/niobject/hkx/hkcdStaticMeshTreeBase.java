@@ -90,36 +90,43 @@ public class hkcdStaticMeshTreeBase extends hkcdStaticTreeTreehkcdStaticTreeDyna
 	
 	*/
 	int primitiveStoresIsFlatConvex;
+
 	public hkcdStaticMeshTreeBase(Havok_TagObject item) {
 		super(item);
 		//item.outputOutline();
 
-		int memberIdx = 2;		
-		
+		int memberIdx = 2;
+
 		numPrimitiveKeys = item.listObjectClass.get(memberIdx++).i_value;
 		bitsPerKey = item.listObjectClass.get(memberIdx++).i_value;
-		maxKeyValue = item.listObjectClass.get(memberIdx++).i_value;		
+		maxKeyValue = item.listObjectClass.get(memberIdx++).i_value;
 		primitiveStoresIsFlatConvex = item.listObjectClass.get(memberIdx++).i_value;
 
 		Havok_TagObject value = item.listObjectClass.get(memberIdx++);
 		int arrSize = value.listObjectArray.size();
-		sections = new hkcdStaticMeshTreeBaseSection[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			sections[i] = new hkcdStaticMeshTreeBaseSection(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			sections = new hkcdStaticMeshTreeBaseSection[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				sections[i] = new hkcdStaticMeshTreeBaseSection(value.listObjectArray.get(i));
+			}
 		}
-		
-		value = item.listObjectClass.get(memberIdx++);
-		arrSize = value.listObjectArray.size();
-		primitives = new hkcdStaticMeshTreeBasePrimitive[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			primitives[i] = new hkcdStaticMeshTreeBasePrimitive(value.listObjectArray.get(i));
-		} 
 
 		value = item.listObjectClass.get(memberIdx++);
 		arrSize = value.listObjectArray.size();
-		sharedVerticesIndex = new int[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			sharedVerticesIndex[i] = value.listObjectArray.get(i).i_value;
-		}		
+		if (arrSize > 0) {
+			primitives = new hkcdStaticMeshTreeBasePrimitive[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				primitives[i] = new hkcdStaticMeshTreeBasePrimitive(value.listObjectArray.get(i));
+			}
+		}
+
+		value = item.listObjectClass.get(memberIdx++);
+		arrSize = value.listObjectArray.size();
+		if (arrSize > 0) {
+			sharedVerticesIndex = new int[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				sharedVerticesIndex[i] = value.listObjectArray.get(i).i_value;
+			}
+		}
 	}
 }
