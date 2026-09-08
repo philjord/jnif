@@ -126,45 +126,57 @@ public class hknpPhysicsSystemData extends hkReferencedObject {
 
 		Havok_TagObject value = value0.listObjectClass.get(memberIdx++);
 		int arrSize = value.listObjectArray.size();
-		materials = new hknpMaterial[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			materials[i] = new hknpMaterial(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			materials = new hknpMaterial[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				materials[i] = new hknpMaterial(value.listObjectArray.get(i));
+			}
 		}
 
 		value = value0.listObjectClass.get(memberIdx++);
 		arrSize = value.listObjectArray.size();
-		motionProperties = new hknpMotionProperties[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			motionProperties[i] = new hknpMotionProperties(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			motionProperties = new hknpMotionProperties[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				motionProperties[i] = new hknpMotionProperties(value.listObjectArray.get(i));
+			}
 		}
 
 		/*	
 			value = value0.listObjectClass.get(memberIdx++);
 			arrSize = value.listObjectArray.size();
+			if (arrSize > 0) {
 			motionCinfos = new hknpMotionCinfo[arrSize];
 			for (int i = 0; i < arrSize; i++) {
 				motionCinfos[i] = new hknpMotionCinfo(value.listObjectArray.get(i), listType,  listItem,	 hkxContents);
+			}
 			}*/
 
 		value = value0.listObjectClass.get(memberIdx++);
 		arrSize = value.listObjectArray.size();
-		bodyCinfos = new bodyCinfoWithAttachment[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			bodyCinfos[i] = new bodyCinfoWithAttachment(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			bodyCinfos = new bodyCinfoWithAttachment[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				bodyCinfos[i] = new bodyCinfoWithAttachment(value.listObjectArray.get(i));
+			}
 		}
 
 		value = value0.listObjectClass.get(memberIdx++);
 		arrSize = value.listObjectArray.size();
-		constraintCinfos = new hknpConstraintCinfo[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			constraintCinfos[i] = new hknpConstraintCinfo(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			constraintCinfos = new hknpConstraintCinfo[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				constraintCinfos[i] = new hknpConstraintCinfo(value.listObjectArray.get(i));
+			}
 		}
 
 		value = value0.listObjectClass.get(memberIdx++);
 		arrSize = value.listObjectArray.size();
-		referencedObjects = new long[arrSize];
-		for (int i = 0; i < arrSize; i++) {
-			referencedObjects[i] = TAG0Reader.getRefPtr(value.listObjectArray.get(i));
+		if (arrSize > 0) {
+			referencedObjects = new long[arrSize];
+			for (int i = 0; i < arrSize; i++) {
+				referencedObjects[i] = TAG0Reader.getRefPtr(value.listObjectArray.get(i));
+			}
 		}
 
 		name = value0.listObjectClass.get(memberIdx++).s_value;
