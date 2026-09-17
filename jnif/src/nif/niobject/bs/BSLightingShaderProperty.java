@@ -54,12 +54,11 @@ public class BSLightingShaderProperty extends BSShaderProperty {
 	 * <field name="Fresnel Power" type="float" default="5.0" range="#F_PNZ#" vercond="#BS_GTE_130#" />
 	 * <field name="Wetness" type="BSSPWetnessParams" vercond="#BS_GTE_130#" />
 	 * 
-	 * //this should be BS_GTE_130 and so in FO76 and STF, issue if I correct it 
-	 * <field name="Luminance" type="BSSPLuminanceParams" vercond="#BS_GTE_STF#" /> // #BS_GTE_130#
-	 * <field name="Do Translucency" type="bool" vercond="#BS_F76#" /> // #BS_GTE_130#
-	 * <field name="Translucency" type="BSSPTranslucencyParams" vercond="#BS_F76#" cond="Do Translucency" /> // #BS_GTE_130# 
-	 * <field name="Has Texture Arrays" type="byte" vercond="#BS_F76#" /> // #BS_GTE_130#
-	 * <field name="Num Texture Arrays" type="uint" vercond="#BS_F76#" cond="Has Texture Arrays" /> // #BS_GTE_130#
+	 * <field name="Luminance" type="BSSPLuminanceParams" vercond="#BS_GTE_F76#" /> 
+	 * <field name="Do Translucency" type="bool" vercond="#BS_F76#" /> // #BS_GTE_F76#
+	 * <field name="Translucency" type="BSSPTranslucencyParams" vercond="#BS_F76#" cond="Do Translucency" /> 
+	 * <field name="Has Texture Arrays" type="byte" vercond="#BS_F76#" />  
+	 * <field name="Num Texture Arrays" type="uint" vercond="#BS_F76#" cond="Has Texture Arrays" />  
 	 * <field name="Texture Arrays" type="BSTextureArray" length="Num Texture Arrays" vercond="#BS_F76#" cond="Has Texture Arrays" />
 	 * 
 	 * <field name="Unk Float 1" type="float" vercond="#BS_GTE_STF#"/>
@@ -142,7 +141,7 @@ public class BSLightingShaderProperty extends BSShaderProperty {
 	public BSSPTranslucencyParams		Translucency;
 	public byte							HasTextureArrays;
 	public int							NumTextureArrays;
-	public String[]						TextureArrays;
+	public BSTextureArray[]						TextureArrays;
 	public boolean						UseScreenSpaceReflections;
 	public boolean						WetnessControlUseSSR;
 
@@ -252,8 +251,8 @@ public class BSLightingShaderProperty extends BSShaderProperty {
 			Wetness = new BSSPWetnessParams(stream, nifVer);
 		}
 
-		// <field name="Luminance" type="BSSPLuminanceParams" vercond="#BS_GTE_STF#" />  		
-		if (nifVer.BS_GTE_STF())
+		// <field name="Luminance" type="BSSPLuminanceParams" vercond="#BS_GTE_F76#" />  		
+		if (nifVer.BS_GTE_F76())
 			Luminance = new BSSPLuminanceParams(stream);
 
 		// <field name="Do Translucency" type="bool" vercond="#BS_F76#" />  
@@ -269,9 +268,9 @@ public class BSLightingShaderProperty extends BSShaderProperty {
 			HasTextureArrays = ByteConvert.readByte(stream);
 			if (HasTextureArrays != 0) {
 				NumTextureArrays = ByteConvert.readInt(stream);
-				TextureArrays = new String[NumTextureArrays];
+				TextureArrays = new BSTextureArray[NumTextureArrays];
 				for (int i = 0; i < NumTextureArrays; i++) {
-					TextureArrays[i] = ByteConvert.readSizedString(stream);
+					TextureArrays[i] = new BSTextureArray(stream, nifVer);
 				}
 			}
 		}
